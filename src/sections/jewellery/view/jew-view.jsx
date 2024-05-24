@@ -10,28 +10,29 @@ import Typography from '@mui/material/Typography';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
 
-import { promotion } from 'src/_mock/promotion';
+
+import { jewellery } from 'src/_mock/jewellery';
 
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 
 import TableNoData from '../table-no-data';
+import UserTableRow from '../jew-table-row';
+import UserTableHead from '../jew-table-head';
 import TableEmptyRows from '../table-empty-rows';
-import PromotionTableRow from '../promotion-table-row';
-import PromotionTableHead from '../promotion-table-head';
-import PromotionTableToolbar from '../promotion-table-toolbar';
-import { emptyRows, applyFilter, getComparator } from '../PromotionUtils';
+import UserTableToolbar from '../jew-table-toolbar';
+import { emptyRows, applyFilter, getComparator } from '../utils';
 
 // ----------------------------------------------------------------------
 
-export default function PromotionPage() {
+export default function JewelleryPage() {
   const [page, setPage] = useState(0);
 
   const [order, setOrder] = useState('asc');
 
   const [selected, setSelected] = useState([]);
 
-  const [orderBy, setOrderBy] = useState('type');
+  const [orderBy, setOrderBy] = useState('name');
 
   const [filterName, setFilterName] = useState('');
 
@@ -47,18 +48,18 @@ export default function PromotionPage() {
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelecteds = promotion.map((n) => n.type);
+      const newSelecteds = jewellery.map((n) => n.name);
       setSelected(newSelecteds);
       return;
     }
     setSelected([]);
   };
 
-  const handleClick = (event, type) => {
-    const selectedIndex = selected.indexOf(type);
+  const handleClick = (event, name) => {
+    const selectedIndex = selected.indexOf(name);
     let newSelected = [];
     if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selected, type);
+      newSelected = newSelected.concat(selected, name);
     } else if (selectedIndex === 0) {
       newSelected = newSelected.concat(selected.slice(1));
     } else if (selectedIndex === selected.length - 1) {
@@ -87,7 +88,7 @@ export default function PromotionPage() {
   };
 
   const dataFiltered = applyFilter({
-    inputData: promotion,
+    inputData: jewellery,
     comparator: getComparator(order, orderBy),
     filterName,
   });
@@ -97,15 +98,15 @@ export default function PromotionPage() {
   return (
     <Container>
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
-        <Typography variant="h4">Promotion</Typography>
+        <Typography variant="h4">Jewellery</Typography>
 
         <Button variant="contained" color="inherit" startIcon={<Iconify icon="eva:plus-fill" />}>
-          New Promotion
+          New Jewellery
         </Button>
       </Stack>
 
       <Card>
-        <PromotionTableToolbar
+        <UserTableToolbar
           numSelected={selected.length}
           filterName={filterName}
           onFilterName={handleFilterByName}
@@ -114,20 +115,19 @@ export default function PromotionPage() {
         <Scrollbar>
           <TableContainer sx={{ overflow: 'unset' }}>
             <Table sx={{ minWidth: 800 }}>
-              <PromotionTableHead
+              <UserTableHead
                 order={order}
                 orderBy={orderBy}
-                rowCount={promotion.length}
+                rowCount={jewellery.length}
                 numSelected={selected.length}
                 onRequestSort={handleSort}
                 onSelectAllClick={handleSelectAllClick}
                 headLabel={[
-                  { id: 'type', label: 'Type' },
-                  { id: 'ApproveManager', label: 'ApproveManager' },
-                  { id: 'Description', label: 'Description' },
-                  { id: 'DiscountRate', label: 'DiscountRate', align: 'center' },
-                  { id: 'StartDate', label: 'StartDate' },
-                  { id: 'EndDate', label: 'EndDate' },
+                  { id: 'name', label: 'Name' },
+                  { id: 'barcode', label: 'BarCode' },
+                  { id: 'weight', label: 'Weight' },
+                  { id: 'stoneCost', label: 'Stone Cost' },
+                  { id: 'laborCost', label: 'Labor Cost' },
                   { id: '' },
                 ]}
               />
@@ -135,22 +135,27 @@ export default function PromotionPage() {
                 {dataFiltered
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((row) => (
-                    <PromotionTableRow
-                      key={row.id}
-                      type={row.type}
-                      Description={row.Description}
-                      StartDate={row.StartDate}
-                      EndDate={row.EndDate}
-                      ApproveManager={row.ApproveManager}
-                      DiscountRate={row.DiscountRate}
-                      selected={selected.indexOf(row.type) !== -1}
-                      handleClick={(event) => handleClick(event, row.type)}
+                    <UserTableRow
+
+                      id={row.id}
+                      name={row.name}
+                      barcode={row.barcode}
+                      weight={row.weight}
+                      stoneCost={row.stoneCost}
+                      laborCost={row.laborCost}
+
+
+
+
+
+                      selected={selected.indexOf(row.name) !== -1}
+                      handleClick={(event) => handleClick(event, row.name)}
                     />
                   ))}
 
                 <TableEmptyRows
                   height={77}
-                  emptyRows={emptyRows(page, rowsPerPage, promotion.length)}
+                  emptyRows={emptyRows(page, rowsPerPage, jewellery.length)}
                 />
 
                 {notFound && <TableNoData query={filterName} />}
@@ -162,7 +167,7 @@ export default function PromotionPage() {
         <TablePagination
           page={page}
           component="div"
-          count={promotion.length}
+          count={jewellery.length}
           rowsPerPage={rowsPerPage}
           onPageChange={handleChangePage}
           rowsPerPageOptions={[5, 10, 25]}

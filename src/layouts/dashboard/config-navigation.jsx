@@ -38,10 +38,12 @@ const navConfig = [
     icon: icon('ic_disabled'),
   },
   {
-    title: 'promotion',
-    path: '/promotion',
-    icon: icon('ic_cart'),
+    title: 'jewellery',
+    path: '/jewellery',
+    icon: icon('ic_jew'),
   },
+
+
 ];
 
 export default navConfig;

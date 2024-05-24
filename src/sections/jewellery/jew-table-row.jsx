@@ -2,6 +2,7 @@ import { useState } from 'react';
 import PropTypes from 'prop-types';
 
 import Stack from '@mui/material/Stack';
+import Avatar from '@mui/material/Avatar';
 import Popover from '@mui/material/Popover';
 import TableRow from '@mui/material/TableRow';
 import Checkbox from '@mui/material/Checkbox';
@@ -10,18 +11,20 @@ import TableCell from '@mui/material/TableCell';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 
+import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 
 // ----------------------------------------------------------------------
 
 export default function UserTableRow({
   selected,
-  type,
-  ApproveManager,
-  Description,
-  DiscountRate,
-  StartDate,
-  EndDate,
+  name,
+  weight,
+  barcode,
+  stoneCost,
+  laborCost,
+  
+
   handleClick,
 }) {
   const [open, setOpen] = useState(null);
@@ -43,25 +46,26 @@ export default function UserTableRow({
 
         <TableCell component="th" scope="row" padding="none">
           <Stack direction="row" alignItems="center" spacing={2}>
+            
             <Typography variant="subtitle2" noWrap>
-              {type}
+              {name}
             </Typography>
           </Stack>
         </TableCell>
 
-        <TableCell>{ApproveManager}</TableCell>
+        <TableCell>{barcode}</TableCell>
 
-        <TableCell>{Description}</TableCell>
+        <TableCell>{weight}</TableCell>
 
-        <TableCell align="center">{DiscountRate}</TableCell>
+        
+        <TableCell>{stoneCost}</TableCell>
 
-        <TableCell>
-          {StartDate}
-        </TableCell>
+        <TableCell>{laborCost}</TableCell>
 
-        <TableCell>
-          {EndDate}
-        </TableCell>
+
+       
+
+       
 
         <TableCell align="right">
           <IconButton onClick={handleOpenMenu}>
@@ -95,12 +99,13 @@ export default function UserTableRow({
 }
 
 UserTableRow.propTypes = {
-  ApproveManager: PropTypes.any,
+  
+  barcode: PropTypes.any,
   handleClick: PropTypes.func,
-  DiscountRate: PropTypes.any,
-  type: PropTypes.any,
-  Description: PropTypes.any,
+  stoneCost: PropTypes.any,
+  laborCost: PropTypes.any,
+  name: PropTypes.any,
+  weight: PropTypes.any,
   selected: PropTypes.any,
-  StartDate: PropTypes.any,
-  EndDate: PropTypes.any,
+
 };
