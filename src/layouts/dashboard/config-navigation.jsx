@@ -37,6 +37,13 @@ const navConfig = [
     path: '/404',
     icon: icon('ic_disabled'),
   },
+  {
+    title: 'jewellery',
+    path: '/jewellery',
+    icon: icon('ic_jew'),
+  },
+
+
 ];
 
 export default navConfig;
