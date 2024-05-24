@@ -40,7 +40,7 @@ const navConfig = [
   {
     title: 'promotion',
     path: '/promotion',
-    icon: icon('ic_cart'),
+    icon: icon('ic_promotion'),
   },
 ];
 
