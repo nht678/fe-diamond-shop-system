@@ -11,7 +11,8 @@ export const ProductsPage = lazy(() => import('src/pages/products'));
 export const Page404 = lazy(() => import('src/pages/page-not-found'));
 export const Hello = lazy(() => import('src/pages/test'));
 export const Promotion = lazy(() => import('src/pages/promotion'));
-export const Customer = lazy (() => import('src/pages/customer'))
+export const Customer = lazy (() => import('src/pages/customer'));
+export const Jewellery = lazy (() => import('src/pages/jewellery'));
 // ----------------------------------------------------------------------
 
 export default function Router() {
@@ -31,7 +32,8 @@ export default function Router() {
         { path: 'blog', element: <BlogPage /> },
         { path: 'test', element: <Hello /> },
         { path: 'promotion', element: <Promotion /> },
-        { path: 'customer', element: <Customer />}
+        { path: 'customer', element: <Customer />},
+        { path: 'jewellery', element: <Jewellery/>},
       ],
     },
     {
