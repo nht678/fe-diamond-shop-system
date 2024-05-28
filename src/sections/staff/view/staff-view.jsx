@@ -10,21 +10,21 @@ import Typography from '@mui/material/Typography';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
 
-import { promotion } from 'src/_mock/promotion';
+import { staff } from 'src/_mock/staff';
 
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 
 import TableNoData from '../table-no-data';
-import UserTableRow from '../promo-table-row';
-import UserTableHead from '../promo-table-head';
+import UserTableRow from '../staff-table-row';
+import UserTableHead from '../staff-table-head';
 import TableEmptyRows from '../table-empty-rows';
-import UserTableToolbar from '../promo-table-toolbar';
+import UserTableToolbar from '../staff-table-toolbar';
 import { emptyRows, applyFilter, getComparator } from '../utils';
 
 // ----------------------------------------------------------------------
 
-export default function PromotionView() {
+export default function StaffView() {
   const [page, setPage] = useState(0);
 
   const [order, setOrder] = useState('asc');
@@ -47,7 +47,7 @@ export default function PromotionView() {
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelecteds = promotion.map((n) => n.name);
+      const newSelecteds = staff.map((n) => n.name);
       setSelected(newSelecteds);
       return;
     }
@@ -87,7 +87,7 @@ export default function PromotionView() {
   };
 
   const dataFiltered = applyFilter({
-    inputData: promotion,
+    inputData: staff,
     comparator: getComparator(order, orderBy),
     filterName,
   });
@@ -97,10 +97,10 @@ export default function PromotionView() {
   return (
     <Container>
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
-        <Typography variant="h4">Promotion</Typography>
+        <Typography variant="h4">Staff</Typography>
 
         <Button variant="contained" color="inherit" startIcon={<Iconify icon="eva:plus-fill" />}>
-          New Promotion
+          New Staff
         </Button>
       </Stack>
 
@@ -117,17 +117,16 @@ export default function PromotionView() {
               <UserTableHead
                 order={order}
                 orderBy={orderBy}
-                rowCount={promotion.length}
+                rowCount={staff.length}
                 numSelected={selected.length}
                 onRequestSort={handleSort}
                 onSelectAllClick={handleSelectAllClick}
                 headLabel={[
-                  { id: 'type', label: 'Type' },
-                  { id: 'approveManager', label: 'ApproveManager' },
-                  { id: 'description', label: 'Description' },
-                  { id: 'discountRate', label: 'DiscountRate' },
-                  { id: 'startDate', label: 'StartDate' },
-                  { id: 'endDate', label: 'EndDate' },
+                  { id: 'userName', label: 'UserName' },
+                  { id: 'email', label: 'Email' },
+                  { id: 'password', label: 'Password' },
+                  { id: 'roleId', label: 'RoleId' },
+                  { id: 'counterId', label: 'CounterId' },
                   { id: '' },
                 ]}
               />
@@ -137,12 +136,11 @@ export default function PromotionView() {
                   .map((row) => (
                     <UserTableRow
                       key={row.id}
-                      type={row.type}
-                      approveManager={row.approveManager}
-                      description={row.description}
-                      discountRate={row.discountRate}
-                      startDate={row.startDate}
-                      endDate={row.endDate}
+                      userName={row.userName}
+                      email={row.email}
+                      password={row.password}
+                      roleId={row.roleId}
+                      counterId={row.counterId}
                       selected={selected.indexOf(row.name) !== -1}
                       handleClick={(event) => handleClick(event, row.type)}
                     />
@@ -150,7 +148,7 @@ export default function PromotionView() {
 
                 <TableEmptyRows
                   height={77}
-                  emptyRows={emptyRows(page, rowsPerPage, promotion.length)}
+                  emptyRows={emptyRows(page, rowsPerPage, staff.length)}
                 />
 
                 {notFound && <TableNoData query={filterName} />}
@@ -162,7 +160,7 @@ export default function PromotionView() {
         <TablePagination
           page={page}
           component="div"
-          count={promotion.length}
+          count={staff.length}
           rowsPerPage={rowsPerPage}
           onPageChange={handleChangePage}
           rowsPerPageOptions={[5, 10, 25]}

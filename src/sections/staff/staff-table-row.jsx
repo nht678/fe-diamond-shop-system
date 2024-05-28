@@ -1,13 +1,11 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
 
-import Stack from '@mui/material/Stack';
 import Popover from '@mui/material/Popover';
 import TableRow from '@mui/material/TableRow';
 import Checkbox from '@mui/material/Checkbox';
 import MenuItem from '@mui/material/MenuItem';
 import TableCell from '@mui/material/TableCell';
-import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 
 import Iconify from 'src/components/iconify';
@@ -16,12 +14,11 @@ import Iconify from 'src/components/iconify';
 
 export default function UserTableRow({
   selected,
-  type,
-  ApproveManager,
-  Description,
-  DiscountRate,
-  StartDate,
-  EndDate,
+  userName,
+  email,
+  password,
+  roleId,
+  counterId,
   handleClick,
 }) {
   const [open, setOpen] = useState(null);
@@ -41,27 +38,16 @@ export default function UserTableRow({
           <Checkbox disableRipple checked={selected} onChange={handleClick} />
         </TableCell>
 
-        <TableCell component="th" scope="row" padding="none">
-          <Stack direction="row" alignItems="center" spacing={2}>
-            <Typography variant="subtitle2" noWrap>
-              {type}
-            </Typography>
-          </Stack>
-        </TableCell>
+        
 
-        <TableCell>{ApproveManager}</TableCell>
+        <TableCell>{userName}</TableCell>
 
-        <TableCell>{Description}</TableCell>
+        <TableCell>{email}</TableCell>      
+        <TableCell>{password}</TableCell>
+        <TableCell>{roleId}</TableCell>
+        <TableCell>{counterId}</TableCell>
 
-        <TableCell align="center">{DiscountRate}</TableCell>
-
-        <TableCell>
-          {StartDate}
-        </TableCell>
-
-        <TableCell>
-          {EndDate}
-        </TableCell>
+        
 
         <TableCell align="right">
           <IconButton onClick={handleOpenMenu}>
@@ -95,12 +81,11 @@ export default function UserTableRow({
 }
 
 UserTableRow.propTypes = {
-  ApproveManager: PropTypes.any,
+  userName: PropTypes.string,
+  email: PropTypes.string,
+  password: PropTypes.string,
   handleClick: PropTypes.func,
-  DiscountRate: PropTypes.any,
-  type: PropTypes.any,
-  Description: PropTypes.any,
+  roleId: PropTypes.number,
+  counterId: PropTypes.number,
   selected: PropTypes.any,
-  StartDate: PropTypes.any,
-  EndDate: PropTypes.any,
 };
