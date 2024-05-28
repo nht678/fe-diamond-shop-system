@@ -95,6 +95,7 @@ export default function JewelleryView() {
 
   const notFound = !dataFiltered.length && !!filterName;
 
+
   return (
     <Container>
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
@@ -123,7 +124,7 @@ export default function JewelleryView() {
                 onRequestSort={handleSort}
                 onSelectAllClick={handleSelectAllClick}
                 headLabel={[
-                  { id: 'name', label: 'Name' },    
+                  { id: 'name', label: 'Name' },
                   { id: 'barcode', label: 'BardCode' },
                   { id: 'weight', label: 'Weight' },
                   { id: 'stoneCost', label: 'Stone Cost' },
@@ -142,7 +143,7 @@ export default function JewelleryView() {
                       weight={row.weight}
                       stoneCost={row.stoneCost}
                       laborCost={row.laborCost}
-                      
+
                       selected={selected.indexOf(row.name) !== -1}
                       handleClick={(event) => handleClick(event, row.name)}
                     />
