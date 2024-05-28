@@ -1,6 +1,6 @@
 export const promotion = [
   {
-    id: '1',
+    promotionId: '1',
     type: 'Type1',
     approveManager: 'John Doe',
     description: 'Special discount for summer season.',
@@ -9,7 +9,7 @@ export const promotion = [
     endDate: '2023-09-01',
   },
   {
-    id: '2',
+    promotionId: '2',
     type: 'Type2',
     approveManager: 'Jane Smith',
     description: 'Black Friday Sale.',
@@ -18,7 +18,7 @@ export const promotion = [
     endDate: '2023-11-30',
   },
   {
-    id: '3',
+    promotionId: '3',
     type: 'Type3',
     approveManager: 'Mike Johnson',
     description: 'New Year Celebration Discount.',
@@ -27,7 +27,7 @@ export const promotion = [
     endDate: '2024-01-05',
   },
   {
-    id: '4',
+    promotionId: '4',
     type: 'Type1',
     approveManager: 'Emily Davis',
     description: 'Back to School Promotion.',
@@ -36,7 +36,7 @@ export const promotion = [
     endDate: '2023-09-15',
   },
   {
-    id: '5',
+    promotionId: '5',
     type: 'Type2',
     approveManager: 'William Brown',
     description: 'Spring Sale.',
@@ -45,7 +45,7 @@ export const promotion = [
     endDate: '2023-04-30',
   },
   {
-    id: '6',
+    promotionId: '6',
     type: 'Type3',
     approveManager: 'Jessica Wilson',
     description: 'Holiday Season Discount.',
@@ -54,7 +54,7 @@ export const promotion = [
     endDate: '2023-12-31',
   },
   {
-    id: '7',
+    promotionId: '7',
     type: 'Type1',
     approveManager: 'David Lee',
     description: 'Clearance Sale.',
