@@ -1,15 +1,65 @@
-import { sample } from 'lodash';
-import { faker } from '@faker-js/faker';
-
-// ----------------------------------------------------------------------
-
-export const promotion = [...Array(24)].map((_, index) => ({
-  id: faker.string.uuid(),
-  type: sample(['Type1', 'Type2', 'Type3']),
-  ApproveManager: faker.person.fullName(),
-  Description: faker.lorem.sentence(),
-  DiscountRate: faker.datatype.number({ min: 1, max: 100 }),
-  StartDate: faker.date.future().toISOString().split('T')[0],
-  EndDate: faker.date.future().toISOString().split('T')[0]
-}));
-
+export const promotion = [
+  {
+    id: '1',
+    type: 'Type1',
+    approveManager: 'John Doe',
+    description: 'Special discount for summer season.',
+    discountRate: 20,
+    startDate: '2023-06-01',
+    endDate: '2023-09-01',
+  },
+  {
+    id: '2',
+    type: 'Type2',
+    approveManager: 'Jane Smith',
+    description: 'Black Friday Sale.',
+    discountRate: 50,
+    startDate: '2023-11-24',
+    endDate: '2023-11-30',
+  },
+  {
+    id: '3',
+    type: 'Type3',
+    approveManager: 'Mike Johnson',
+    description: 'New Year Celebration Discount.',
+    discountRate: 30,
+    startDate: '2023-12-25',
+    endDate: '2024-01-05',
+  },
+  {
+    id: '4',
+    type: 'Type1',
+    approveManager: 'Emily Davis',
+    description: 'Back to School Promotion.',
+    discountRate: 25,
+    startDate: '2023-08-01',
+    endDate: '2023-09-15',
+  },
+  {
+    id: '5',
+    type: 'Type2',
+    approveManager: 'William Brown',
+    description: 'Spring Sale.',
+    discountRate: 15,
+    startDate: '2023-03-20',
+    endDate: '2023-04-30',
+  },
+  {
+    id: '6',
+    type: 'Type3',
+    approveManager: 'Jessica Wilson',
+    description: 'Holiday Season Discount.',
+    discountRate: 40,
+    startDate: '2023-12-01',
+    endDate: '2023-12-31',
+  },
+  {
+    id: '7',
+    type: 'Type1',
+    approveManager: 'David Lee',
+    description: 'Clearance Sale.',
+    discountRate: 60,
+    startDate: '2023-07-15',
+    endDate: '2023-08-15',
+  },
+];
