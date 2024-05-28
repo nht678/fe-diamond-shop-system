@@ -23,6 +23,7 @@ import UserTableHead from '../customer-table-head';
 import UserTableToolbar from '../customer-table-toolbar';
 import { emptyRows, applyFilter, getComparator } from '../utils';
 
+
 // ----------------------------------------------------------------------
 
 export default function CustomerPage() {
