@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
@@ -10,7 +10,7 @@ import Typography from '@mui/material/Typography';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
 
-import { jewellery } from 'src/_mock/jewellery';
+import { fetchAllJew } from 'src/_mock/jewellery';
 
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
@@ -26,6 +26,9 @@ import { emptyRows, applyFilter, getComparator } from '../utils';
 // ----------------------------------------------------------------------
 
 export default function JewelleryView() {
+
+const [jewList, setJewList] = useState([]);
+
   const [page, setPage] = useState(0);
 
   const [order, setOrder] = useState('asc');
@@ -38,6 +41,22 @@ export default function JewelleryView() {
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
+
+  useEffect(() => {
+    
+    getJew();
+  
+  }, [])
+  
+  
+    const getJew = async() => {
+      const res = await fetchAllJew();
+      setJewList(res.data)
+  }
+  
+  console.log(jewList)
+  
+
   const handleSort = (event, id) => {
     const isAsc = orderBy === id && order === 'asc';
     if (id !== '') {
@@ -48,7 +67,7 @@ export default function JewelleryView() {
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelecteds = jewellery.map((n) => n.name);
+      const newSelecteds = jewList.map((n) => n.name);
       setSelected(newSelecteds);
       return;
     }
@@ -87,8 +106,10 @@ export default function JewelleryView() {
     setFilterName(event.target.value);
   };
 
+
+
   const dataFiltered = applyFilter({
-    inputData: jewellery,
+    inputData: jewList,
     comparator: getComparator(order, orderBy),
     filterName,
   });
@@ -98,10 +119,10 @@ export default function JewelleryView() {
   return (
     <Container>
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
-        <Typography variant="h4">Users</Typography>
+        <Typography variant="h4">Jewellery</Typography>
 
         <Button variant="contained" color="inherit" startIcon={<Iconify icon="eva:plus-fill" />}>
-          New User
+          New Jewellery
         </Button>
       </Stack>
 
@@ -118,7 +139,7 @@ export default function JewelleryView() {
               <UserTableHead
                 order={order}
                 orderBy={orderBy}
-                rowCount={jewellery.length}
+                rowCount={jewList.length}
                 numSelected={selected.length}
                 onRequestSort={handleSort}
                 onSelectAllClick={handleSelectAllClick}
@@ -145,12 +166,13 @@ export default function JewelleryView() {
                       
                       selected={selected.indexOf(row.name) !== -1}
                       handleClick={(event) => handleClick(event, row.name)}
+                      
                     />
                   ))}
 
                 <TableEmptyRows
                   height={77}
-                  emptyRows={emptyRows(page, rowsPerPage, jewellery.length)}
+                  emptyRows={emptyRows(page, rowsPerPage, jewList.length)}
                 />
 
                 {notFound && <TableNoData query={filterName} />}
@@ -162,7 +184,7 @@ export default function JewelleryView() {
         <TablePagination
           page={page}
           component="div"
-          count={jewellery.length}
+          count={jewList.length}
           rowsPerPage={rowsPerPage}
           onPageChange={handleChangePage}
           rowsPerPageOptions={[5, 10, 25]}
