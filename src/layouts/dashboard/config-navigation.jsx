@@ -40,7 +40,7 @@ const navConfig = [
   {
     title: 'promotion',
     path: '/promotion',
-    icon: icon('ic_cart'),
+    icon: icon('ic_promotion'),
   },
   {
     title: 'customer',
@@ -51,6 +51,11 @@ const navConfig = [
     title: 'Jewellery',
     path: '/jewellery',
     icon: icon('ic_jew'),
+  },
+  {
+    title: 'Staff',
+    path: '/staff',
+    icon: icon('ic_staff'),
   },
 ];
 

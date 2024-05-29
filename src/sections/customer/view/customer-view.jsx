@@ -1,5 +1,6 @@
 import { useState } from 'react';
-
+// import React, { useState, useEffect } from 'react';
+// import { sample } from 'lodash';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Table from '@mui/material/Table';
@@ -25,6 +26,36 @@ import { emptyRows, applyFilter, getComparator } from '../utils';
 // ----------------------------------------------------------------------
 
 export default function CustomerPage() {
+  // // Khởi tạo state cho danh sách khách hàng
+  // const [customer, setCustomer] = useState([]);
+
+  // // Sử dụng useEffect để gọi API khi component được mount
+  // useEffect(() => {
+  //   const fetchCustomers = async () => {
+  //     try {
+  //       const response = await fetch('https://65dc58f6e7edadead7ebb035.mockapi.io/authentication/test'); // Thay thế bằng URL của API thực tế
+  //       const data = await response.json();
+
+  //       // Giả sử data là một mảng các đối tượng khách hàng
+  //       const formattedData = data.map((customers, index) => ({
+  //         id: customers.id,
+  //         avatarUrl: customers.avatarUrl || `/assets/images/avatars/avatar_${index + 1}.jpg`,
+  //         name: customers.name,
+  //         address: customers.address,
+  //         point: customers.point || Math.floor(Math.random() * 100) + 1,
+  //         status: customers.status || sample(['active', 'banned']),
+  //         phoneNumber: customers.phoneNumber,
+  //       }));
+  //       console.log("Customer")
+
+  //       setCustomer(formattedData);
+  //     } catch (error) {
+  //       console.error('Error fetching customers:', error);
+  //     }
+  //   };
+
+  //   fetchCustomers();
+  // }, []);
   const [page, setPage] = useState(0);
 
   const [order, setOrder] = useState('asc');
@@ -93,6 +124,12 @@ export default function CustomerPage() {
   });
 
   const notFound = !dataFiltered.length && !!filterName;
+
+
+
+
+
+
 
   return (
     <Container>

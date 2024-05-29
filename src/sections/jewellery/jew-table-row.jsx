@@ -1,7 +1,5 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
-import Modal from 'react-bootstrap/Modal';
-import Table from 'react-bootstrap/Table';
 import Button from 'react-bootstrap/Button';
 
 import Stack from '@mui/material/Stack';
@@ -13,8 +11,12 @@ import TableCell from '@mui/material/TableCell';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 
+import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 
+import InfoModal from './jew-modal';
+import DelModal from './jew-del-modal';
+import EditModal from './jew-edit-modal';
 
 
 
@@ -25,17 +27,31 @@ export default function UserTableRow({
   selected,
   name,
   weight,
-  barcode,
-  stoneCost,
+  price,
+  gemCost,
   laborCost,
+  warrantyID,
+  typeID,
   handleClick,
+  status,
 
 }) {
   const [open, setOpen] = useState(null);
+  const [showDel, setShowDel] = useState(false);
+
+  const handleCloseDel = () => setShowDel(false);
+  const handleShowDel = () => setShowDel(true);
+
+  const [showEd, setShowEd] = useState(false);
+
+  const handleCloseEd = () => setShowEd(false);
+  const handleShowEd = () => setShowEd(true);
+
   const [show, setShow] = useState(false);
 
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
+  
 
 
   const handleOpenMenu = (event) => {
@@ -57,21 +73,26 @@ export default function UserTableRow({
 
         <TableCell component="th" scope="row" padding="none">
           <Stack direction="row" alignItems="center" spacing={2}>
-            
+
             <Typography variant="subtitle2" noWrap>
               {name}
             </Typography>
           </Stack>
         </TableCell>
 
-        <TableCell>{barcode}</TableCell>
-
         <TableCell>{weight}</TableCell>
 
-        
-        <TableCell>{stoneCost}</TableCell>
+        <TableCell>{price}$</TableCell>
 
-        <TableCell>{laborCost}</TableCell>
+        <TableCell>{gemCost}$</TableCell>
+
+        <TableCell>{laborCost}$</TableCell>
+
+        <TableCell>
+          <Label color={(status === 'Out-stock' && 'error') || 'success'}>{status}</Label>
+        </TableCell>
+
+        <TableCell><Button variant="outline-primary" onClick={handleShow}>More Info</Button></TableCell>
 
         <TableCell align="right">
           <IconButton onClick={handleOpenMenu}>
@@ -90,64 +111,39 @@ export default function UserTableRow({
           sx: { width: 140 },
         }}
       >
-        <MenuItem onClick={handleCloseMenu}>
-          <Iconify icon="eva:edit-fill" sx={{ mr: 2 }} />
+        <MenuItem onClick={() => { handleCloseMenu(); handleShowEd(); }}>
+          <Iconify icon="eva:edit-fill" sx={{ mr: 2 }} onClick={handleShowEd}/>
           Edit
         </MenuItem>
 
-        <MenuItem onClick={() => { handleCloseMenu(); handleShow(); }} sx={{ color: 'error.main' }}>
-          <Iconify icon="eva:trash-2-outline" sx={{ mr: 2 }} onClick={handleShow}/>
+        <MenuItem onClick={() => { handleCloseMenu(); handleShowDel(); }} sx={{ color: 'error.main' }}>
+          <Iconify icon="eva:trash-2-outline" sx={{ mr: 2 }} onClick={handleShowDel} />
           Delete
         </MenuItem>
       </Popover>
 
-      <Modal show={show} onHide={handleClose}  aria-labelledby="contained-modal-title-vcenter" centered>
-        <Modal.Header closeButton>
-          <Modal.Title > {name}</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Table striped bordered hover>
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>Name</th>
-          <th>Weight</th>
-          
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>1</td>
-          <td>{name}</td>
-          <td>{weight}</td>
-          
-        </tr>
-        </tbody>
-    </Table>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleClose}>
-            Close
-          </Button>
-          <Button variant="danger" onClick={handleClose}>
-            Delete
-          </Button>
-        </Modal.Footer>
-      </Modal>
+      <InfoModal show={show} handleClose={handleClose} name={name} price={price} weight={weight} laborCost={laborCost} gemCost={gemCost} typeID={typeID} warrantyID={warrantyID} />
 
+      <DelModal show={showDel} handleClose={handleCloseDel} name={name} price={price} weight={weight} laborCost={laborCost} gemCost={gemCost} typeID={typeID} warrantyID={warrantyID} />
+
+      <EditModal show={showEd} handleClose={handleCloseEd} name={name} price={price} weight={weight} laborCost={laborCost} gemCost={gemCost} typeID={typeID} warrantyID={warrantyID} />
       
+
+
     </>
   );
 }
 
 UserTableRow.propTypes = {
-  
-  barcode: PropTypes.any,
+  warrantyID: PropTypes.any,
+  typeID: PropTypes.any,
+  price: PropTypes.any,
   handleClick: PropTypes.func,
-  stoneCost: PropTypes.any,
+  gemCost: PropTypes.any,
   laborCost: PropTypes.any,
   name: PropTypes.any,
   weight: PropTypes.any,
   selected: PropTypes.any,
+  status: PropTypes.string,
 
 };

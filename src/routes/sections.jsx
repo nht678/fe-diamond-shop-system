@@ -13,6 +13,7 @@ export const Hello = lazy(() => import('src/pages/test'));
 export const Promotion = lazy(() => import('src/pages/promotion'));
 export const Customer = lazy (() => import('src/pages/customer'));
 export const Jewellery = lazy (() => import('src/pages/jewellery'));
+export const Staff = lazy (() => import('src/pages/staff'));
 // ----------------------------------------------------------------------
 
 export default function Router() {
@@ -34,6 +35,7 @@ export default function Router() {
         { path: 'promotion', element: <Promotion /> },
         { path: 'customer', element: <Customer />},
         { path: 'jewellery', element: <Jewellery/>},
+        { path: 'staff', element: <Staff/>},
       ],
     },
     {

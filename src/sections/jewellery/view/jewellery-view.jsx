@@ -15,6 +15,7 @@ import { fetchAllJew } from 'src/_mock/jewellery';
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 
+import NewModal from '../jew-new-modal';
 import TableNoData from '../table-no-data';
 import UserTableRow from '../jew-table-row';
 import UserTableHead from '../jew-table-head';
@@ -23,11 +24,17 @@ import UserTableToolbar from '../jew-table-toolbar';
 import { emptyRows, applyFilter, getComparator } from '../utils';
 
 
+
 // ----------------------------------------------------------------------
 
 export default function JewelleryView() {
 
-const [jewList, setJewList] = useState([]);
+  const [show, setShow] = useState(false);
+
+  const handleClose = () => setShow(false);
+  const handleShow = () => setShow(true);
+
+  const [jewList, setJewList] = useState([]);
 
   const [page, setPage] = useState(0);
 
@@ -43,19 +50,18 @@ const [jewList, setJewList] = useState([]);
 
 
   useEffect(() => {
-    
+
     getJew();
-  
+
   }, [])
-  
-  
-    const getJew = async() => {
-      const res = await fetchAllJew();
-      setJewList(res.data)
+
+  const getJew = async () => {
+    const res = await fetchAllJew();
+    setJewList(res.data)
   }
-  
+
   console.log(jewList)
-  
+
 
   const handleSort = (event, id) => {
     const isAsc = orderBy === id && order === 'asc';
@@ -116,14 +122,17 @@ const [jewList, setJewList] = useState([]);
 
   const notFound = !dataFiltered.length && !!filterName;
 
+
   return (
     <Container>
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
         <Typography variant="h4">Jewellery</Typography>
 
-        <Button variant="contained" color="inherit" startIcon={<Iconify icon="eva:plus-fill" />}>
+        <Button variant="contained" color="inherit" startIcon={<Iconify icon="eva:plus-fill" />} onClick={handleShow}>
           New Jewellery
         </Button>
+
+        <NewModal show={show} handleClose={handleClose} />
       </Stack>
 
       <Card>
@@ -144,12 +153,12 @@ const [jewList, setJewList] = useState([]);
                 onRequestSort={handleSort}
                 onSelectAllClick={handleSelectAllClick}
                 headLabel={[
-                  { id: 'name', label: 'Name' },    
-                  { id: 'barcode', label: 'BardCode' },
+                  { id: 'name', label: 'Name' },
                   { id: 'weight', label: 'Weight' },
-                  { id: 'stoneCost', label: 'Stone Cost' },
+                  { id: 'price', label: 'Price' },
+                  { id: 'stoneCost', label: 'Gem Cost' },
                   { id: 'laborCost', label: 'Labor Cost' },
-                  { id: '' },
+                  { id: 'status', label: 'Status' },
                 ]}
               />
               <TableBody>
@@ -159,14 +168,16 @@ const [jewList, setJewList] = useState([]);
                     <UserTableRow
                       key={row.id}
                       name={row.name}
-                      barcode={row.barcode}
                       weight={row.weight}
-                      stoneCost={row.stoneCost}
+                      price={row.price}
+                      gemCost={row.gemCost}
                       laborCost={row.laborCost}
-                      
+                      status={row.status}
+                      typeID={row.typeID}
+                      warrantyID={row.warrantyID}
                       selected={selected.indexOf(row.name) !== -1}
                       handleClick={(event) => handleClick(event, row.name)}
-                      
+
                     />
                   ))}
 
