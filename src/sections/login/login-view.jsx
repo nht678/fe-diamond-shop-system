@@ -20,6 +20,8 @@ import { bgGradient } from 'src/theme/css';
 import Logo from 'src/components/logo';
 import Iconify from 'src/components/iconify';
 
+
+
 // ----------------------------------------------------------------------
 
 export default function LoginView() {
@@ -29,14 +31,17 @@ export default function LoginView() {
 
   const [showPassword, setShowPassword] = useState(false);
 
+  
+
   const handleClick = () => {
     router.push('/dashboard');
   };
 
   const renderForm = (
-    <>
+    
+   <>
       <Stack spacing={3}>
-        <TextField name="email" label="Email address" />
+        <TextField name="username" label="Username"  />
 
         <TextField
           name="password"
@@ -53,6 +58,7 @@ export default function LoginView() {
           }}
         />
       </Stack>
+      
 
       <Stack direction="row" alignItems="center" justifyContent="flex-end" sx={{ my: 3 }}>
         <Link variant="subtitle2" underline="hover">
@@ -63,14 +69,14 @@ export default function LoginView() {
       <LoadingButton
         fullWidth
         size="large"
-        type="submit"
+        onClick={handleClick}
         variant="contained"
         color="inherit"
-        onClick={handleClick}
       >
         Login
       </LoadingButton>
-    </>
+     </>
+    
   );
 
   return (
