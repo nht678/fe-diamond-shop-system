@@ -1,12 +1,36 @@
-import { sample } from 'lodash';
-import { faker } from '@faker-js/faker';
+export const customer =[
+  {
+    name: 'David Tran',
+    address: '32 Western Street',
+    phoneNumber:'(84) 453-7283',
+    point: ' 43 ',
+  },
 
-export const customer = [...Array(24)].map((_, index) => ({
-  id: faker.string.uuid(),
-  avatarUrl: `/assets/images/avatars/avatar_${index + 1}.jpg`,
-  name: faker.person.fullName(),
-  address: faker.location.city(),
-  point: faker.number.int({ min: 1, max: 100 }),
-  status: sample(['active', 'banned']),
-  phoneNumber: faker.phone.number(),
-}));
+  {
+    name: 'John Smith',
+    address: '4324 Las Vegas ',
+    phoneNumber:'(321) 987-4311',
+    point: ' 21 ',
+  },
+
+  {
+    name: 'Wiliams Nguyen',
+    address: '12 Califonia',
+    phoneNumber:'(84) 453-7283',
+    point: ' 43 ',
+  },
+
+  {
+    name: 'Olivia Johnson',
+    address: '452 Los Angeles',
+    phoneNumber:'(64) 422-5632',
+    point: ' 100 ',
+  },
+
+  {
+    name: 'Mia Garcia ',
+    address: '452 Los Angeles',
+    phoneNumber:'(23) 543-1892',
+    point: ' 65 ',
+  },
+]

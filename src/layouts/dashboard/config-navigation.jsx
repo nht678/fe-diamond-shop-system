@@ -45,7 +45,7 @@ const navConfig = [
   {
     title: 'customer',
     path: '/customer',
-    icon: icon('ic_user'),
+    icon: icon('ic_customer'),
   },
   {
     title: 'Jewellery',

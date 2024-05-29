@@ -135,10 +135,10 @@ export default function CustomerPage() {
   return (
     <Container>
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
-        <Typography variant="h4">customer</Typography>
+        <Typography variant="h4">Customer</Typography>
 
         <Button variant="contained" color="inherit" startIcon={<Iconify icon="eva:plus-fill" />}>
-          New customer
+          New Customer
         </Button>
       </Stack>
 
@@ -164,7 +164,6 @@ export default function CustomerPage() {
                   { id: 'address', label: 'Address' },
                   { id: 'phoneNumber', label: 'Phone Number' },
                   { id: 'point', label: 'Point', align: 'center' },
-                  { id: 'status', label: 'Status' },
                 ]}
               />
               <TableBody>
@@ -174,10 +173,8 @@ export default function CustomerPage() {
                     <UserTableRow
                       key={row.id}
                       name={row.name}
-                      phoneNumber={row.phoneNumber}
-                      status={row.status}
+                      phoneNumber={row.phoneNumber} 
                       address={row.address}
-                      avatarUrl={row.avatarUrl}
                       point={row.point}
                       selected={selected.indexOf(row.name) !== -1}
                       handleClick={(event) => handleClick(event, row.name)}
