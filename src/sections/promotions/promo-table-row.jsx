@@ -1,19 +1,28 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
 
+import Grid from '@mui/material/Grid';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
 import Popover from '@mui/material/Popover';
-import TableRow from '@mui/material/TableRow';
 import Checkbox from '@mui/material/Checkbox';
 import MenuItem from '@mui/material/MenuItem';
+import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
 import IconButton from '@mui/material/IconButton';
+import Typography from '@mui/material/Typography';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
 
 import Iconify from 'src/components/iconify';
+
 
 // ----------------------------------------------------------------------
 
 export default function UserTableRow({
   selected,
+  promotionId,
   type,
   approveManager,
   description,
@@ -23,6 +32,7 @@ export default function UserTableRow({
   handleClick,
 }) {
   const [open, setOpen] = useState(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
 
   const handleOpenMenu = (event) => {
     setOpen(event.currentTarget);
@@ -32,30 +42,76 @@ export default function UserTableRow({
     setOpen(null);
   };
 
+  const handleDialogOpen = () => {
+    setDialogOpen(true);
+  };
+
+  const handleDialogClose = () => {
+    setDialogOpen(false);
+  };
+
   return (
     <>
       <TableRow hover tabIndex={-1} role="checkbox" selected={selected}>
         <TableCell padding="checkbox">
           <Checkbox disableRipple checked={selected} onChange={handleClick} />
         </TableCell>
-
-        
-
+        <TableCell>{promotionId}</TableCell>
         <TableCell>{type}</TableCell>
-
-        <TableCell>{approveManager}</TableCell>      
-        <TableCell>{description}</TableCell>
-        <TableCell>{discountRate}</TableCell>
+        <TableCell>{`${discountRate}%`}</TableCell>
         <TableCell>{startDate}</TableCell>
         <TableCell>{endDate}</TableCell>
-        
 
-        <TableCell align="right">
+        <TableCell align='right'>
+          <Button variant="outlined" onClick={handleDialogOpen}>
+            More Info
+          </Button>
           <IconButton onClick={handleOpenMenu}>
             <Iconify icon="eva:more-vertical-fill" />
           </IconButton>
         </TableCell>
       </TableRow>
+
+      <Dialog open={dialogOpen} onClose={handleDialogClose}>
+        <DialogTitle>Promotion</DialogTitle>
+        <DialogContent>
+          <Grid container spacing={2}>
+            <Grid item xs={12}>
+              <Typography variant="h6">Promotion ID:</Typography>
+              <Typography>{promotionId}</Typography>
+            </Grid>
+            <Grid item xs={12}>
+              <Typography variant="h6">Type:</Typography>
+              <Typography>{type}</Typography>
+            </Grid>
+            <Grid item xs={12}>
+              <Typography variant="h6">DiscountRate:</Typography>
+              <Typography>{`${discountRate}%`}</Typography>
+            </Grid>
+            <Grid item xs={12}>
+              <Typography variant="h6">Approval Manager:</Typography>
+              <Typography>{approveManager}</Typography>
+            </Grid>
+            <Grid item xs={12}>
+              <Typography variant="h6">Start Date:</Typography>
+              <Typography>{startDate}</Typography>
+            </Grid>
+            <Grid item xs={12}>
+              <Typography variant="h6">End Date:</Typography>
+              <Typography>{endDate}</Typography>
+            </Grid>
+            <Grid item xs={12}>
+              <Typography variant="h6">Description:</Typography>
+              <Typography>{description}</Typography>
+            </Grid>
+          </Grid>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleDialogClose}>
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
 
       <Popover
         open={!!open}
@@ -82,6 +138,7 @@ export default function UserTableRow({
 }
 
 UserTableRow.propTypes = {
+  promotionId: PropTypes.any,
   type: PropTypes.string,
   approveManager: PropTypes.string,
   description: PropTypes.string,

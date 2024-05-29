@@ -122,13 +122,12 @@ export default function PromotionView() {
                 onRequestSort={handleSort}
                 onSelectAllClick={handleSelectAllClick}
                 headLabel={[
+                  { id: 'promotionId', label: 'PromotionId' },
                   { id: 'type', label: 'Type' },
-                  { id: 'approveManager', label: 'ApproveManager' },
-                  { id: 'description', label: 'Description' },
                   { id: 'discountRate', label: 'DiscountRate' },
                   { id: 'startDate', label: 'StartDate' },
                   { id: 'endDate', label: 'EndDate' },
-                  { id: '' },
+                  { id: '', label: '' },
                 ]}
               />
               <TableBody>
@@ -137,6 +136,7 @@ export default function PromotionView() {
                   .map((row) => (
                     <UserTableRow
                       key={row.id}
+                      promotionId={row.promotionId}
                       type={row.type}
                       approveManager={row.approveManager}
                       description={row.description}
