@@ -10,7 +10,7 @@ import Typography from '@mui/material/Typography';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
 
-import { promotion } from 'src/_mock/promotion';
+import { promotion, addPromotion } from 'src/_mock/promotion';
 
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
@@ -19,6 +19,7 @@ import TableNoData from '../table-no-data';
 import UserTableRow from '../promo-table-row';
 import UserTableHead from '../promo-table-head';
 import TableEmptyRows from '../table-empty-rows';
+import PromotionForm from '../create-promo-table';
 import UserTableToolbar from '../promo-table-toolbar';
 import { emptyRows, applyFilter, getComparator } from '../utils';
 
@@ -36,6 +37,8 @@ export default function PromotionView() {
   const [filterName, setFilterName] = useState('');
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
+
+  const [showPromotionForm, setShowPromotionForm] = useState(false);
 
   const handleSort = (event, id) => {
     const isAsc = orderBy === id && order === 'asc';
@@ -94,15 +97,33 @@ export default function PromotionView() {
 
   const notFound = !dataFiltered.length && !!filterName;
 
+  const handleClosePromotionForm = () => {
+    setShowPromotionForm(false);
+  };
+
+  const handleNewPromotionClick = (newPromotionData) => {
+    addPromotion(newPromotionData);
+    setShowPromotionForm(false);
+  };
+
   return (
     <Container>
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
         <Typography variant="h4">Promotion</Typography>
 
-        <Button variant="contained" color="inherit" startIcon={<Iconify icon="eva:plus-fill" />}>
+        <Button
+          onClick={() => setShowPromotionForm(true)}
+          variant="contained"
+          color="inherit"
+          startIcon={<Iconify icon="eva:plus-fill" />}
+        >
           New Promotion
         </Button>
       </Stack>
+
+      <PromotionForm open={showPromotionForm} onClose={handleClosePromotionForm}
+        onSubmit={handleNewPromotionClick}
+      />
 
       <Card>
         <UserTableToolbar

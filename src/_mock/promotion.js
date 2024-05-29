@@ -1,3 +1,4 @@
+
 export const promotion = [
   {
     promotionId: '1',
@@ -63,3 +64,7 @@ export const promotion = [
     endDate: '2023-08-15',
   },
 ];
+
+export function addPromotion(newPromotionData) {
+  promotion.push(newPromotionData);
+}
