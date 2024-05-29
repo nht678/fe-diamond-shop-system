@@ -5,11 +5,11 @@ import { JewelleryView } from 'src/sections/jewellery/view';
 export default function JewelleryPage() {
   return (
     <>
-          <Helmet>
+      <Helmet>
         <title> Jewellery  </title>
       </Helmet>
-     
-      <JewelleryView/>
+
+      <JewelleryView />
     </>
   );
 }

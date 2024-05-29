@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
+import Button from 'react-bootstrap/Button';
 
 import Stack from '@mui/material/Stack';
 import Popover from '@mui/material/Popover';
@@ -10,7 +11,15 @@ import TableCell from '@mui/material/TableCell';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 
+import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
+
+import InfoModal from './jew-modal';
+import DelModal from './jew-del-modal';
+import EditModal from './jew-edit-modal';
+
+
+
 
 // ----------------------------------------------------------------------
 
@@ -18,18 +27,38 @@ export default function UserTableRow({
   selected,
   name,
   weight,
-  barcode,
-  stoneCost,
+  price,
+  gemCost,
   laborCost,
-  
-
+  warrantyID,
+  typeID,
   handleClick,
+  status,
+
 }) {
   const [open, setOpen] = useState(null);
+  const [showDel, setShowDel] = useState(false);
+
+  const handleCloseDel = () => setShowDel(false);
+  const handleShowDel = () => setShowDel(true);
+
+  const [showEd, setShowEd] = useState(false);
+
+  const handleCloseEd = () => setShowEd(false);
+  const handleShowEd = () => setShowEd(true);
+
+  const [show, setShow] = useState(false);
+
+  const handleClose = () => setShow(false);
+  const handleShow = () => setShow(true);
+  
+
 
   const handleOpenMenu = (event) => {
     setOpen(event.currentTarget);
   };
+
+
 
   const handleCloseMenu = () => {
     setOpen(null);
@@ -44,26 +73,26 @@ export default function UserTableRow({
 
         <TableCell component="th" scope="row" padding="none">
           <Stack direction="row" alignItems="center" spacing={2}>
-            
+
             <Typography variant="subtitle2" noWrap>
               {name}
             </Typography>
           </Stack>
         </TableCell>
 
-        <TableCell>{barcode}</TableCell>
-
         <TableCell>{weight}</TableCell>
 
-        
-        <TableCell>{stoneCost}</TableCell>
+        <TableCell>{price}$</TableCell>
 
-        <TableCell>{laborCost}</TableCell>
+        <TableCell>{gemCost}$</TableCell>
 
+        <TableCell>{laborCost}$</TableCell>
 
-       
+        <TableCell>
+          <Label color={(status === 'Out-stock' && 'error') || 'success'}>{status}</Label>
+        </TableCell>
 
-       
+        <TableCell><Button variant="outline-primary" onClick={handleShow}>More Info</Button></TableCell>
 
         <TableCell align="right">
           <IconButton onClick={handleOpenMenu}>
@@ -82,28 +111,39 @@ export default function UserTableRow({
           sx: { width: 140 },
         }}
       >
-        <MenuItem onClick={handleCloseMenu}>
-          <Iconify icon="eva:edit-fill" sx={{ mr: 2 }} />
+        <MenuItem onClick={() => { handleCloseMenu(); handleShowEd(); }}>
+          <Iconify icon="eva:edit-fill" sx={{ mr: 2 }} onClick={handleShowEd}/>
           Edit
         </MenuItem>
 
-        <MenuItem onClick={handleCloseMenu} sx={{ color: 'error.main' }}>
-          <Iconify icon="eva:trash-2-outline" sx={{ mr: 2 }} />
+        <MenuItem onClick={() => { handleCloseMenu(); handleShowDel(); }} sx={{ color: 'error.main' }}>
+          <Iconify icon="eva:trash-2-outline" sx={{ mr: 2 }} onClick={handleShowDel} />
           Delete
         </MenuItem>
       </Popover>
+
+      <InfoModal show={show} handleClose={handleClose} name={name} price={price} weight={weight} laborCost={laborCost} gemCost={gemCost} typeID={typeID} warrantyID={warrantyID} />
+
+      <DelModal show={showDel} handleClose={handleCloseDel} name={name} price={price} weight={weight} laborCost={laborCost} gemCost={gemCost} typeID={typeID} warrantyID={warrantyID} />
+
+      <EditModal show={showEd} handleClose={handleCloseEd} name={name} price={price} weight={weight} laborCost={laborCost} gemCost={gemCost} typeID={typeID} warrantyID={warrantyID} />
+      
+
+
     </>
   );
 }
 
 UserTableRow.propTypes = {
-  
-  barcode: PropTypes.any,
+  warrantyID: PropTypes.any,
+  typeID: PropTypes.any,
+  price: PropTypes.any,
   handleClick: PropTypes.func,
-  stoneCost: PropTypes.any,
+  gemCost: PropTypes.any,
   laborCost: PropTypes.any,
   name: PropTypes.any,
   weight: PropTypes.any,
   selected: PropTypes.any,
+  status: PropTypes.string,
 
 };
