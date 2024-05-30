@@ -127,11 +127,6 @@ export default function CustomerPage() {
   const notFound = !dataFiltered.length && !!filterName;
 
 
-
-
-
-
-
   return (
     <Container>
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
@@ -163,7 +158,8 @@ export default function CustomerPage() {
                   { id: 'name', label: 'Name' },
                   { id: 'address', label: 'Address' },
                   { id: 'phoneNumber', label: 'Phone Number' },
-                  { id: 'point', label: 'Point', align: 'center' },
+                  { id: 'point', label: 'Point'},
+                  { id: ' ', label:' '},
                 ]}
               />
               <TableBody>
