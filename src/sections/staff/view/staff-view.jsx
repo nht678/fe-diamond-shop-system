@@ -10,7 +10,7 @@ import Typography from '@mui/material/Typography';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
 
-import { staff } from 'src/_mock/staff';
+import { staff, addStaff } from 'src/_mock/staff';
 
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
@@ -21,6 +21,7 @@ import UserTableHead from '../staff-table-head';
 import TableEmptyRows from '../table-empty-rows';
 import UserTableToolbar from '../staff-table-toolbar';
 import { emptyRows, applyFilter, getComparator } from '../utils';
+import StaffForm from '../create-staff-table';
 
 // ----------------------------------------------------------------------
 
@@ -36,6 +37,8 @@ export default function StaffView() {
   const [filterName, setFilterName] = useState('');
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
+
+  const [showStaffForm, setShowStaffForm] = useState(false);
 
   const handleSort = (event, id) => {
     const isAsc = orderBy === id && order === 'asc';
@@ -94,15 +97,30 @@ export default function StaffView() {
 
   const notFound = !dataFiltered.length && !!filterName;
 
+  const handleCloseStaffForm = () => {
+    setShowStaffForm(false);
+  };
+
+  const handleNewStaffClick = (newStaffData) => {
+    addStaff(newStaffData);
+    setShowStaffForm(false);
+  };
+
   return (
     <Container>
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
         <Typography variant="h4">Staff</Typography>
 
-        <Button variant="contained" color="inherit" startIcon={<Iconify icon="eva:plus-fill" />}>
+        <Button
+        onClick={() => setShowStaffForm(true)} 
+        variant="contained" color="inherit" startIcon={<Iconify icon="eva:plus-fill" />}>
           New Staff
         </Button>
       </Stack>
+
+      <StaffForm open={showStaffForm} onClose={handleCloseStaffForm}
+        onSubmit={handleNewStaffClick}
+      />
 
       <Card>
         <UserTableToolbar
@@ -126,7 +144,7 @@ export default function StaffView() {
                   { id: 'email', label: 'Email' },
                   { id: 'password', label: 'Password' },
                   { id: 'roleId', label: 'RoleId' },
-                  { id: 'counterId', label: 'CounterId' },
+                  { id: 'status', label: 'Status' },
                   { id: '' },
                 ]}
               />
@@ -141,8 +159,10 @@ export default function StaffView() {
                       password={row.password}
                       roleId={row.roleId}
                       counterId={row.counterId}
-                      selected={selected.indexOf(row.name) !== -1}
-                      handleClick={(event) => handleClick(event, row.type)}
+                      status={row.status}
+                      staffId={row.staffId}
+                      selected={selected.indexOf(row.userName) !== -1}
+                      handleClick={(event) => handleClick(event, row.userName)}
                     />
                   ))}
 

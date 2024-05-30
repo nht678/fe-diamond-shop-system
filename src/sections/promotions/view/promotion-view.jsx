@@ -164,8 +164,8 @@ export default function PromotionView() {
                       discountRate={row.discountRate}
                       startDate={row.startDate}
                       endDate={row.endDate}
-                      selected={selected.indexOf(row.name) !== -1}
-                      handleClick={(event) => handleClick(event, row.type)}
+                      selected={selected.indexOf(row.promotionId) !== -1}
+                      handleClick={(event) => handleClick(event, row.promotionId)}
                     />
                   ))}
 
