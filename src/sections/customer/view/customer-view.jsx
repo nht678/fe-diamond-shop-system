@@ -168,10 +168,12 @@ export default function CustomerPage() {
                   .map((row) => (
                     <UserTableRow
                       key={row.id}
+                      CusID={row.CusID}
                       name={row.name}
                       phoneNumber={row.phoneNumber} 
                       address={row.address}
                       point={row.point}
+                      gender={row.gender}
                       selected={selected.indexOf(row.name) !== -1}
                       handleClick={(event) => handleClick(event, row.name)}
                     />
