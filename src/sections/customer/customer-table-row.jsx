@@ -1,14 +1,19 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
 
-import Stack from '@mui/material/Stack';
+import Grid from '@mui/material/Grid';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
 import Popover from '@mui/material/Popover';
-import TableRow from '@mui/material/TableRow';
 import Checkbox from '@mui/material/Checkbox';
 import MenuItem from '@mui/material/MenuItem';
+import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
-import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
+import Typography from '@mui/material/Typography';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
 
 import Iconify from 'src/components/iconify';
 
@@ -16,20 +21,31 @@ import Iconify from 'src/components/iconify';
 
 export default function UserTableRow({
   selected,
+  CusID,
   name,
   address,
   phoneNumber,
   point,
+  gender,
   handleClick,
 }) {
   const [open, setOpen] = useState(null);
-
+  const [dialogOpen, setDialogOpen] = useState(false);
+  
   const handleOpenMenu = (event) => {
     setOpen(event.currentTarget);
   };
 
   const handleCloseMenu = () => {
     setOpen(null);
+  };
+
+  const handleDialogOpen = () => {
+    setDialogOpen(true);
+  };
+
+  const handleDialogClose = () => {
+    setDialogOpen(false);
   };
 
   return (
@@ -39,14 +55,8 @@ export default function UserTableRow({
           <Checkbox disableRipple checked={selected} onChange={handleClick} />
         </TableCell>
 
-        <TableCell component="th" scope="row" padding="none">
-          <Stack direction="row" alignItems="center" spacing={2}>
-            <Typography variant="subtitle2" noWrap>
-              {name}
-            </Typography>
-          </Stack>
-        </TableCell>
-
+        <TableCell>{name}</TableCell>
+        
         <TableCell>{address}</TableCell>
 
         <TableCell>{phoneNumber}</TableCell>
@@ -54,11 +64,52 @@ export default function UserTableRow({
         <TableCell> {point} </TableCell>
 
         <TableCell align="right">
+        <Button variant="outlined" onClick={handleDialogOpen}>
+            More Info
+          </Button>
           <IconButton onClick={handleOpenMenu}>
             <Iconify icon="eva:more-vertical-fill" />
           </IconButton>
         </TableCell>
       </TableRow>
+
+      <Dialog open={dialogOpen} onClose={handleDialogClose}>
+        <DialogTitle>Customer</DialogTitle>
+        <DialogContent>
+          <Grid container spacing={2}>
+            <Grid item xs={12}>
+              <Typography variant="h6">ID:</Typography>
+              <Typography>{CusID}</Typography>
+            </Grid>
+            <Grid item xs={12}>
+              <Typography variant="h6">Name:</Typography>
+              <Typography>{name}</Typography>
+            </Grid>
+            <Grid item xs={12}>
+              <Typography variant="h6">Address:</Typography>
+              <Typography>{address}</Typography>
+            </Grid>
+            <Grid item xs={12}>
+              <Typography variant="h6">Phone Number:</Typography>
+              <Typography>{phoneNumber}</Typography>
+            </Grid>
+            <Grid item xs={12}>
+              <Typography variant="h6">Point:</Typography>
+              <Typography>{point}</Typography>
+            </Grid>
+            <Grid item xs={12}>
+              <Typography variant="h6">Gender:</Typography>
+              <Typography>{gender}</Typography>
+            </Grid>
+          </Grid>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleDialogClose}>
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
+
 
       <Popover
         open={!!open}
@@ -85,6 +136,8 @@ export default function UserTableRow({
 }
 
 UserTableRow.propTypes = {
+  CusID: PropTypes.any,
+  gender: PropTypes.any,
   address: PropTypes.any,
   handleClick: PropTypes.func,
   point: PropTypes.any,
