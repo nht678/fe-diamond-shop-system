@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+
 import { Dialog, DialogTitle, DialogContent, Grid, Typography, DialogActions, Button } from '@mui/material';
 
 export default function PromotionDeleteForm({ open, onClose, onDelete, promotion }) {
