@@ -51,7 +51,7 @@ export default function UserTableRow({
 
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
-  
+
 
 
   const handleOpenMenu = (event) => {
@@ -92,9 +92,10 @@ export default function UserTableRow({
           <Label color={(status === 'Out-stock' && 'error') || 'success'}>{status}</Label>
         </TableCell>
 
-        <TableCell><Button variant="outline-primary" onClick={handleShow}>More Info</Button></TableCell>
+
 
         <TableCell align="right">
+          <Button variant="outline-primary" onClick={handleShow}>More Info</Button>
           <IconButton onClick={handleOpenMenu}>
             <Iconify icon="eva:more-vertical-fill" />
           </IconButton>
@@ -112,7 +113,7 @@ export default function UserTableRow({
         }}
       >
         <MenuItem onClick={() => { handleCloseMenu(); handleShowEd(); }}>
-          <Iconify icon="eva:edit-fill" sx={{ mr: 2 }} onClick={handleShowEd}/>
+          <Iconify icon="eva:edit-fill" sx={{ mr: 2 }} onClick={handleShowEd} />
           Edit
         </MenuItem>
 
@@ -127,7 +128,7 @@ export default function UserTableRow({
       <DelModal show={showDel} handleClose={handleCloseDel} name={name} price={price} weight={weight} laborCost={laborCost} gemCost={gemCost} typeID={typeID} warrantyID={warrantyID} />
 
       <EditModal show={showEd} handleClose={handleCloseEd} name={name} price={price} weight={weight} laborCost={laborCost} gemCost={gemCost} typeID={typeID} warrantyID={warrantyID} />
-      
+
 
 
     </>

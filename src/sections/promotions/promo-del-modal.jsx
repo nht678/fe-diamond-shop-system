@@ -17,29 +17,29 @@ export default function PromotionDeleteForm({ open, onClose, onDelete, promotion
             <Typography>{promotion.promotionId}</Typography>
           </Grid>
           <Grid item xs={12}>
-              <Typography variant="h6">Type:</Typography>
-              <Typography>{promotion.type}</Typography>
-            </Grid>
-            <Grid item xs={12}>
-              <Typography variant="h6">DiscountRate:</Typography>
-              <Typography>{`${promotion.discountRate}%`}</Typography>
-            </Grid>
-            <Grid item xs={12}>
-              <Typography variant="h6">Approval Manager:</Typography>
-              <Typography>{promotion.approveManager}</Typography>
-            </Grid>
-            <Grid item xs={12}>
-              <Typography variant="h6">Start Date:</Typography>
-              <Typography>{promotion.startDate}</Typography>
-            </Grid>
-            <Grid item xs={12}>
-              <Typography variant="h6">End Date:</Typography>
-              <Typography>{promotion.endDate}</Typography>
-            </Grid>
-            <Grid item xs={12}>
-              <Typography variant="h6">Description:</Typography>
-              <Typography>{promotion.description}</Typography>
-            </Grid>
+            <Typography variant="h6">Type:</Typography>
+            <Typography>{promotion.type}</Typography>
+          </Grid>
+          <Grid item xs={12}>
+            <Typography variant="h6">DiscountRate:</Typography>
+            <Typography>{`${promotion.discountRate}%`}</Typography>
+          </Grid>
+          <Grid item xs={12}>
+            <Typography variant="h6">Approval Manager:</Typography>
+            <Typography>{promotion.approveManager}</Typography>
+          </Grid>
+          <Grid item xs={12}>
+            <Typography variant="h6">Start Date:</Typography>
+            <Typography>{promotion.startDate}</Typography>
+          </Grid>
+          <Grid item xs={12}>
+            <Typography variant="h6">End Date:</Typography>
+            <Typography>{promotion.endDate}</Typography>
+          </Grid>
+          <Grid item xs={12}>
+            <Typography variant="h6">Description:</Typography>
+            <Typography>{promotion.description}</Typography>
+          </Grid>
         </Grid>
       </DialogContent>
       <DialogActions>

@@ -159,6 +159,9 @@ export default function JewelleryView() {
                   { id: 'stoneCost', label: 'Gem Cost' },
                   { id: 'laborCost', label: 'Labor Cost' },
                   { id: 'status', label: 'Status' },
+                  { id: '' },
+
+
                 ]}
               />
               <TableBody>

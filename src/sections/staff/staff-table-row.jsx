@@ -7,7 +7,7 @@ import Checkbox from '@mui/material/Checkbox';
 import MenuItem from '@mui/material/MenuItem';
 import TableCell from '@mui/material/TableCell';
 import IconButton from '@mui/material/IconButton';
-import { Button, Dialog, DialogTitle, DialogContent, DialogActions, Typography, Grid } from '@mui/material';
+import { Button, Dialog, DialogTitle, DialogContent, DialogActions, Grid, Typography } from '@mui/material';
 
 import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';

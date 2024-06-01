@@ -17,6 +17,7 @@ import DialogContent from '@mui/material/DialogContent';
 
 import Iconify from 'src/components/iconify';
 import PromotionEditForm from './promo-edit-modal';
+
 import PromotionDeleteForm from './promo-del-modal';
 
 
@@ -56,15 +57,15 @@ export default function UserTableRow({
 
   const handleEditOpen = () => {
     setEditOpen(true);
-    handleCloseMenu();  
+    handleCloseMenu();
   };
-  
+
   const handleEditClose = () => {
     setEditOpen(false);
   };
 
   const onSubmit = (updatedData) => {
-    handleEditClose(); 
+    handleEditClose();
   };
 
   const handleDeleteOpen = () => {
@@ -167,18 +168,18 @@ export default function UserTableRow({
 
       </Popover>
 
-      <PromotionEditForm 
-        open={editOpen} 
+      <PromotionEditForm
+        open={editOpen}
         onClose={handleEditClose}
         promotion={{ promotionId, type, discountRate, startDate, endDate, approveManager, description }}
         onSubmit={onSubmit}
       />
 
       <PromotionDeleteForm
-      open={deleteOpen}
-      onClose={handleDeleteClose}
-      onDelete={onDelete}
-      promotion={{ promotionId, type, discountRate, startDate, endDate, approveManager, description }}
+        open={deleteOpen}
+        onClose={handleDeleteClose}
+        onDelete={onDelete}
+        promotion={{ promotionId, type, discountRate, startDate, endDate, approveManager, description }}
       />
     </>
   );

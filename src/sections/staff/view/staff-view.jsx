@@ -17,11 +17,11 @@ import Scrollbar from 'src/components/scrollbar';
 
 import TableNoData from '../table-no-data';
 import UserTableRow from '../staff-table-row';
+import StaffForm from '../create-staff-table';
 import UserTableHead from '../staff-table-head';
 import TableEmptyRows from '../table-empty-rows';
 import UserTableToolbar from '../staff-table-toolbar';
 import { emptyRows, applyFilter, getComparator } from '../utils';
-import StaffForm from '../create-staff-table';
 
 // ----------------------------------------------------------------------
 
@@ -112,8 +112,8 @@ export default function StaffView() {
         <Typography variant="h4">Staff</Typography>
 
         <Button
-        onClick={() => setShowStaffForm(true)} 
-        variant="contained" color="inherit" startIcon={<Iconify icon="eva:plus-fill" />}>
+          onClick={() => setShowStaffForm(true)}
+          variant="contained" color="inherit" startIcon={<Iconify icon="eva:plus-fill" />}>
           New Staff
         </Button>
       </Stack>
