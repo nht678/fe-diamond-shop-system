@@ -158,8 +158,8 @@ export default function CustomerPage() {
                   { id: 'name', label: 'Name' },
                   { id: 'address', label: 'Address' },
                   { id: 'phoneNumber', label: 'Phone Number' },
-                  { id: 'point', label: 'Point'},
-                  { id: ' ', label:' '},
+                  { id: 'point', label: 'Point' },
+                  { id: ' ', label: ' ' },
                 ]}
               />
               <TableBody>
@@ -170,7 +170,7 @@ export default function CustomerPage() {
                       key={row.id}
                       CusID={row.CusID}
                       name={row.name}
-                      phoneNumber={row.phoneNumber} 
+                      phoneNumber={row.phoneNumber}
                       address={row.address}
                       point={row.point}
                       gender={row.gender}
