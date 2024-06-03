@@ -1,4 +1,5 @@
-import { useState } from 'react';
+// import { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
@@ -10,7 +11,7 @@ import Typography from '@mui/material/Typography';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
 
-import { promotion, addPromotion } from 'src/_mock/promotion';
+// import { promotion, addPromotion } from 'src/_mock/promotion';
 
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
@@ -26,6 +27,35 @@ import { emptyRows, applyFilter, getComparator } from '../utils';
 // ----------------------------------------------------------------------
 
 export default function PromotionView() {
+  const [promotion, setPromotion] = useState([]);
+
+  // Sử dụng useEffect để gọi API khi component được mount
+  useEffect(() => {
+    const fetchPromotions = async () => {
+      try {
+        const response = await fetch('http://localhost:5188/api/Promotion/GetAll'); // Thay thế bằng URL của API thực tế
+        const data = await response.json();
+        console.log(data);
+
+        // Giả sử data là một mảng các đối tượng khách hàng
+        const formattedData = data.map((promotions, index) => ({
+          promotionId: promotions.promotionId,
+          type: promotions.type,
+          approveManager: promotions.approveManager,
+          description: promotions.description,
+          discountRate: promotions.discountRate,
+          startDate: promotions.startDate,
+          endDate: promotions.endDate
+        }));
+
+        setPromotion(formattedData);
+      } catch (error) {
+        console.error('Error fetching promotion:', error);
+      }
+    };
+
+    fetchPromotions();
+  }, []);
   const [page, setPage] = useState(0);
 
   const [order, setOrder] = useState('asc');
@@ -102,8 +132,9 @@ export default function PromotionView() {
   };
 
   const handleNewPromotionClick = (newPromotionData) => {
-    addPromotion(newPromotionData);
+    // addPromotion(newPromotionData);
     setShowPromotionForm(false);
+    window.location.reload();
   };
 
   return (

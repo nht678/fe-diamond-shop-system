@@ -1,4 +1,5 @@
-import React from 'react';
+import axios from 'axios';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 
 import Dialog from '@mui/material/Dialog';
@@ -10,42 +11,35 @@ import DialogContent from '@mui/material/DialogContent';
 
 function PromotionForm({ open, onClose, onSubmit }) {
     const initialFormState = {
-        promotionId: '',
         type: '',
-        discountRate: '',
+        discountRate: 0,
         startDate: '',
         endDate: '',
         approveManager: '',
         description: '',
     };
-
     const [formState, setFormState] = React.useState(initialFormState);
 
     const handleChange = (e) => {
         setFormState({ ...formState, [e.target.name]: e.target.value })
     };
 
-    const handleSubmit = (e) => {
-        e.preventDefault(); // Ngăn chặn hành động submit mặc định của form
-        onSubmit(formState); // Gọi addPromotion
-        setFormState(initialFormState); // Clear các trường của form sau khi submit
-        onClose();
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        try {
+            const response = await axios.post(`http://localhost:5188/api/Promotion/AddNewPromotion`, formState);
+            onSubmit(response.data); // Truyền dữ liệu mới đã tạo về thành phần cha xử lý
+            setFormState(initialFormState);
+            onClose();
+        } catch (error) {
+            console.error('Lỗi khi tạo dữ liệu khuyến mãi:', error);
+        }
     };
-
     return (
         <Dialog open={open} onClose={onClose} aria-labelledby="form-dialog-title">
             <DialogTitle id="form-dialog-title">New Promotion</DialogTitle>
             <DialogContent>
-                <TextField
-                    autoFocus
-                    margin="dense"
-                    name="promotionId"
-                    label="Promotion ID"
-                    type="text"
-                    fullWidth
-                    onChange={handleChange}
-                    InputProps={{ style: { marginBottom: 10 } }}
-                />
+
                 <TextField
                     margin="dense"
                     name="type"

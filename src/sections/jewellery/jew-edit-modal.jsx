@@ -14,7 +14,7 @@ import FormControl from '@mui/material/FormControl';
 import InputAdornment from '@mui/material/InputAdornment'
 import FormControlLabel from '@mui/material/FormControlLabel';
 
-export default function EditModal({ show, handleClose, name, weight, laborCost, price, gemCost, typeID, warrantyID }) {
+export default function EditModal({ show, handleClose, name, weight, laborCost, price, gemCost, jewelryTypeName, warranty }) {
 
     const [rangeValue, setRangeValue] = useState(weight);
 
@@ -27,7 +27,7 @@ export default function EditModal({ show, handleClose, name, weight, laborCost, 
     const handleChange = (event) => {
         setValue(event.target.value);
     };
-    
+
 
     return (
         <>
@@ -62,7 +62,7 @@ export default function EditModal({ show, handleClose, name, weight, laborCost, 
                             <InputGroup className="mb-4 mt-4">
                                 <TextField id="fullWidth" label="Jewellery Name" value={name} variant="outlined" sx={{
                                     width: 400,
-                                    
+
                                     '& .MuiOutlinedInput-root': {
                                         '& fieldset': {
                                             borderColor: 'gray', // sets the border color
@@ -73,9 +73,9 @@ export default function EditModal({ show, handleClose, name, weight, laborCost, 
                             </InputGroup>
 
                             <InputGroup className="mb-4 mt-4">
-                                <TextField id="fullWidth" label="Type ID" variant="outlined" value={typeID} sx={{
+                                <TextField id="fullWidth" label="Type ID" variant="outlined" value={jewelryTypeName} sx={{
                                     width: 300,
-                                    
+
                                     '& .MuiOutlinedInput-root': {
                                         '& fieldset': {
                                             borderColor: 'gray', // sets the border color
@@ -86,9 +86,9 @@ export default function EditModal({ show, handleClose, name, weight, laborCost, 
                             </InputGroup>
 
                             <InputGroup className="mb-4 mt-4">
-                                <TextField id="fullWidth" label="Warranty ID" variant="outlined" value={warrantyID} sx={{
+                                <TextField id="fullWidth" label="Warranty ID" variant="outlined" value={warranty.description} sx={{
                                     width: 300,
-                                    
+
                                     '& .MuiOutlinedInput-root': {
                                         '& fieldset': {
                                             borderColor: 'gray', // sets the border color
@@ -148,7 +148,7 @@ export default function EditModal({ show, handleClose, name, weight, laborCost, 
                                     step={1}
                                     value={rangeValue}
                                     onChange={handleRangeChange}
-                                    
+
                                 />
                             </InputGroup>
 
@@ -192,7 +192,7 @@ EditModal.propTypes = {
     laborCost: PropTypes.any.isRequired,
     gemCost: PropTypes.any.isRequired,
     price: PropTypes.any.isRequired,
-    typeID: PropTypes.string.isRequired,
-    warrantyID: PropTypes.string.isRequired,
+    jewelryTypeName: PropTypes.string.isRequired,
+    warranty: PropTypes.string.isRequired,
 
 };

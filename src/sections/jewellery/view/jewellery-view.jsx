@@ -35,6 +35,7 @@ export default function JewelleryView() {
   const handleShow = () => setShow(true);
 
   const [jewList, setJewList] = useState([]);
+  console.log('test jewery', jewList);
 
   const [page, setPage] = useState(0);
 
@@ -172,12 +173,12 @@ export default function JewelleryView() {
                       key={row.id}
                       name={row.name}
                       weight={row.weight}
-                      price={row.price}
-                      gemCost={row.gemCost}
+                      price={row.basePrice}
+                      gemCost={row.stoneCost}
                       laborCost={row.laborCost}
                       status={row.status}
-                      typeID={row.typeID}
-                      warrantyID={row.warrantyID}
+                      jewelryTypeName={row.jewelryType.name}
+                      warranty={row.warranty}
                       selected={selected.indexOf(row.name) !== -1}
                       handleClick={(event) => handleClick(event, row.name)}
 

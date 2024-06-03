@@ -5,7 +5,15 @@ import { Dialog, DialogTitle, DialogContent, Grid, Typography, DialogActions, Bu
 
 export default function PromotionDeleteForm({ open, onClose, onDelete, promotion }) {
   const handleDeleteClick = () => {
-    onDelete(promotion.promotionId);
+    // axios.delete(`your-api-url/${promotion.promotionId}`)
+    //   .then(response => {
+    //     // Xóa thành công, thực hiện các hành động phản hồi tương ứng ở đây
+    //     onDelete(promotion.promotionId);
+    //   })
+    //   .catch(error => {
+    //     // Xử lý lỗi ở đây
+    //     console.error('Error deleting promotion:', error);
+    //   });
   };
 
   return (

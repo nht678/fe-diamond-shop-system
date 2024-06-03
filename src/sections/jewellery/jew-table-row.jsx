@@ -30,8 +30,8 @@ export default function UserTableRow({
   price,
   gemCost,
   laborCost,
-  warrantyID,
-  typeID,
+  warranty,
+  jewelryTypeName,
   handleClick,
   status,
 
@@ -123,11 +123,11 @@ export default function UserTableRow({
         </MenuItem>
       </Popover>
 
-      <InfoModal show={show} handleClose={handleClose} name={name} price={price} weight={weight} laborCost={laborCost} gemCost={gemCost} typeID={typeID} warrantyID={warrantyID} />
+      <InfoModal show={show} handleClose={handleClose} name={name} price={price} weight={weight} laborCost={laborCost} gemCost={gemCost} jewelryTypeName={jewelryTypeName} warranty={warranty} />
 
-      <DelModal show={showDel} handleClose={handleCloseDel} name={name} price={price} weight={weight} laborCost={laborCost} gemCost={gemCost} typeID={typeID} warrantyID={warrantyID} />
+      <DelModal show={showDel} handleClose={handleCloseDel} name={name} price={price} weight={weight} laborCost={laborCost} gemCost={gemCost} jewelryTypeName={jewelryTypeName} warranty={warranty} />
 
-      <EditModal show={showEd} handleClose={handleCloseEd} name={name} price={price} weight={weight} laborCost={laborCost} gemCost={gemCost} typeID={typeID} warrantyID={warrantyID} />
+      <EditModal show={showEd} handleClose={handleCloseEd} name={name} price={price} weight={weight} laborCost={laborCost} gemCost={gemCost} jewelryTypeName={jewelryTypeName} warranty={warranty} />
 
 
 
@@ -136,8 +136,8 @@ export default function UserTableRow({
 }
 
 UserTableRow.propTypes = {
-  warrantyID: PropTypes.any,
-  typeID: PropTypes.any,
+  warranty: PropTypes.any,
+  jewelryTypeName: PropTypes.any,
   price: PropTypes.any,
   handleClick: PropTypes.func,
   gemCost: PropTypes.any,
