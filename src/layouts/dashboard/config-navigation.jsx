@@ -57,6 +57,11 @@ const navConfig = [
     path: '/staff',
     icon: icon('ic_staff'),
   },
+  {
+    title: 'Account',
+    path: '/account',
+    icon: icon('ic_staff'),
+  },
 ];
 
 export default navConfig;
