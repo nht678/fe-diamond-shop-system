@@ -174,8 +174,8 @@ export default function CustomerPage() {
                       address={row.address}
                       point={row.point}
                       gender={row.gender}
-                      selected={selected.indexOf(row.name) !== -1}
-                      handleClick={(event) => handleClick(event, row.name)}
+                      selected={selected.indexOf(row.CusID) !== -1}
+                      handleClick={(event) => handleClick(event, row.CusID)}
                     />
                   ))}
 
