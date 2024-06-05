@@ -88,7 +88,7 @@ export default function UserTableRow({
           <Checkbox disableRipple checked={selected} onChange={handleClick} />
         </TableCell>
 
-        <TableCell>{name}</TableCell>~
+        <TableCell>{name}</TableCell>
 
         <TableCell>{address}</TableCell>
 

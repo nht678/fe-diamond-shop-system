@@ -160,7 +160,6 @@ export default function CustomerPage() {
                   { id: 'phoneNumber', label: 'Phone Number' },
                   { id: 'point', label: 'Point'},
                   { id: ' ', label:' '},
-                  { id: ' ', label:' '},
                 ]}
               />
               <TableBody>
