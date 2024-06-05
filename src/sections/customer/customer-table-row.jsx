@@ -17,6 +17,10 @@ import DialogContent from '@mui/material/DialogContent';
 
 import Iconify from 'src/components/iconify';
 
+import CustomerEditForm from './customer-edit-model';
+import CustomerDeleteForm from './customer-del-model';
+
+
 // ----------------------------------------------------------------------
 
 export default function UserTableRow({
@@ -31,7 +35,9 @@ export default function UserTableRow({
 }) {
   const [open, setOpen] = useState(null);
   const [dialogOpen, setDialogOpen] = useState(false);
-  
+  const [editOpen, setEditOpen] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
+
   const handleOpenMenu = (event) => {
     setOpen(event.currentTarget);
   };
@@ -48,6 +54,33 @@ export default function UserTableRow({
     setDialogOpen(false);
   };
 
+  const handleEditOpen = () => {
+    setEditOpen(true);
+    handleCloseMenu();
+  };
+
+  const handleEditClose = () => {
+    setEditOpen(false);
+  };
+
+  const onSubmit = (updatedData) => {
+    handleEditClose();
+  };
+
+  const handleDeleteOpen = () => {
+    setDeleteOpen(true);
+    handleCloseMenu();
+  };
+
+  const handleDeleteClose = () => {
+    setDeleteOpen(false);
+    handleCloseMenu();
+  };
+
+  const onDelete = () => {
+    handleDeleteClose();
+  };
+
   return (
     <>
       <TableRow hover tabIndex={-1} role="checkbox" selected={selected}>
@@ -56,7 +89,7 @@ export default function UserTableRow({
         </TableCell>
 
         <TableCell>{name}</TableCell>
-        
+
         <TableCell>{address}</TableCell>
 
         <TableCell>{phoneNumber}</TableCell>
@@ -64,7 +97,7 @@ export default function UserTableRow({
         <TableCell> {point} </TableCell>
 
         <TableCell align="right">
-        <Button variant="outlined" onClick={handleDialogOpen}>
+          <Button variant="outlined" onClick={handleDialogOpen}>
             More Info
           </Button>
           <IconButton onClick={handleOpenMenu}>
@@ -121,16 +154,31 @@ export default function UserTableRow({
           sx: { width: 140 },
         }}
       >
-        <MenuItem onClick={handleCloseMenu}>
+        <MenuItem onClick={handleEditOpen}>
           <Iconify icon="eva:edit-fill" sx={{ mr: 2 }} />
           Edit
         </MenuItem>
 
-        <MenuItem onClick={handleCloseMenu} sx={{ color: 'error.main' }}>
+        <MenuItem onClick={handleDeleteOpen} sx={{ color: 'error.main' }}>
           <Iconify icon="eva:trash-2-outline" sx={{ mr: 2 }} />
           Delete
         </MenuItem>
       </Popover>
+
+      <CustomerEditForm
+        open={editOpen}
+        onClose={handleEditClose}
+        customer={{ CusID, name, address, phoneNumber, point, gender, }}
+        onSubmit={onSubmit}
+      />
+
+      <CustomerDeleteForm
+        open={deleteOpen}
+        onClose={handleDeleteClose}
+        onDelete={onDelete}
+        customer={{ CusID, name, address, phoneNumber, point, gender, }}
+      />
+
     </>
   );
 }
