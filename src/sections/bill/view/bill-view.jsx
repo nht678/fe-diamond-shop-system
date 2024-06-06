@@ -1,6 +1,5 @@
 import { useState } from 'react';
-// import React, { useState, useEffect } from 'react';
-// import { sample } from 'lodash';
+
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Table from '@mui/material/Table';
@@ -11,52 +10,21 @@ import Typography from '@mui/material/Typography';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
 
-import { customer } from 'src/_mock/customer';
+import { bill } from 'src/_mock/bill';
 
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 
 import TableNoData from '../table-no-data';
-import UserTableRow from '../customer-table-row';
+import UserTableRow from '../bill-table-row';
+import UserTableHead from '../bill-table-head';
 import TableEmptyRows from '../table-empty-rows';
-import UserTableHead from '../customer-table-head';
-import UserTableToolbar from '../customer-table-toolbar';
+import UserTableToolbar from '../bill-table-toolbar';
 import { emptyRows, applyFilter, getComparator } from '../utils';
-
 
 // ----------------------------------------------------------------------
 
-export default function CustomerPage() {
-  // // Khởi tạo state cho danh sách khách hàng
-  // const [customer, setCustomer] = useState([]);
-
-  // // Sử dụng useEffect để gọi API khi component được mount
-  // useEffect(() => {
-  //   const fetchCustomers = async () => {
-  //     try {
-  //       const response = await fetch('https://65dc58f6e7edadead7ebb035.mockapi.io/authentication/test'); // Thay thế bằng URL của API thực tế
-  //       const data = await response.json();
-
-  //       // Giả sử data là một mảng các đối tượng khách hàng
-  //       const formattedData = data.map((customers, index) => ({
-  //         id: customers.id,
-  //         avatarUrl: customers.avatarUrl || `/assets/images/avatars/avatar_${index + 1}.jpg`,
-  //         name: customers.name,
-  //         address: customers.address,
-  //         point: customers.point || Math.floor(Math.random() * 100) + 1,
-  //         status: customers.status || sample(['active', 'banned']),
-  //         phoneNumber: customers.phoneNumber,
-  //       }));
-  //       console.log("Customer")
-
-  //       setCustomer(formattedData);
-  //     } catch (error) {
-  //       console.error('Error fetching customers:', error);
-  //     }
-  //   };
-
-  //   fetchCustomers();
-  // }, []);
+export default function UserPage() {
   const [page, setPage] = useState(0);
 
   const [order, setOrder] = useState('asc');
@@ -79,7 +47,7 @@ export default function CustomerPage() {
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelecteds = customer.map((n) => n.name);
+      const newSelecteds = bill.map((n) => n.name);
       setSelected(newSelecteds);
       return;
     }
@@ -119,21 +87,20 @@ export default function CustomerPage() {
   };
 
   const dataFiltered = applyFilter({
-    inputData: customer,
+    inputData: bill,
     comparator: getComparator(order, orderBy),
     filterName,
   });
 
   const notFound = !dataFiltered.length && !!filterName;
 
-
   return (
     <Container>
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
-        <Typography variant="h4">Customer</Typography>
+        <Typography variant="h4">Bill</Typography>
 
         <Button variant="contained" color="inherit" startIcon={<Iconify icon="eva:plus-fill" />}>
-          New Customer
+          New Bill
         </Button>
       </Stack>
 
@@ -150,16 +117,17 @@ export default function CustomerPage() {
               <UserTableHead
                 order={order}
                 orderBy={orderBy}
-                rowCount={customer.length}
+                rowCount={bill.length}
                 numSelected={selected.length}
                 onRequestSort={handleSort}
                 onSelectAllClick={handleSelectAllClick}
                 headLabel={[
-                  { id: 'name', label: 'Name' },
-                  { id: 'address', label: 'Address' },
-                  { id: 'phoneNumber', label: 'Phone Number' },
-                  { id: 'point', label: 'Point'},
-                  { id: ' ', label:' '},
+                  { id: 'billId', label: 'BillId' },
+                  { id: 'customerId', label: 'CustomerId' },
+                  { id: 'staffId', label: 'StaffId' },
+                  { id: 'totalAmount', label: 'TotalAmount'},
+                  { id: 'saleDate', label: 'SaleDate' },
+                  { id: '' },
                 ]}
               />
               <TableBody>
@@ -168,20 +136,19 @@ export default function CustomerPage() {
                   .map((row) => (
                     <UserTableRow
                       key={row.id}
-                      CusID={row.CusID}
-                      name={row.name}
-                      phoneNumber={row.phoneNumber} 
-                      address={row.address}
-                      point={row.point}
-                      gender={row.gender}
-                      selected={selected.indexOf(row.CusID) !== -1}
-                      handleClick={(event) => handleClick(event, row.CusID)}
+                      billId={row.billId}
+                      staffId={row.staffId}
+                      customerId={row.customerId}
+                      totalAmount={row.totalAmount}
+                      saleDate={row.saleDate}
+                      selected={selected.indexOf(row.billId) !== -1}
+                      handleClick={(event) => handleClick(event, row.billId)}
                     />
                   ))}
 
                 <TableEmptyRows
                   height={77}
-                  emptyRows={emptyRows(page, rowsPerPage, customer.length)}
+                  emptyRows={emptyRows(page, rowsPerPage, bill.length)}
                 />
 
                 {notFound && <TableNoData query={filterName} />}
@@ -193,7 +160,7 @@ export default function CustomerPage() {
         <TablePagination
           page={page}
           component="div"
-          count={customer.length}
+          count={bill.length}
           rowsPerPage={rowsPerPage}
           onPageChange={handleChangePage}
           rowsPerPageOptions={[5, 10, 25]}

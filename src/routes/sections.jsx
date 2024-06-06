@@ -14,6 +14,8 @@ export const Promotion = lazy(() => import('src/pages/promotion'));
 export const Customer = lazy(() => import('src/pages/customer'));
 export const Jewellery = lazy(() => import('src/pages/jewellery'));
 export const Staff = lazy(() => import('src/pages/staff'));
+export const Bill = lazy(() => import('src/pages/bill'));
+export const GoldPrice = lazy(() => import ('src/pages/goldprice'))
 // ----------------------------------------------------------------------
 
 export default function Router() {

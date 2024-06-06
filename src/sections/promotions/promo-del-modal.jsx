@@ -1,7 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import {Grid, Button, Dialog, Typography, DialogTitle, DialogContent, DialogActions } from '@mui/material';
+import { Grid,Button, Dialog, Typography ,DialogTitle, DialogContent, DialogActions } from '@mui/material';
+
 
 export default function PromotionDeleteForm({ open, onClose, onDelete, promotion }) {
   const handleDeleteClick = () => {

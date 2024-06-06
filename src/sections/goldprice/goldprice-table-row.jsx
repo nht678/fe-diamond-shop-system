@@ -1,32 +1,20 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 
-import Popover from '@mui/material/Popover';
-import TableRow from '@mui/material/TableRow';
-import Checkbox from '@mui/material/Checkbox';
-import MenuItem from '@mui/material/MenuItem';
-import TableCell from '@mui/material/TableCell';
-import IconButton from '@mui/material/IconButton';
-import { Grid, Button, Dialog,Typography ,DialogTitle, DialogContent, DialogActions } from '@mui/material';
+import { TableRow, TableCell, Checkbox, Button, IconButton, Dialog, DialogTitle, DialogContent, DialogActions, Grid, Typography, Popover, MenuItem } from '@mui/material';
 
-import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
+import GoldpriceEditForm from './goldprice-edit-modal'; 
+import GoldpriceDeleteForm from './goldprice-del-modal'; 
 
-import StaffEditForm from './staff-edit-modal';
-import StaffDeleteForm from './staff-del-modal';
-
-// ----------------------------------------------------------------------
-
-export default function UserTableRow({
+export default function GoldpriceTableRow({
   selected,
-  staffId,
-  userName,
-  email,
-  password,
-  roleId,
-  counterId,
+  city,
+  buyPrice,
+  sellPrice,
+  type,
+  lastUpdated,
   handleClick,
-  status,
 }) {
   const [open, setOpen] = useState(null);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -75,7 +63,7 @@ export default function UserTableRow({
   const onDelete = () => {
     handleDeleteClose();
   };
-
+  
   return (
     <>
       <TableRow hover tabIndex={-1} role="checkbox" selected={selected}>
@@ -83,13 +71,11 @@ export default function UserTableRow({
           <Checkbox disableRipple checked={selected} onChange={handleClick} />
         </TableCell>
 
-        <TableCell>{userName}</TableCell>
-        <TableCell>{email}</TableCell>
-        <TableCell>{password}</TableCell>
-        <TableCell>{roleId}</TableCell>
-        <TableCell>
-          <Label color={(status === 'inactive' && 'error') || 'success'}>{status}</Label>
-        </TableCell>
+        <TableCell>{city}</TableCell>
+        <TableCell>{buyPrice}</TableCell>
+        <TableCell>{sellPrice}</TableCell>
+        <TableCell>{type}</TableCell>
+        <TableCell>{new Date(lastUpdated).toLocaleString()}</TableCell>
 
         <TableCell align='right'>
           <Button variant="outlined" onClick={handleDialogOpen}>
@@ -102,36 +88,28 @@ export default function UserTableRow({
       </TableRow>
 
       <Dialog open={dialogOpen} onClose={handleDialogClose}>
-        <DialogTitle>Staff</DialogTitle>
+        <DialogTitle>Gold Price Details</DialogTitle>
         <DialogContent>
           <Grid container spacing={2}>
             <Grid item xs={12}>
-              <Typography variant="h6">ID:</Typography>
-              <Typography>{staffId}</Typography>
+              <Typography variant="h6">City:</Typography>
+              <Typography>{city}</Typography>
             </Grid>
             <Grid item xs={12}>
-              <Typography variant="h6">User Name:</Typography>
-              <Typography>{userName}</Typography>
+              <Typography variant="h6">Buy Price:</Typography>
+              <Typography>{buyPrice}</Typography>
             </Grid>
             <Grid item xs={12}>
-              <Typography variant="h6">Counter ID:</Typography>
-              <Typography>{counterId}</Typography>
+              <Typography variant="h6">Sell Price:</Typography>
+              <Typography>{sellPrice}</Typography>
             </Grid>
             <Grid item xs={12}>
-              <Typography variant="h6">Email:</Typography>
-              <Typography>{email}</Typography>
+              <Typography variant="h6">Type:</Typography>
+              <Typography>{type}</Typography>
             </Grid>
             <Grid item xs={12}>
-              <Typography variant="h6">Password:</Typography>
-              <Typography>{password}</Typography>
-            </Grid>
-            <Grid item xs={12}>
-              <Typography variant="h6">Role ID:</Typography>
-              <Typography>{roleId}</Typography>
-            </Grid>
-            <Grid item xs={12}>
-              <Typography variant="h6">Status:</Typography>
-              <Typography><Label color={(status === 'inactive' && 'error') || 'success'}>{status}</Label></Typography>
+              <Typography variant="h6">Last Updated:</Typography>
+              <Typography>{new Date(lastUpdated).toLocaleString()}</Typography>
             </Grid>
           </Grid>
         </DialogContent>
@@ -163,47 +141,44 @@ export default function UserTableRow({
         </MenuItem>
       </Popover>
 
-      <StaffEditForm
+      <GoldpriceEditForm
         open={editOpen}
         onClose={handleEditClose}
-        staff={{
-          staffId,
-          userName,
-          email,
-          password,
-          roleId,
-          counterId,
-          status
+        goldprice={{
+          city,
+          buyPrice,
+          sellPrice,
+          type,
+          lastUpdated,
         }}
         onSubmit={onSubmit}
       />
 
-      <StaffDeleteForm
+      <GoldpriceDeleteForm
         open={deleteOpen}
         onClose={handleDeleteClose}
         onDelete={onDelete}
-        staff={{
-          staffId,
-          userName,
-          email,
-          password,
-          roleId,
-          counterId,
-          status
+        goldprice={{
+          city,
+          buyPrice,
+          sellPrice,
+          type,
+          lastUpdated,
         }}
       />
     </>
   );
 }
 
-UserTableRow.propTypes = {
-  staffId: PropTypes.string,
-  userName: PropTypes.string,
-  email: PropTypes.string,
-  password: PropTypes.string,
-  handleClick: PropTypes.func,
-  roleId: PropTypes.string,
-  counterId: PropTypes.number,
-  selected: PropTypes.any,
-  status: PropTypes.string,
+GoldpriceTableRow.propTypes = {
+  city: PropTypes.string.isRequired,
+  buyPrice: PropTypes.string.isRequired,
+  sellPrice: PropTypes.string.isRequired,
+  type: PropTypes.string.isRequired,
+  lastUpdated: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.instanceOf(Date),
+  ]).isRequired,
+  handleClick: PropTypes.func.isRequired,
+  selected: PropTypes.bool.isRequired,
 };
