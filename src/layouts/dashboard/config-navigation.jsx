@@ -62,6 +62,11 @@ const navConfig = [
     path: '/bill',
     icon: icon('ic_bill'),
   },
+  {
+    title: 'GoldPrice',
+    path: '/goldprice',
+    icon: icon('ic_disabled'),
+  },
 ];
 
 export default navConfig;

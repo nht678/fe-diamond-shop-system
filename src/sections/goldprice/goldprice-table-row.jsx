@@ -1,36 +1,19 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 
-import Grid from '@mui/material/Grid';
-import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
-import Popover from '@mui/material/Popover';
-import Checkbox from '@mui/material/Checkbox';
-import MenuItem from '@mui/material/MenuItem';
-import TableRow from '@mui/material/TableRow';
-import TableCell from '@mui/material/TableCell';
-import IconButton from '@mui/material/IconButton';
-import Typography from '@mui/material/Typography';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
+import { TableRow, TableCell, Checkbox, Button, IconButton, Dialog, DialogTitle, DialogContent, DialogActions, Grid, Typography, Popover, MenuItem } from '@mui/material';
 
 import Iconify from 'src/components/iconify';
+import GoldpriceEditForm from './goldprice-edit-modal'; 
+import GoldpriceDeleteForm from './goldprice-del-modal'; 
 
-import CustomerEditForm from './customer-edit-model';
-import CustomerDeleteForm from './customer-del-model';
-
-
-// ----------------------------------------------------------------------
-
-export default function UserTableRow({
+export default function GoldpriceTableRow({
   selected,
-  CusID,
-  name,
-  address,
-  phoneNumber,
-  point,
-  gender,
+  city,
+  buyPrice,
+  sellPrice,
+  type,
+  lastUpdated,
   handleClick,
 }) {
   const [open, setOpen] = useState(null);
@@ -80,7 +63,7 @@ export default function UserTableRow({
   const onDelete = () => {
     handleDeleteClose();
   };
-
+  
   return (
     <>
       <TableRow hover tabIndex={-1} role="checkbox" selected={selected}>
@@ -88,15 +71,13 @@ export default function UserTableRow({
           <Checkbox disableRipple checked={selected} onChange={handleClick} />
         </TableCell>
 
-        <TableCell>{name}</TableCell>
+        <TableCell>{city}</TableCell>
+        <TableCell>{buyPrice}</TableCell>
+        <TableCell>{sellPrice}</TableCell>
+        <TableCell>{type}</TableCell>
+        <TableCell>{new Date(lastUpdated).toLocaleString()}</TableCell>
 
-        <TableCell>{address}</TableCell>
-
-        <TableCell>{phoneNumber}</TableCell>
-
-        <TableCell> {point} </TableCell>
-
-        <TableCell align="right">
+        <TableCell align='right'>
           <Button variant="outlined" onClick={handleDialogOpen}>
             More Info
           </Button>
@@ -107,32 +88,28 @@ export default function UserTableRow({
       </TableRow>
 
       <Dialog open={dialogOpen} onClose={handleDialogClose}>
-        <DialogTitle>Customer</DialogTitle>
+        <DialogTitle>Gold Price Details</DialogTitle>
         <DialogContent>
           <Grid container spacing={2}>
             <Grid item xs={12}>
-              <Typography variant="h6">ID:</Typography>
-              <Typography>{CusID}</Typography>
+              <Typography variant="h6">City:</Typography>
+              <Typography>{city}</Typography>
             </Grid>
             <Grid item xs={12}>
-              <Typography variant="h6">Name:</Typography>
-              <Typography>{name}</Typography>
+              <Typography variant="h6">Buy Price:</Typography>
+              <Typography>{buyPrice}</Typography>
             </Grid>
             <Grid item xs={12}>
-              <Typography variant="h6">Address:</Typography>
-              <Typography>{address}</Typography>
+              <Typography variant="h6">Sell Price:</Typography>
+              <Typography>{sellPrice}</Typography>
             </Grid>
             <Grid item xs={12}>
-              <Typography variant="h6">Phone Number:</Typography>
-              <Typography>{phoneNumber}</Typography>
+              <Typography variant="h6">Type:</Typography>
+              <Typography>{type}</Typography>
             </Grid>
             <Grid item xs={12}>
-              <Typography variant="h6">Point:</Typography>
-              <Typography>{point}</Typography>
-            </Grid>
-            <Grid item xs={12}>
-              <Typography variant="h6">Gender:</Typography>
-              <Typography>{gender}</Typography>
+              <Typography variant="h6">Last Updated:</Typography>
+              <Typography>{new Date(lastUpdated).toLocaleString()}</Typography>
             </Grid>
           </Grid>
         </DialogContent>
@@ -142,7 +119,6 @@ export default function UserTableRow({
           </Button>
         </DialogActions>
       </Dialog>
-
 
       <Popover
         open={!!open}
@@ -165,31 +141,44 @@ export default function UserTableRow({
         </MenuItem>
       </Popover>
 
-      <CustomerEditForm
+      <GoldpriceEditForm
         open={editOpen}
         onClose={handleEditClose}
-        customer={{ CusID, name, address, phoneNumber, point, gender, }}
+        goldprice={{
+          city,
+          buyPrice,
+          sellPrice,
+          type,
+          lastUpdated,
+        }}
         onSubmit={onSubmit}
       />
 
-      <CustomerDeleteForm
+      <GoldpriceDeleteForm
         open={deleteOpen}
         onClose={handleDeleteClose}
         onDelete={onDelete}
-        customer={{ CusID, name, address, phoneNumber, point, gender, }}
+        goldprice={{
+          city,
+          buyPrice,
+          sellPrice,
+          type,
+          lastUpdated,
+        }}
       />
-
     </>
   );
 }
 
-UserTableRow.propTypes = {
-  CusID: PropTypes.any,
-  gender: PropTypes.any,
-  address: PropTypes.any,
-  handleClick: PropTypes.func,
-  point: PropTypes.any,
-  name: PropTypes.any,
-  phoneNumber: PropTypes.any,
-  selected: PropTypes.any,
+GoldpriceTableRow.propTypes = {
+  city: PropTypes.string.isRequired,
+  buyPrice: PropTypes.string.isRequired,
+  sellPrice: PropTypes.string.isRequired,
+  type: PropTypes.string.isRequired,
+  lastUpdated: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.instanceOf(Date),
+  ]).isRequired,
+  handleClick: PropTypes.func.isRequired,
+  selected: PropTypes.bool.isRequired,
 };
