@@ -1,62 +1,28 @@
 import { useState } from 'react';
-// import React, { useState, useEffect } from 'react';
-// import { sample } from 'lodash';
+
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Table from '@mui/material/Table';
-import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
 import TableBody from '@mui/material/TableBody';
 import Typography from '@mui/material/Typography';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
 
-import { customer } from 'src/_mock/customer';
+import { goldprice } from 'src/_mock/goldprice';
 
-import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 
-import TableNoData from '../table-no-data';
-import UserTableRow from '../customer-table-row';
-import TableEmptyRows from '../table-empty-rows';
-import UserTableHead from '../customer-table-head';
-import UserTableToolbar from '../customer-table-toolbar';
+import GoldpriceTableNoData from '../goldprice-no-data';
+import GoldpriceTableHead from '../goldprice-table-head';
+import GoldpriceTableEmptyRows from '../goldprice-empty-rows';
+import GoldpriceTableRow from '../goldprice-table-row';
+import GoldpriceTableToolbar from '../goldprice-table-toolbar';
 import { emptyRows, applyFilter, getComparator } from '../utils';
-
 
 // ----------------------------------------------------------------------
 
-export default function CustomerPage() {
-  // // Khởi tạo state cho danh sách khách hàng
-  // const [customer, setCustomer] = useState([]);
-
-  // // Sử dụng useEffect để gọi API khi component được mount
-  // useEffect(() => {
-  //   const fetchCustomers = async () => {
-  //     try {
-  //       const response = await fetch('https://65dc58f6e7edadead7ebb035.mockapi.io/authentication/test'); // Thay thế bằng URL của API thực tế
-  //       const data = await response.json();
-
-  //       // Giả sử data là một mảng các đối tượng khách hàng
-  //       const formattedData = data.map((customers, index) => ({
-  //         id: customers.id,
-  //         avatarUrl: customers.avatarUrl || `/assets/images/avatars/avatar_${index + 1}.jpg`,
-  //         name: customers.name,
-  //         address: customers.address,
-  //         point: customers.point || Math.floor(Math.random() * 100) + 1,
-  //         status: customers.status || sample(['active', 'banned']),
-  //         phoneNumber: customers.phoneNumber,
-  //       }));
-  //       console.log("Customer")
-
-  //       setCustomer(formattedData);
-  //     } catch (error) {
-  //       console.error('Error fetching customers:', error);
-  //     }
-  //   };
-
-  //   fetchCustomers();
-  // }, []);
+export default function GoldPriceView() {
   const [page, setPage] = useState(0);
 
   const [order, setOrder] = useState('asc');
@@ -79,18 +45,18 @@ export default function CustomerPage() {
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelecteds = customer.map((n) => n.name);
+      const newSelecteds = goldprice.map((n) => n.name);
       setSelected(newSelecteds);
       return;
     }
     setSelected([]);
   };
 
-  const handleClick = (event, name) => {
-    const selectedIndex = selected.indexOf(name);
+  const handleClick = (event, id) => {
+    const selectedIndex = selected.indexOf(id);
     let newSelected = [];
     if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selected, name);
+      newSelected = newSelected.concat(selected, id);
     } else if (selectedIndex === 0) {
       newSelected = newSelected.concat(selected.slice(1));
     } else if (selectedIndex === selected.length - 1) {
@@ -119,26 +85,28 @@ export default function CustomerPage() {
   };
 
   const dataFiltered = applyFilter({
-    inputData: customer,
+    inputData: goldprice,
     comparator: getComparator(order, orderBy),
     filterName,
   });
 
   const notFound = !dataFiltered.length && !!filterName;
 
+  // const handleNewStaffClick = (newStaffData) => {
+  //   addStaff(newStaffData);
+  //   setShowStaffForm(false);
+  // };
 
   return (
     <Container>
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
-        <Typography variant="h4">Customer</Typography>
-
-        <Button variant="contained" color="inherit" startIcon={<Iconify icon="eva:plus-fill" />}>
-          New Customer
-        </Button>
+        <Typography variant="h4"> Gold Price </Typography>
       </Stack>
 
+      
+
       <Card>
-        <UserTableToolbar
+        <GoldpriceTableToolbar
           numSelected={selected.length}
           filterName={filterName}
           onFilterName={handleFilterByName}
@@ -147,44 +115,43 @@ export default function CustomerPage() {
         <Scrollbar>
           <TableContainer sx={{ overflow: 'unset' }}>
             <Table sx={{ minWidth: 800 }}>
-              <UserTableHead
+              <GoldpriceTableHead
                 order={order}
                 orderBy={orderBy}
-                rowCount={customer.length}
                 numSelected={selected.length}
                 onRequestSort={handleSort}
                 onSelectAllClick={handleSelectAllClick}
                 headLabel={[
-                  { id: 'name', label: 'Name' },
-                  { id: 'address', label: 'Address' },
-                  { id: 'phoneNumber', label: 'Phone Number' },
-                  { id: 'point', label: 'Point'},
-                  { id: ' ', label:' '},
+                  { id: 'city', label: 'City' },
+                  { id: 'buyPrice', label: 'Buy Price' },
+                  { id: 'sellPrice', label: 'Sell Price' },
+                  { id: 'type', label: 'Type' },
+                  { id: 'lastUpdated', label: 'Last Updated' },
+                  { id: '' },
                 ]}
               />
               <TableBody>
-                {dataFiltered
+                {goldprice
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((row) => (
-                    <UserTableRow
+                    <GoldpriceTableRow
                       key={row.id}
-                      CusID={row.CusID}
-                      name={row.name}
-                      phoneNumber={row.phoneNumber} 
-                      address={row.address}
-                      point={row.point}
-                      gender={row.gender}
-                      selected={selected.indexOf(row.CusID) !== -1}
-                      handleClick={(event) => handleClick(event, row.CusID)}
+                      city={row.city}
+                      buyPrice={row.buyPrice}
+                      sellPrice={row.sellPrice}
+                      type={row.type}
+                      lastUpdated={row.lastUpdated}
+                      selected={selected.indexOf(row.city) !== -1}
+                      handleClick={(event) => handleClick(event, row.city)}
                     />
                   ))}
 
-                <TableEmptyRows
+                <GoldpriceTableEmptyRows
                   height={77}
-                  emptyRows={emptyRows(page, rowsPerPage, customer.length)}
+                  emptyRows={emptyRows(page, rowsPerPage, goldprice.length)}
                 />
 
-                {notFound && <TableNoData query={filterName} />}
+                {notFound && <GoldpriceTableNoData query={filterName} />}
               </TableBody>
             </Table>
           </TableContainer>
@@ -193,7 +160,6 @@ export default function CustomerPage() {
         <TablePagination
           page={page}
           component="div"
-          count={customer.length}
           rowsPerPage={rowsPerPage}
           onPageChange={handleChangePage}
           rowsPerPageOptions={[5, 10, 25]}
