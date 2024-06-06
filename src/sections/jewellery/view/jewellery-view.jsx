@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { useState, useEffect } from 'react';
 
 import Card from '@mui/material/Card';
@@ -10,7 +11,7 @@ import Typography from '@mui/material/Typography';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
 
-import { fetchAllJew } from 'src/_mock/jewellery';
+import { fetchAllJew} from 'src/_mock/jewellery';
 
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
@@ -48,7 +49,6 @@ export default function JewelleryView() {
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
-
   useEffect(() => {
 
     getJew();
@@ -61,6 +61,44 @@ export default function JewelleryView() {
   }
 
   console.log(jewList)
+
+  const deleteJewellery = async (id) => {
+    try {
+      await axios.delete(`https://663c446717145c4d8c359da1.mockapi.io/api/user/jewellery/${id}`);
+      setJewList(jewList.filter((item) => item.id !== id));
+      console.log('Delete successful');
+    } catch (error) {
+      console.error('There was an error deleting the item:', error);
+    }
+  };
+
+ const createJew = async (newItem) => {
+    try {
+      const response = await axios.post('https://663c446717145c4d8c359da1.mockapi.io/api/user/jewellery', newItem);
+      setJewList([...jewList, response.data]);
+      handleClose();
+    } catch (error) {
+      console.error('There was an error creating the item:', error);
+    }
+  };
+
+  const updateJew = async (id, updatedData) => {
+    try {
+      const response = await axios.put(`https://663c446717145c4d8c359da1.mockapi.io/api/user/jewellery/${id}`, updatedData);
+      const updatedJewellery = response.data;
+  
+      // Update the state with the new data
+      setJewList(prevData =>
+        prevData.map(item => (item.id === id ? updatedJewellery : item))
+      );
+  
+      return updatedJewellery;
+    } catch (error) {
+      console.error('Error updating jewellery:', error);
+      throw error;
+    }
+  };
+  
 
 
   const handleSort = (event, id) => {
@@ -127,12 +165,10 @@ export default function JewelleryView() {
     <Container>
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
         <Typography variant="h4">Jewellery</Typography>
-
         <Button variant="contained" color="inherit" startIcon={<Iconify icon="eva:plus-fill" />} onClick={handleShow}>
           New Jewellery
         </Button>
-
-        <NewModal show={show} handleClose={handleClose} />
+        <NewModal show={show} handleClose={handleClose} createJew={createJew} />
       </Stack>
 
       <Card>
@@ -170,6 +206,7 @@ export default function JewelleryView() {
                   .map((row) => (
                     <UserTableRow
                       key={row.id}
+                      id={row.id}
                       name={row.name}
                       weight={row.weight}
                       price={row.price}
@@ -180,6 +217,8 @@ export default function JewelleryView() {
                       warrantyID={row.warrantyID}
                       selected={selected.indexOf(row.name) !== -1}
                       handleClick={(event) => handleClick(event, row.name)}
+                      onDelete={() => deleteJewellery(row.id)} 
+                      onUpdate={updateJew}
 
                     />
                   ))}

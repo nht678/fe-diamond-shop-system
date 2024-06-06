@@ -14,23 +14,41 @@ import FormControl from '@mui/material/FormControl';
 import InputAdornment from '@mui/material/InputAdornment'
 import FormControlLabel from '@mui/material/FormControlLabel';
 
-export default function NewModal({ show, handleClose }) {
-    const [rangeValue, setRangeValue] = useState(50);
+export default function NewModal({ show, handleClose, createJew }) {
+    
 
-    const handleRangeChange = (event) => {
-        setRangeValue(event.target.value);
+    const initialState = {
+        name: '',
+        typeId: '',
+        warrantyId: '',
+        price: '',
+        laborCost: '',
+        gemCost: '',
+        weight: 50,
+        status: 'In-stock',
+      };
+
+      const [jewelleryData, setJewelleryData] = useState(initialState);
+
+
+    const handleInputChange = (event) => {
+        const { name, value } = event.target;
+        setJewelleryData({
+            ...jewelleryData,
+            [name]: value
+        });
     };
 
-    const [value, setValue] = useState("In-stock");
-
-    const handleChange = (event) => {
-        setValue(event.target.value);
+    const handleSubmit = (event) => {
+        event.preventDefault();
+        createJew(jewelleryData);
+        setJewelleryData(initialState);  // Clear the state after submission
+        handleClose();
     };
 
 
     return (
         <>
-
             <style type="text/css">
                 {`
           .custom-range::-webkit-slider-runnable-track {
@@ -46,7 +64,6 @@ export default function NewModal({ show, handleClose }) {
             border-radius: 50%;
             margin-top: -4px; /* Adjust based on thumb height */
           }
-
           
         `}
             </style>
@@ -55,11 +72,11 @@ export default function NewModal({ show, handleClose }) {
                     <Modal.Title>Add New Jewellery</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-
+                <Form onSubmit={handleSubmit}> 
                     <Row>
                         <Col md={6} className="me-5 ms-3"  >
                             <InputGroup className="mb-4 mt-4">
-                                <TextField id="fullWidth" label="Jewellery Name" variant="outlined" sx={{
+                                <TextField id="fullWidth" label="Jewellery Name" variant="outlined" name='name' value={jewelleryData.name} onChange={handleInputChange} sx={{
                                     width: 400,
                                     
                                     '& .MuiOutlinedInput-root': {
@@ -72,7 +89,7 @@ export default function NewModal({ show, handleClose }) {
                             </InputGroup>
 
                             <InputGroup className="mb-4 mt-4">
-                                <TextField id="fullWidth" label="Type ID" variant="outlined" sx={{
+                                <TextField id="fullWidth" label="Type ID" variant="outlined" name='typeId'  value={jewelleryData.typeId} onChange={handleInputChange} sx={{
                                     width: 300,
                                     
                                     '& .MuiOutlinedInput-root': {
@@ -85,7 +102,7 @@ export default function NewModal({ show, handleClose }) {
                             </InputGroup>
 
                             <InputGroup className="mb-4 mt-4">
-                                <TextField id="fullWidth" label="Warranty ID" variant="outlined" sx={{
+                                <TextField id="fullWidth" label="Warranty ID" variant="outlined" name='warrantyId'  value={jewelleryData.warrantyId} onChange={handleInputChange} sx={{
                                     width: 300,
                                     
                                     '& .MuiOutlinedInput-root': {
@@ -105,6 +122,8 @@ export default function NewModal({ show, handleClose }) {
                                     <Input
                                         id="standard-adornment-amount"
                                         startAdornment={<InputAdornment position="start">$</InputAdornment>}
+                                        name='price'
+                                        value={jewelleryData.price} onChange={handleInputChange}
                                     />
                                 </FormControl>
                             </InputGroup>
@@ -115,6 +134,8 @@ export default function NewModal({ show, handleClose }) {
                                     <Input
                                         id="standard-adornment-amount"
                                         startAdornment={<InputAdornment position="start">$</InputAdornment>}
+                                        name='laborCost'
+                                        value={jewelleryData.laborCost} onChange={handleInputChange}
                                     />
                                 </FormControl>
                             </InputGroup>
@@ -125,6 +146,8 @@ export default function NewModal({ show, handleClose }) {
                                     <Input
                                         id="standard-adornment-amount"
                                         startAdornment={<InputAdornment position="start">$</InputAdornment>}
+                                        name='gemCost'
+                                        value={jewelleryData.gemCost} onChange={handleInputChange}
                                     />
                                 </FormControl>
                             </InputGroup>
@@ -135,15 +158,15 @@ export default function NewModal({ show, handleClose }) {
                         <Col md={6}>
                             <InputGroup className="mb-4 mt-3 ms-3">
 
-                                <Form.Label>Weight: {rangeValue} grams</Form.Label>
+                                <Form.Label>Weight: {jewelleryData.weight} grams</Form.Label>
                                 <Form.Range
                                     className="custom-range"
-
+                                    name='weight'
                                     min={0}
                                     max={2000}
                                     step={1}
-                                    value={rangeValue}
-                                    onChange={handleRangeChange}
+                                    value={jewelleryData.weight}
+                                    onChange={handleInputChange}
                                 />
                             </InputGroup>
 
@@ -155,9 +178,9 @@ export default function NewModal({ show, handleClose }) {
                                     <FormLabel id="demo-controlled-radio-buttons-group">Status</FormLabel>
                                     <RadioGroup
                                         aria-labelledby="demo-controlled-radio-buttons-group"
-                                        name="controlled-radio-buttons-group"
-                                        value={value}
-                                        onChange={handleChange}
+                                        name='status'
+                                        value={jewelleryData.status}
+                                        onChange={handleInputChange}
                                     >
                                         <FormControlLabel value="In-stock" control={<Radio />} label="In-stock" />
                                         <FormControlLabel value="Out-stock" control={<Radio />} label="Out-stock" />
@@ -167,14 +190,18 @@ export default function NewModal({ show, handleClose }) {
                         </Col>
 
                     </Row>
+                    </Form>
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant="secondary" onClick={handleClose}>
                         Close
                     </Button>
-                    <Button variant="primary">Save changes</Button>
+                    <Button variant="primary" onClick={handleSubmit}>Add</Button>
+                    
                 </Modal.Footer>
+                
             </Modal>
+            
         </>
     );
 }
@@ -182,5 +209,6 @@ export default function NewModal({ show, handleClose }) {
 NewModal.propTypes = {
     show: PropTypes.bool.isRequired,
     handleClose: PropTypes.func.isRequired,
+    createJew: PropTypes.func.isRequired,
 
 };

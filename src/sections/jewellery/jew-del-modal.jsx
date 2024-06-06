@@ -4,7 +4,7 @@ import { Row, Col, Modal, Button } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {faBarcode, faMoneyBill, faDollarSign, faWeightHanging, faTriangleExclamation} from '@fortawesome/free-solid-svg-icons'
 
-export default function DelModal({ show, handleClose, name, weight, laborCost, price, gemCost, typeID, warrantyID }) {
+export default function DelModal({ show, handleClose, name, weight, laborCost, price, gemCost, typeID, warrantyID, onDelete}) {
 
 
   return (
@@ -33,7 +33,7 @@ export default function DelModal({ show, handleClose, name, weight, laborCost, p
         <Button variant="secondary" onClick={handleClose}>
           Close
         </Button>
-        <Button variant="danger" onClick={handleClose}>
+        <Button variant="danger" onClick={() => {handleClose(); onDelete()}} >
           Delete
         </Button>
       </Modal.Footer>
@@ -52,10 +52,11 @@ DelModal.propTypes = {
     show: PropTypes.bool.isRequired,
     handleClose: PropTypes.func.isRequired,
     name: PropTypes.string.isRequired,
-    weight: PropTypes.string.isRequired,
+    weight: PropTypes.any.isRequired,
     laborCost: PropTypes.any.isRequired,
     gemCost: PropTypes.any.isRequired,
     price: PropTypes.any.isRequired,
     typeID: PropTypes.string.isRequired,
     warrantyID: PropTypes.string.isRequired,
+    onDelete: PropTypes.func.isRequired,
   };
