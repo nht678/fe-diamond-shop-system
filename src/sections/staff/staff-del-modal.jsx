@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Dialog, DialogTitle, DialogContent, Grid, Typography, DialogActions, Button } from '@mui/material';
+
+import {Grid, Button, Dialog, Typography, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 
 export default function StaffDeleteForm({ open, onClose, onDelete, staff }) {
   const handleDeleteClick = () => {

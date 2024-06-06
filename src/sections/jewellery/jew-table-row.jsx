@@ -24,6 +24,7 @@ import EditModal from './jew-edit-modal';
 // ----------------------------------------------------------------------
 
 export default function UserTableRow({
+  id,
   selected,
   name,
   weight,
@@ -34,6 +35,8 @@ export default function UserTableRow({
   typeID,
   handleClick,
   status,
+  onDelete,
+  onUpdate,
 
 }) {
   const [open, setOpen] = useState(null);
@@ -125,17 +128,16 @@ export default function UserTableRow({
 
       <InfoModal show={show} handleClose={handleClose} name={name} price={price} weight={weight} laborCost={laborCost} gemCost={gemCost} typeID={typeID} warrantyID={warrantyID} />
 
-      <DelModal show={showDel} handleClose={handleCloseDel} name={name} price={price} weight={weight} laborCost={laborCost} gemCost={gemCost} typeID={typeID} warrantyID={warrantyID} />
+      <DelModal show={showDel} handleClose={handleCloseDel} name={name} price={price} weight={weight} laborCost={laborCost} gemCost={gemCost} typeID={typeID} warrantyID={warrantyID} onDelete={onDelete}/>
 
-      <EditModal show={showEd} handleClose={handleCloseEd} name={name} price={price} weight={weight} laborCost={laborCost} gemCost={gemCost} typeID={typeID} warrantyID={warrantyID} />
-
-
+      <EditModal show={showEd} handleClose={handleCloseEd} name={name} price={price} weight={weight} laborCost={laborCost} gemCost={gemCost} typeID={typeID} warrantyID={warrantyID} status={status} onUpdate={(updatedData) => onUpdate(id, updatedData)} />
 
     </>
   );
 }
 
 UserTableRow.propTypes = {
+  id: PropTypes.any,
   warrantyID: PropTypes.any,
   typeID: PropTypes.any,
   price: PropTypes.any,
@@ -146,5 +148,7 @@ UserTableRow.propTypes = {
   weight: PropTypes.any,
   selected: PropTypes.any,
   status: PropTypes.string,
+  onDelete: PropTypes.func,
+  onUpdate: PropTypes.func,
 
 };
