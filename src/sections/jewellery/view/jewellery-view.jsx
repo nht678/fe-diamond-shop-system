@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { toast } from 'react-toastify';
 import { useState, useEffect } from 'react';
 
 import Card from '@mui/material/Card';
@@ -66,6 +67,11 @@ export default function JewelleryView() {
     try {
       await axios.delete(`https://663c446717145c4d8c359da1.mockapi.io/api/user/jewellery/${id}`);
       setJewList(jewList.filter((item) => item.id !== id));
+      toast.success('Delete successful !', {
+        position: "bottom-right",
+        theme: "colored",
+        });
+
       console.log('Delete successful');
     } catch (error) {
       console.error('There was an error deleting the item:', error);
@@ -77,6 +83,10 @@ export default function JewelleryView() {
       const response = await axios.post('https://663c446717145c4d8c359da1.mockapi.io/api/user/jewellery', newItem);
       setJewList([...jewList, response.data]);
       handleClose();
+      toast.success('Create successful !', {
+        position: "bottom-right",
+        theme: "colored",
+        });
     } catch (error) {
       console.error('There was an error creating the item:', error);
     }
@@ -91,6 +101,10 @@ export default function JewelleryView() {
       setJewList(prevData =>
         prevData.map(item => (item.id === id ? updatedJewellery : item))
       );
+      toast.success('Update successful !', {
+        position: "bottom-right",
+        theme: "colored",
+        });
   
       return updatedJewellery;
     } catch (error) {
