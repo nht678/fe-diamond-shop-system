@@ -38,6 +38,7 @@ export default function Router() {
         { path: 'customer', element: <Customer /> },
         { path: 'jewellery', element: <Jewellery /> },
         { path: 'staff', element: <Staff /> },
+        { path: 'bill', element: <Bill /> },
       ],
     },
     {
