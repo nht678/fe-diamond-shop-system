@@ -40,7 +40,7 @@ InfoModal.propTypes = {
   show: PropTypes.bool.isRequired,
   handleClose: PropTypes.func.isRequired,
   name: PropTypes.string.isRequired,
-  weight: PropTypes.string.isRequired,
+  weight: PropTypes.any.isRequired,
   laborCost: PropTypes.any.isRequired,
   gemCost: PropTypes.any.isRequired,
   price: PropTypes.any.isRequired,

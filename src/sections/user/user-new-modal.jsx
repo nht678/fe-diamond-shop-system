@@ -11,38 +11,35 @@ import FormLabel from '@mui/material/FormLabel';
 import InputLabel from '@mui/material/InputLabel';
 import RadioGroup from '@mui/material/RadioGroup';
 import FormControl from '@mui/material/FormControl';
-import InputAdornment from '@mui/material/InputAdornment'
 import FormControlLabel from '@mui/material/FormControlLabel';
 
-export default function NewModal({ show, handleClose, createJew }) {
+export default function NewModal({ show, handleClose, createUser }) {
     
 
     const initialState = {
-        name: '',
-        typeId: '',
-        warrantyId: '',
-        price: '',
-        laborCost: '',
-        gemCost: '',
-        weight: 50,
-        status: 'In-stock',
+        username: '',
+        roleId: '',
+        counterId: '',
+        role: '',
+        email: '',
+        password: '',
       };
 
-      const [jewelleryData, setJewelleryData] = useState(initialState);
+      const [userData, setUserData] = useState(initialState);
 
 
     const handleInputChange = (event) => {
         const { name, value } = event.target;
-        setJewelleryData({
-            ...jewelleryData,
+        setUserData({
+            ...userData,
             [name]: value
         });
     };
 
     const handleSubmit = (event) => {
         event.preventDefault();
-        createJew(jewelleryData);
-        setJewelleryData(initialState);  // Clear the state after submission
+        createUser(userData);
+        setUserData(initialState);  // Clear the state after submission
         handleClose();
     };
 
@@ -69,15 +66,15 @@ export default function NewModal({ show, handleClose, createJew }) {
             </style>
             <Modal size="lg" show={show} onHide={handleClose} aria-labelledby="contained-modal-title-vcenter" centered>
                 <Modal.Header closeButton>
-                    <Modal.Title>Add New Jewellery</Modal.Title>
+                    <Modal.Title>Add New User</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                 <Form onSubmit={handleSubmit}> 
                     <Row>
                         <Col md={6} className="me-5 ms-3"  >
                             <InputGroup className="mb-4 mt-4">
-                                <TextField id="fullWidth" label="Jewellery Name" variant="outlined" name='name' value={jewelleryData.name} onChange={handleInputChange} sx={{
-                                    width: 400,
+                                <TextField id="fullWidth" label="Username" variant="outlined" name='username' value={userData.username} required onChange={handleInputChange} sx={{
+                                    width: 400, 
                                     
                                     '& .MuiOutlinedInput-root': {
                                         '& fieldset': {
@@ -89,7 +86,7 @@ export default function NewModal({ show, handleClose, createJew }) {
                             </InputGroup>
 
                             <InputGroup className="mb-4 mt-4">
-                                <TextField id="fullWidth" label="Type ID" variant="outlined" name='typeId'  value={jewelleryData.typeId} onChange={handleInputChange} sx={{
+                                <TextField id="fullWidth" label="Password" variant="outlined" name='password' required  value={userData.password} onChange={handleInputChange} sx={{
                                     width: 300,
                                     
                                     '& .MuiOutlinedInput-root': {
@@ -102,7 +99,7 @@ export default function NewModal({ show, handleClose, createJew }) {
                             </InputGroup>
 
                             <InputGroup className="mb-4 mt-4">
-                                <TextField id="fullWidth" label="Warranty ID" variant="outlined" name='warrantyId'  value={jewelleryData.warrantyId} onChange={handleInputChange} sx={{
+                                <TextField id="fullWidth" label="Email" variant="outlined" name='email'  value={userData.email} onChange={handleInputChange} sx={{
                                     width: 300,
                                     
                                     '& .MuiOutlinedInput-root': {
@@ -118,36 +115,22 @@ export default function NewModal({ show, handleClose, createJew }) {
                         <Col md={5}>
                             <InputGroup className="mb-4 mt-3 ">
                                 <FormControl fullWidth sx={{ m: 1 }} variant="standard">
-                                    <InputLabel htmlFor="standard-adornment-amount">Price</InputLabel>
+                                    <InputLabel htmlFor="standard-adornment-amount">Role ID</InputLabel>
                                     <Input
                                         id="standard-adornment-amount"
-                                        startAdornment={<InputAdornment position="start">$</InputAdornment>}
-                                        name='price'
-                                        value={jewelleryData.price} onChange={handleInputChange}
+                                        name='roleId'
+                                        value={userData.roleId} onChange={handleInputChange}
                                     />
                                 </FormControl>
                             </InputGroup>
 
                             <InputGroup className="mb-4 mt-3 ">
                                 <FormControl fullWidth sx={{ m: 1 }} variant="standard">
-                                    <InputLabel htmlFor="standard-adornment-amount">Labor Cost</InputLabel>
+                                    <InputLabel htmlFor="standard-adornment-amount">Counter ID</InputLabel>
                                     <Input
                                         id="standard-adornment-amount"
-                                        startAdornment={<InputAdornment position="start">$</InputAdornment>}
-                                        name='laborCost'
-                                        value={jewelleryData.laborCost} onChange={handleInputChange}
-                                    />
-                                </FormControl>
-                            </InputGroup>
-
-                            <InputGroup className="mb-4 mt-3 ">
-                                <FormControl fullWidth sx={{ m: 1 }} variant="standard">
-                                    <InputLabel htmlFor="standard-adornment-amount">Gem Cost</InputLabel>
-                                    <Input
-                                        id="standard-adornment-amount"
-                                        startAdornment={<InputAdornment position="start">$</InputAdornment>}
-                                        name='gemCost'
-                                        value={jewelleryData.gemCost} onChange={handleInputChange}
+                                        name='counterId'
+                                        value={userData.counterId} onChange={handleInputChange}
                                     />
                                 </FormControl>
                             </InputGroup>
@@ -155,35 +138,21 @@ export default function NewModal({ show, handleClose, createJew }) {
 
                         </Col>
 
-                        <Col md={6}>
-                            <InputGroup className="mb-4 mt-3 ms-3">
-
-                                <Form.Label>Weight: {jewelleryData.weight} grams</Form.Label>
-                                <Form.Range
-                                    className="custom-range"
-                                    name='weight'
-                                    min={0}
-                                    max={2000}
-                                    step={1}
-                                    value={jewelleryData.weight}
-                                    onChange={handleInputChange}
-                                />
-                            </InputGroup>
-
-                        </Col>
 
                         <Col md={6}>
                             <InputGroup className="mb-4 mt-3 ms-5">
                                 <FormControl>
-                                    <FormLabel id="demo-controlled-radio-buttons-group">Status</FormLabel>
+                                    <FormLabel id="demo-controlled-radio-buttons-group">Role</FormLabel>
                                     <RadioGroup
                                         aria-labelledby="demo-controlled-radio-buttons-group"
-                                        name='status'
-                                        value={jewelleryData.status}
+                                        name='role'
+                                        value={userData.role}
                                         onChange={handleInputChange}
+                                        style={{ flexDirection: 'row' }}
                                     >
-                                        <FormControlLabel value="In-stock" control={<Radio />} label="In-stock" />
-                                        <FormControlLabel value="Out-stock" control={<Radio />} label="Out-stock" />
+                                        <FormControlLabel value="Admin" control={<Radio />} label="Admin" />
+                                        <FormControlLabel value="Staff" control={<Radio />} label="Staff" />
+                                        <FormControlLabel value="Manager" control={<Radio />} label="Manager" />
                                     </RadioGroup>
                                 </FormControl>
                             </InputGroup>
@@ -209,6 +178,6 @@ export default function NewModal({ show, handleClose, createJew }) {
 NewModal.propTypes = {
     show: PropTypes.bool.isRequired,
     handleClose: PropTypes.func.isRequired,
-    createJew: PropTypes.func.isRequired,
+    createUser: PropTypes.func.isRequired,
 
 };

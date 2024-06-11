@@ -58,6 +58,11 @@ const navConfig = [
     icon: icon('ic_staff'),
   },
   {
+    title: 'Bill',
+    path: '/bill',
+    icon: icon('ic_bill'),
+  },
+  {
     title: 'GoldPrice',
     path: '/goldprice',
     icon: icon('ic_disabled'),

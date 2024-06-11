@@ -1,4 +1,6 @@
-import { useState } from 'react';
+import axios from 'axios';
+import { toast } from 'react-toastify';
+import { useState, useEffect } from 'react';
 
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
@@ -10,11 +12,12 @@ import Typography from '@mui/material/Typography';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
 
-import { users } from 'src/_mock/user';
+import { fetchAllUsers } from 'src/_mock/user';
 
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 
+import NewModal from '../user-new-modal';
 import TableNoData from '../table-no-data';
 import UserTableRow from '../user-table-row';
 import UserTableHead from '../user-table-head';
@@ -25,12 +28,84 @@ import { emptyRows, applyFilter, getComparator } from '../utils';
 // ----------------------------------------------------------------------
 
 export default function UserPage() {
+  const [show, setShow] = useState(false);
+
+  const handleClose = () => setShow(false);
+  const handleShow = () => setShow(true);
+
+  const [userList, setUserList] = useState([]);
+
   const [page, setPage] = useState(0);
   const [order, setOrder] = useState('asc');
   const [selected, setSelected] = useState([]);
   const [orderBy, setOrderBy] = useState('username');
   const [filterName, setFilterName] = useState('');
   const [rowsPerPage, setRowsPerPage] = useState(5);
+
+  useEffect(() => {
+
+    getUser();
+
+  }, [])
+
+  const getUser = async () => {
+    const res = await fetchAllUsers();
+    setUserList(res.data)
+  }
+
+  console.log(userList)
+
+  const deleteUser = async (id) => {
+    try {
+      await axios.delete(`https://663c446717145c4d8c359da1.mockapi.io/api/user/users/${id}`);
+      setUserList(userList.filter((item) => item.id !== id));
+      toast.success('Delete user successful !', {
+        position: "bottom-right",
+        theme: "colored",
+        });
+
+      console.log('Delete successful');
+    } catch (error) {
+      console.error('There was an error:', error);
+    }
+  };
+
+  const createUser = async (newItem) => {
+    try {
+      const response = await axios.post('https://663c446717145c4d8c359da1.mockapi.io/api/user/users', newItem);
+      setUserList([...userList, response.data]);
+      handleClose();
+      toast.success('Create user successful !', {
+        position: "bottom-right",
+        theme: "colored",
+        });
+    } catch (error) {
+      console.error('There was an error creating:', error);
+    }
+  };
+
+  const updateUser = async (id, updatedData) => {
+    try {
+      const response = await axios.put(`https://663c446717145c4d8c359da1.mockapi.io/api/user/users/${id}`, updatedData);
+      const updatedUser = response.data;
+  
+      // Update the state with the new data
+      setUserList(prevData =>
+        prevData.map(item => (item.id === id ? updatedUser : item))
+      );
+      toast.success('Update user successful !', {
+        position: "bottom-right",
+        theme: "colored",
+        });
+  
+      return updatedUser;
+    } catch (error) {
+      console.error('Error updating user:', error);
+      throw error;
+    }
+  };
+  
+
 
   const handleSort = (event, id) => {
     const isAsc = orderBy === id && order === 'asc';
@@ -40,7 +115,9 @@ export default function UserPage() {
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
+
       const newSelecteds = users.map((user) => user.username);
+
       setSelected(newSelecteds);
       return;
     }
@@ -82,7 +159,7 @@ export default function UserPage() {
   };
 
   const dataFiltered = applyFilter({
-    inputData: users,
+    inputData: userList,
     comparator: getComparator(order, orderBy),
     filterName,
   });
@@ -94,9 +171,10 @@ export default function UserPage() {
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
         <Typography variant="h4">Users</Typography>
 
-        <Button variant="contained" color="inherit" startIcon={<Iconify icon="eva:plus-fill" />}>
+        <Button variant="contained" color="inherit" startIcon={<Iconify icon="eva:plus-fill" />} onClick={handleShow}>
           New User
         </Button>
+        <NewModal show={show} handleClose={handleClose} createUser={createUser} />
       </Stack>
 
       <Card>
@@ -112,11 +190,12 @@ export default function UserPage() {
               <UserTableHead
                 order={order}
                 orderBy={orderBy}
-                rowCount={users.length}
+                rowCount={userList.length}
                 numSelected={selected.length}
                 onRequestSort={handleSort}
                 onSelectAllClick={handleSelectAllClick}
                 headLabel={[
+
                   { id: 'username', label: 'Username' },
                   { id: 'email', label: 'Email' },
                   { id: 'role', label: 'Role' },
@@ -140,7 +219,7 @@ export default function UserPage() {
 
                 <TableEmptyRows
                   height={77}
-                  emptyRows={emptyRows(page, rowsPerPage, users.length)}
+                  emptyRows={emptyRows(page, rowsPerPage, userList.length)}
                 />
 
                 {notFound && <TableNoData query={filterName} />}
@@ -152,7 +231,7 @@ export default function UserPage() {
         <TablePagination
           page={page}
           component="div"
-          count={users.length}
+          count={userList.length}
           rowsPerPage={rowsPerPage}
           onPageChange={handleChangePage}
           rowsPerPageOptions={[5, 10, 25]}
