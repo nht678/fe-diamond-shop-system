@@ -10,7 +10,7 @@ export default function DelModal({ show, handleClose, name, weight, laborCost, p
   return (
     <Modal size="md" show={show} onHide={handleClose} aria-labelledby="contained-modal-title-vcenter" centered>
       <Modal.Header closeButton>
-        <Modal.Title> <FontAwesomeIcon icon={faTriangleExclamation} /> &nbsp;Confirm Delete</Modal.Title>
+        <Modal.Title> <FontAwesomeIcon icon={faTriangleExclamation} style={{ color: 'red' }} /> &nbsp;Confirm Delete</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         
