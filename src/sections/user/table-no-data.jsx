@@ -10,7 +10,7 @@ import Typography from '@mui/material/Typography';
 export default function TableNoData({ query }) {
   return (
     <TableRow>
-      <TableCell align="center" colSpan={6} sx={{ py: 3 }}>
+      <TableCell align="center" colSpan={4} sx={{ py: 3 }}>
         <Paper
           sx={{
             textAlign: 'center',
@@ -22,8 +22,11 @@ export default function TableNoData({ query }) {
 
           <Typography variant="body2">
             No results found for &nbsp;
-            <strong>&quot;{query}&quot;</strong>.
-            <br /> Try checking for typos or using complete words.
+            <strong>
+              &quot;{query}&quot;
+            </strong>.
+            <br /> 
+              Try checking for typos or using complete words.
           </Typography>
         </Paper>
       </TableCell>
