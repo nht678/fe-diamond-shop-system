@@ -1,28 +1,4 @@
-// import { sample } from 'lodash';
-// import { faker } from '@faker-js/faker';
-
-// // ----------------------------------------------------------------------
-
-// export const users = [...Array(24)].map((_, index) => ({
-//   id: faker.string.uuid(),
-//   avatarUrl: `/assets/images/avatars/avatar_${index + 1}.jpg`,
-//   name: faker.person.fullName(),
-//   company: faker.company.name(),
-//   isVerified: faker.datatype.boolean(),
-//   status: sample(['active', 'banned']),
-//   role: sample([
-//     'Leader',
-//     'Hr Manager',
-//     'UI Designer',
-//     'UX Designer',
-//     'UI/UX Designer',
-//     'Project Manager',
-//     'Backend Developer',
-//     'Full Stack Designer',
-//     'Front End Developer',
-//     'Full Stack Developer',
-//   ]),
-// }));
+import axios from "axios";
 
 export const users = [
   {
@@ -100,6 +76,11 @@ export const users = [
 ];
 
 
-// export function addStaff(newStaffData) {
-//   staff.push(newStaffData);
-// }
+
+const fetchAllUsers = () => 
+  axios.get("https://663c446717145c4d8c359da1.mockapi.io/api/user/users");
+
+
+
+export {fetchAllUsers} ;
+

@@ -16,7 +16,7 @@ export default function UserTableToolbar({ numSelected, filterName, onFilterName
     onFilterName(value);
   };
 
-  return (
+  return ( 
     <Toolbar
       sx={{
         height: 96,
