@@ -19,16 +19,19 @@ import EditModal from './user-edit-modal';
 
 // ----------------------------------------------------------------------
 
-
 export default function UserTableRow({ 
+  id,
   selected, 
   username, 
   email, 
   role, 
   handleClick,
- }) 
-{
-
+  roleId,
+  password,
+  counterId,
+  onDelete,
+  onUpdate,
+}) {
   const [open, setOpen] = useState(null);
   const [showDel, setShowDel] = useState(false);
 
@@ -49,9 +52,7 @@ export default function UserTableRow({
     setOpen(event.currentTarget);
   };
 
-  const handleCloseMenu = () => {
-    setOpen(null);
-  };
+  const handleCloseMenu = () => setOpen(null);
 
   return (
     <>
@@ -72,9 +73,8 @@ export default function UserTableRow({
 
         <TableCell>{role}</TableCell>
 
-       
         <TableCell align="right">
-        <Button variant="outline-primary" onClick={handleShow}>More Info</Button>
+          <Button variant="outline-primary" onClick={handleShow}>More Info</Button>
           <IconButton onClick={handleOpenMenu}>
             <Iconify icon="eva:more-vertical-fill" />
           </IconButton>
@@ -102,19 +102,54 @@ export default function UserTableRow({
         </MenuItem>
       </Popover>
 
-      <DelModal show={showDel} handleClose={handleCloseDel} name={name} roleId={roleId} role={role} email={email} password={password} counterId={counterId} onDelete={onDelete}/>
+      <DelModal
+        show={showDel}
+        handleClose={handleCloseDel}
+        name={username}
+        roleId={roleId}
+        role={role}
+        email={email}
+        password={password}
+        counterId={counterId}
+        onDelete={onDelete}
+      />
 
-      <InfoModal show={show} handleClose={handleClose} name={name} roleId={roleId} role={role} email={email} password={password} counterId={counterId}  />
+      <InfoModal
+        show={show}
+        handleClose={handleClose}
+        name={username}
+        roleId={roleId}
+        role={role}
+        email={email}
+        password={password}
+        counterId={counterId}
+      />
 
-      <EditModal show={showEd} handleClose={handleCloseEd}  name={name} roleId={roleId} role={role} email={email} password={password} counterId={counterId} onUpdate={(updatedData) => onUpdate(id, updatedData)} />
+      <EditModal
+        show={showEd}
+        handleClose={handleCloseEd}
+        name={username}
+        roleId={roleId}
+        role={role}
+        email={email}
+        password={password}
+        counterId={counterId}
+        onUpdate={(updatedData) => onUpdate(id, updatedData)}
+      />
     </>
   );
 }
 
 UserTableRow.propTypes = {
+  id: PropTypes.number.isRequired,
   username: PropTypes.string.isRequired,
   email: PropTypes.string.isRequired,
   role: PropTypes.string.isRequired,
   selected: PropTypes.bool,
   handleClick: PropTypes.func.isRequired,
+  roleId: PropTypes.string.isRequired,
+  password: PropTypes.string.isRequired,
+  counterId: PropTypes.string.isRequired,
+  onDelete: PropTypes.func.isRequired,
+  onUpdate: PropTypes.func.isRequired,
 };

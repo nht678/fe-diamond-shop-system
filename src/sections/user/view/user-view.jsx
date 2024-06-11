@@ -12,7 +12,7 @@ import Typography from '@mui/material/Typography';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
 
-import { fetchAllUsers } from 'src/_mock/user';
+import { fetchAllUsers } from "src/_mock/user";
 
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
@@ -43,9 +43,7 @@ export default function UserPage() {
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
   useEffect(() => {
-
     getUser();
-
   }, [])
 
   const getUser = async () => {
@@ -62,7 +60,7 @@ export default function UserPage() {
       toast.success('Delete user successful !', {
         position: "bottom-right",
         theme: "colored",
-        });
+      });
 
       console.log('Delete successful');
     } catch (error) {
@@ -78,7 +76,7 @@ export default function UserPage() {
       toast.success('Create user successful !', {
         position: "bottom-right",
         theme: "colored",
-        });
+      });
     } catch (error) {
       console.error('There was an error creating:', error);
     }
@@ -89,14 +87,13 @@ export default function UserPage() {
       const response = await axios.put(`https://663c446717145c4d8c359da1.mockapi.io/api/user/users/${id}`, updatedData);
       const updatedUser = response.data;
   
-      // Update the state with the new data
       setUserList(prevData =>
         prevData.map(item => (item.id === id ? updatedUser : item))
       );
       toast.success('Update user successful !', {
         position: "bottom-right",
         theme: "colored",
-        });
+      });
   
       return updatedUser;
     } catch (error) {
@@ -104,8 +101,6 @@ export default function UserPage() {
       throw error;
     }
   };
-  
-
 
   const handleSort = (event, id) => {
     const isAsc = orderBy === id && order === 'asc';
@@ -115,9 +110,7 @@ export default function UserPage() {
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-
-      const newSelecteds = users.map((user) => user.username);
-
+      const newSelecteds = userList.map((user) => user.username);
       setSelected(newSelecteds);
       return;
     }
@@ -195,7 +188,6 @@ export default function UserPage() {
                 onRequestSort={handleSort}
                 onSelectAllClick={handleSelectAllClick}
                 headLabel={[
-
                   { id: 'username', label: 'Username' },
                   { id: 'email', label: 'Email' },
                   { id: 'role', label: 'Role' },
@@ -240,5 +232,4 @@ export default function UserPage() {
       </Card>
     </Container>
   );
-
 }
