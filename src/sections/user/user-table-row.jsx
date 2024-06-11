@@ -20,10 +20,6 @@ export default function UserTableRow({
   email, 
   role, 
   handleClick,
-  // name,
-  // counterId,
-  // role,
-  // email,
     }
       ) {
   const [open, setOpen] = useState(null);
@@ -55,19 +51,6 @@ export default function UserTableRow({
 
         <TableCell>{role}</TableCell>
 
-        {/* <TableCell>{roleId}</TableCell>
-
-        <TableCell>{email}</TableCell>
-
-        <TableCell>
-          <Label
-            color={
-              (role === 'Admin' && 'primary') || (role === 'Staff' && 'secondary') || 'success'
-            }
-          >
-            {role}
-          </Label>
-        </TableCell> */}
         <TableCell align="right">
           <IconButton onClick={handleOpenMenu}>
             <Iconify icon="eva:more-vertical-fill" />
@@ -105,15 +88,4 @@ UserTableRow.propTypes = {
   role: PropTypes.string.isRequired,
   selected: PropTypes.bool,
   handleClick: PropTypes.func.isRequired,
-  // id: PropTypes.any,
-  // roleId: PropTypes.any,
-  // counterId: PropTypes.any,
-  // handleClick: PropTypes.func,
-  // email: PropTypes.any,
-  // name: PropTypes.any,
-  // role: PropTypes.any,
-  // selected: PropTypes.any,
-  // password: PropTypes.any,
-  // onDelete: PropTypes.func,
-  // onUpdate: PropTypes.func,
 };
