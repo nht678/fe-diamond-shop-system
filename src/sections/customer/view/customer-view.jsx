@@ -1,6 +1,5 @@
 import { useState } from 'react';
-// import React, { useState, useEffect } from 'react';
-// import { sample } from 'lodash';
+
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Table from '@mui/material/Table';
@@ -11,7 +10,7 @@ import Typography from '@mui/material/Typography';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
 
-import { customer } from 'src/_mock/customer';
+import { customer, addCustomer } from 'src/_mock/customer';
 
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
@@ -20,6 +19,7 @@ import TableNoData from '../table-no-data';
 import UserTableRow from '../customer-table-row';
 import TableEmptyRows from '../table-empty-rows';
 import UserTableHead from '../customer-table-head';
+import CustomerForm from '../create-customer-table';
 import UserTableToolbar from '../customer-table-toolbar';
 import { emptyRows, applyFilter, getComparator } from '../utils';
 
@@ -68,6 +68,8 @@ export default function CustomerPage() {
   const [filterName, setFilterName] = useState('');
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
+
+  const [showCustomerForm, setShowCustomerForm] = useState(false);
 
   const handleSort = (event, id) => {
     const isAsc = orderBy === id && order === 'asc';
@@ -126,16 +128,33 @@ export default function CustomerPage() {
 
   const notFound = !dataFiltered.length && !!filterName;
 
+  const handleCloseCustomerForm = () => {
+    setShowCustomerForm(false);
+  };
+
+  const handleNewCustomerClick = (newCustomerData) => {
+    addCustomer(newCustomerData);
+    setShowCustomerForm(false);
+  };
 
   return (
     <Container>
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
         <Typography variant="h4">Customer</Typography>
 
-        <Button variant="contained" color="inherit" startIcon={<Iconify icon="eva:plus-fill" />}>
+        <Button
+          onClick={() => setShowCustomerForm(true)}
+          variant="contained"
+          color="inherit"
+          startIcon={<Iconify icon="eva:plus-fill" />}
+        >
           New Customer
         </Button>
       </Stack>
+
+      <CustomerForm open={showCustomerForm} onClose={handleCloseCustomerForm}
+        onSubmit={handleNewCustomerClick}
+      />
 
       <Card>
         <UserTableToolbar
@@ -158,8 +177,8 @@ export default function CustomerPage() {
                   { id: 'name', label: 'Name' },
                   { id: 'address', label: 'Address' },
                   { id: 'phoneNumber', label: 'Phone Number' },
-                  { id: 'point', label: 'Point'},
-                  { id: ' ', label:' '},
+                  { id: 'point', label: 'Point' },
+                  { id: ' ', label: ' ' },
                 ]}
               />
               <TableBody>
@@ -170,7 +189,7 @@ export default function CustomerPage() {
                       key={row.id}
                       CusID={row.CusID}
                       name={row.name}
-                      phoneNumber={row.phoneNumber} 
+                      phoneNumber={row.phoneNumber}
                       address={row.address}
                       point={row.point}
                       gender={row.gender}
