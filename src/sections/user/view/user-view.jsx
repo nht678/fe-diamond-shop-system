@@ -12,7 +12,7 @@ import Typography from '@mui/material/Typography';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
 
-import { fetchAllUsers } from 'src/_mock/user';
+import { fetchAllUsers } from "src/_mock/user";
 
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
@@ -36,21 +36,14 @@ export default function UserPage() {
   const [userList, setUserList] = useState([]);
 
   const [page, setPage] = useState(0);
-
   const [order, setOrder] = useState('asc');
-
   const [selected, setSelected] = useState([]);
-
-  const [orderBy, setOrderBy] = useState('name');
-
+  const [orderBy, setOrderBy] = useState('username');
   const [filterName, setFilterName] = useState('');
-
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
   useEffect(() => {
-
     getUser();
-
   }, [])
 
   const getUser = async () => {
@@ -67,7 +60,7 @@ export default function UserPage() {
       toast.success('Delete user successful !', {
         position: "bottom-right",
         theme: "colored",
-        });
+      });
 
       console.log('Delete successful');
     } catch (error) {
@@ -83,7 +76,7 @@ export default function UserPage() {
       toast.success('Create user successful !', {
         position: "bottom-right",
         theme: "colored",
-        });
+      });
     } catch (error) {
       console.error('There was an error creating:', error);
     }
@@ -94,14 +87,13 @@ export default function UserPage() {
       const response = await axios.put(`https://663c446717145c4d8c359da1.mockapi.io/api/user/users/${id}`, updatedData);
       const updatedUser = response.data;
   
-      // Update the state with the new data
       setUserList(prevData =>
         prevData.map(item => (item.id === id ? updatedUser : item))
       );
       toast.success('Update user successful !', {
         position: "bottom-right",
         theme: "colored",
-        });
+      });
   
       return updatedUser;
     } catch (error) {
@@ -109,31 +101,28 @@ export default function UserPage() {
       throw error;
     }
   };
-  
-
 
   const handleSort = (event, id) => {
     const isAsc = orderBy === id && order === 'asc';
-    if (id !== '') {
-      setOrder(isAsc ? 'desc' : 'asc');
-      setOrderBy(id);
-    }
+    setOrder(isAsc ? 'desc' : 'asc');
+    setOrderBy(id);
   };
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelecteds = userList.map((n) => n.name);
+      const newSelecteds = userList.map((user) => user.username);
       setSelected(newSelecteds);
       return;
     }
     setSelected([]);
   };
 
-  const handleClick = (event, name) => {
-    const selectedIndex = selected.indexOf(name);
+  const handleClick = (event, username) => {
+    const selectedIndex = selected.indexOf(username);
     let newSelected = [];
+
     if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selected, name);
+      newSelected = newSelected.concat(selected, username);
     } else if (selectedIndex === 0) {
       newSelected = newSelected.concat(selected.slice(1));
     } else if (selectedIndex === selected.length - 1) {
@@ -144,6 +133,7 @@ export default function UserPage() {
         selected.slice(selectedIndex + 1)
       );
     }
+
     setSelected(newSelected);
   };
 
@@ -198,9 +188,8 @@ export default function UserPage() {
                 onRequestSort={handleSort}
                 onSelectAllClick={handleSelectAllClick}
                 headLabel={[
-                  { id: 'name', label: 'Name' },
-                  { id: 'roleId', label: 'RoleID' },
-                  { id: 'email', label: 'Email'},
+                  { id: 'username', label: 'Username' },
+                  { id: 'email', label: 'Email' },
                   { id: 'role', label: 'Role' },
                   { id: '' },
                 ]}
@@ -208,21 +197,15 @@ export default function UserPage() {
               <TableBody>
                 {dataFiltered
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map((row) => (
+                  .map((user) => (
                     <UserTableRow
-                      key={row.id}
-                      id={row.id}
-                      name={row.username}
-                      roleId={row.roleId}
-                      role={row.role}
-                      counterId={row.counterId}
-                      email={row.email}
-                      password={row.password}
-                      selected={selected.indexOf(row.name) !== -1}
-                      handleClick={(event) => handleClick(event, row.name)}
-                      onDelete={() => deleteUser(row.id)}
-                      onUpdate={updateUser}
-                    
+                      key={user.username}
+                      username={user.username}
+                      email={user.email}
+                      role={user.role.roleName}
+                      status="Active" // Example status, update as needed
+                      selected={selected.indexOf(user.username) !== -1}
+                      handleClick={(event) => handleClick(event, user.username)}
                     />
                   ))}
 
