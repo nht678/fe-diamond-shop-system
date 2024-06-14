@@ -1,7 +1,7 @@
 export const bill = [
     {
-      staffId: 1,
       billId: 101,
+      staffId: 1,
       customerId: 1001,
       totalAmount: 250.75,
       saleDate: '2023-01-15'

@@ -48,7 +48,7 @@ export function applyFilter({ inputData, comparator, filterName }) {
 
   if (filterName) {
     inputData = inputData.filter(
-      (bill) => bill.billId.toLowerCase().indexOf(filterName.toLowerCase()) !== -1
+      (bill) => bill.billId.toString().toLowerCase().indexOf(filterName.toLowerCase()) !== -1
     );
   }
 
