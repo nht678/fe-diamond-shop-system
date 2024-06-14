@@ -23,7 +23,7 @@ import EditModal from './user-edit-modal';
 export default function UserTableRow({
   id,
   selected,
-  name,
+  username,
   counterId,
   role,
   email,
@@ -68,12 +68,12 @@ export default function UserTableRow({
         <TableCell component="th" scope="row" padding="none">
           <Stack direction="row" alignItems="center" spacing={2}>
             <Typography variant="subtitle2" noWrap>
-              {name}
+              {username}
             </Typography>
           </Stack>
         </TableCell>
 
-        <TableCell>{password}</TableCell>
+      
 
         <TableCell>{email}</TableCell>
 
@@ -110,11 +110,11 @@ export default function UserTableRow({
         </MenuItem>
       </Popover>
 
-      <DelModal show={showDel} handleClose={handleCloseDel} name={name} roleId={roleId} role={role} email={email} password={password} counterId={counterId} onDelete={onDelete}/>
+      <DelModal show={showDel} handleClose={handleCloseDel} name={username} roleId={roleId} role={role} email={email} password={password} counterId={counterId} onDelete={onDelete}/>
 
-      <InfoModal show={show} handleClose={handleClose} name={name} roleId={roleId} role={role} email={email} password={password} counterId={counterId}  />
+      <InfoModal show={show} handleClose={handleClose} name={username} roleId={roleId} role={role} email={email} password={password} counterId={counterId}  />
 
-      <EditModal show={showEd} handleClose={handleCloseEd}  name={name} roleId={roleId} role={role} email={email} password={password} counterId={counterId} onUpdate={(updatedData) => onUpdate(id, updatedData)} />
+      <EditModal show={showEd} handleClose={handleCloseEd}  name={username} roleId={roleId} role={role} email={email} password={password} counterId={counterId} onUpdate={(updatedData) => onUpdate(id, updatedData)} />
     </>
   );
 }
@@ -125,7 +125,7 @@ UserTableRow.propTypes = {
   counterId: PropTypes.any,
   handleClick: PropTypes.func,
   email: PropTypes.any,
-  name: PropTypes.any,
+  username: PropTypes.any,
   role: PropTypes.any,
   selected: PropTypes.any,
   password: PropTypes.any,

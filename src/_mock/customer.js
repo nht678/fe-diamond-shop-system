@@ -45,3 +45,7 @@ export const customer =[
     gender: 'female'
   },
 ]
+
+export function addCustomer(newCustomerData) {
+  customer.push(newCustomerData);
+}

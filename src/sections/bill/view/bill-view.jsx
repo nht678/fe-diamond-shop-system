@@ -10,7 +10,7 @@ import Typography from '@mui/material/Typography';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
 
-import { bill } from 'src/_mock/bill';
+import { addBill, bill } from 'src/_mock/bill';
 
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
@@ -21,10 +21,11 @@ import UserTableHead from '../bill-table-head';
 import TableEmptyRows from '../table-empty-rows';
 import UserTableToolbar from '../bill-table-toolbar';
 import { emptyRows, applyFilter, getComparator } from '../utils';
+import InvoiceTemplate from '../bill-form';
 
 // ----------------------------------------------------------------------
 
-export default function UserPage() {
+export default function BillPage() {
   const [page, setPage] = useState(0);
 
   const [order, setOrder] = useState('asc');
@@ -36,6 +37,8 @@ export default function UserPage() {
   const [filterName, setFilterName] = useState('');
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
+
+  const [showBillForm, setShowBillForm] = useState(false);
 
   const handleSort = (event, id) => {
     const isAsc = orderBy === id && order === 'asc';
@@ -94,14 +97,27 @@ export default function UserPage() {
 
   const notFound = !dataFiltered.length && !!filterName;
 
+  const handleCloseBillForm = () => {
+    setShowBillForm(false);
+  };
+
+  const handleNewBillClick = (newBillData) => {
+    addBill(newBillData);
+    setShowBillForm(true);
+  };
+
   return (
     <Container>
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
         <Typography variant="h4">Bill</Typography>
 
-        <Button variant="contained" color="inherit" startIcon={<Iconify icon="eva:plus-fill" />}>
+        <Button
+          onClick={() => setShowBillForm(true)}
+          variant="contained" color="inherit" startIcon={<Iconify icon="eva:plus-fill" />}>
           New Bill
         </Button>
+
+        <InvoiceTemplate open={showBillForm} onClose={handleCloseBillForm} />
       </Stack>
 
       <Card>
@@ -125,7 +141,7 @@ export default function UserPage() {
                   { id: 'billId', label: 'BillId' },
                   { id: 'customerId', label: 'CustomerId' },
                   { id: 'staffId', label: 'StaffId' },
-                  { id: 'totalAmount', label: 'TotalAmount'},
+                  { id: 'totalAmount', label: 'TotalAmount' },
                   { id: 'saleDate', label: 'SaleDate' },
                   { id: '' },
                 ]}

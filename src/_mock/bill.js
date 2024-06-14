@@ -70,4 +70,8 @@ export const bill = [
       saleDate: '2023-01-24'
     }
   ];
+
+  export function addBill(newBillData) {
+    bill.push(newBillData);
+  } 
   
