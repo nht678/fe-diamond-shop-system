@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import {
     Dialog,
@@ -19,26 +19,40 @@ import {
     FormControl,
     Box,
     IconButton,
+    Autocomplete,
 } from '@mui/material';
 import { Delete as DeleteIcon } from '@mui/icons-material';
+import { staff } from 'src/_mock/staff';
+import { customer } from 'src/_mock/customer';
+import { fetchAllJew } from 'src/_mock/jewellery';
 
 const InvoiceTemplate = ({ open, onClose, onSubmit }) => {
     const [currentDate, setCurrentDate] = useState(new Date());
     const [dueDate, setDueDate] = useState(new Date());
     const [invoiceNumber, setInvoiceNumber] = useState(1);
-    const [billToName, setBillToName] = useState('');
-    const [billToEmail, setBillToEmail] = useState('');
-    const [billToAddress, setBillToAddress] = useState('');
-    const [billFromName, setBillFromName] = useState('');
-    const [billFromEmail, setBillFromEmail] = useState('');
-    const [billFromAddress, setBillFromAddress] = useState('');
+    const [billTo, setBillTo] = useState(null);
+    const [billFrom, setBillFrom] = useState(null);
     const [items, setItems] = useState([]);
     const [currency, setCurrency] = useState('USD');
     const [taxRate, setTaxRate] = useState(0);
     const [discountRate, setDiscountRate] = useState(0);
+    const [jewelryData, setJewelryData] = useState([]);
+
+
+    const staffData = staff;
+    const customerData = customer;
+
+    useEffect(() => {
+        const fetchData = async () => {
+            const response = await fetchAllJew();
+            setJewelryData(response.data);
+        }
+
+        fetchData();
+    }, []);
 
     const handleAddItem = () => {
-        setItems([...items, { name: '', description: '', qty: 1, price: 1.00 }]);
+        setItems([...items, { name: '', qty: 1, price: 0 }])
     };
 
     const handleInputChange = (index, field, value) => {
@@ -77,7 +91,7 @@ const InvoiceTemplate = ({ open, onClose, onSubmit }) => {
             <DialogContent>
                 <Grid container spacing={2}>
                     <Grid item xs={12}>
-                        <Typography variant="h5">Invoice Details</Typography>
+                        <Typography variant="h5" style={{ marginBottom: 16 }} >Invoice Details</Typography>
                         <Grid container spacing={2}>
                             <Grid item xs={6}>
                                 <TextField
@@ -86,6 +100,7 @@ const InvoiceTemplate = ({ open, onClose, onSubmit }) => {
                                     value={currentDate.toISOString().slice(0, 10)}
                                     onChange={(e) => setCurrentDate(new Date(e.target.value))}
                                     fullWidth
+                                    style={{ marginBottom: 16 }}
                                 />
                                 <TextField
                                     label="Due Date"
@@ -98,68 +113,98 @@ const InvoiceTemplate = ({ open, onClose, onSubmit }) => {
                             <Grid item xs={6}>
                                 <TextField
                                     label="Invoice ID"
-                                    // Note: You have to add your own state and handler for Invoice ID
+                                    value={invoiceNumber}
                                     onChange={(e) => setInvoiceNumber(e.target.value)}
                                     fullWidth
+                                    style={{ marginBottom: 16 }}
                                 />
+                                <FormControl fullWidth variant="outlined" style={{ marginBottom: 16 }}>
+                                <InputLabel id="demo-simple-select-outlined-label">Currency</InputLabel>
+                                <Select
+                                    labelId="demo-simple-select-outlined-label"
+                                    id="demo-simple-select-outlined"
+                                    value={currency}
+                                    onChange={(e) => setCurrency(e.target.value)}
+                                    label="Currency"
+                                >
+                                    <MenuItem value="USD">USD</MenuItem>
+                                    <MenuItem value="EUR">EUR</MenuItem>
+                                    <MenuItem value="GBP">GBP</MenuItem>
+                                    {/* Add more currencies as needed */}
+                                </Select>
+                            </FormControl>
                             </Grid>
                         </Grid>
                     </Grid>
 
                     <Grid item xs={12}>
-                        <Typography variant="h6">Billing Details</Typography>
+                        <Typography variant="h6" style={{ marginBottom: 16 }}>Billing Details</Typography>
                         <Grid container spacing={2}>
                             <Grid item xs={6}>
-                                <TextField
-                                    label="Bill To Name"
-                                    value={billToName}
-                                    onChange={(e) => setBillToName(e.target.value)}
-                                    fullWidth
+                                <Autocomplete
+                                    options={customerData}
+                                    getOptionLabel={(option) => option.name}
+                                    onChange={(event, newValue) => {
+                                        setBillTo(newValue);
+                                    }}
+                                    renderInput={(params) => <TextField {...params} label="Bill To Name" fullWidth />}
+                                    style={{ marginBottom: 16 }}
                                 />
-                                <TextField
-                                    label="Bill To Email"
-                                    value={billToEmail}
-                                    onChange={(e) => setBillToEmail(e.target.value)}
-                                    fullWidth
-                                />
-                                <TextField
-                                    label="Bill To Address"
-                                    value={billToAddress}
-                                    onChange={(e) => setBillToAddress(e.target.value)}
-                                    fullWidth
-                                />
+                                {billTo && (
+                                    <>
+                                        <TextField
+                                            label="Bill To Phone"
+                                            value={billTo.phoneNumber}
+                                            fullWidth
+                                            style={{ marginBottom: 16 }}
+                                            disabled
+                                        />
+                                        <TextField
+                                            label="Bill To Address"
+                                            value={billTo.address}
+                                            fullWidth
+                                            disabled
+                                        />
+                                    </>
+                                )}
                             </Grid>
-
                             <Grid item xs={6}>
-                                <TextField
-                                    label="Bill From Name"
-                                    value={billFromName}
-                                    onChange={(e) => setBillFromName(e.target.value)}
-                                    fullWidth
+                                <Autocomplete
+                                    options={staffData}
+                                    getOptionLabel={(option) => option.userName}
+                                    onChange={(event, newValue) => {
+                                        setBillFrom(newValue);
+                                    }}
+                                    renderInput={(params) => <TextField {...params} label="Bill From Name" fullWidth />}
+                                    style={{ marginBottom: 16 }}
                                 />
-                                <TextField
-                                    label="Bill From Email"
-                                    value={billFromEmail}
-                                    onChange={(e) => setBillFromEmail(e.target.value)}
-                                    fullWidth
-                                />
-                                <TextField
-                                    label="Bill From Address"
-                                    value={billFromAddress}
-                                    onChange={(e) => setBillFromAddress(e.target.value)}
-                                    fullWidth
-                                />
+                                {billFrom && (
+                                    <>
+                                        <TextField
+                                            label="Bill From Email"
+                                            value={billFrom.email}
+                                            fullWidth
+                                            style={{ marginBottom: 16 }}
+                                            disabled
+                                        />
+                                        <TextField
+                                            label="Bill From RoleId"
+                                            value={billFrom.roleId}
+                                            fullWidth
+                                            disabled
+                                        />
+                                    </>
+                                )}
                             </Grid>
                         </Grid>
                     </Grid>
 
                     <Grid item xs={12}>
-                        <Typography variant="h6">Items</Typography>
-                        <Table>
+                        <Typography variant="h6" style={{ marginBottom: 16 }}>Items</Typography>
+                        <Table style={{ marginBottom: 16 }}>
                             <TableHead>
                                 <TableRow>
                                     <TableCell>Name</TableCell>
-                                    <TableCell>Description</TableCell>
                                     <TableCell>Qty</TableCell>
                                     <TableCell>Price</TableCell>
                                     <TableCell>Total</TableCell>
@@ -170,33 +215,37 @@ const InvoiceTemplate = ({ open, onClose, onSubmit }) => {
                                 {items.map((item, index) => (
                                     <TableRow key={index}>
                                         <TableCell>
-                                            <TextField
-                                                value={item.name}
-                                                onChange={(e) => handleInputChange(index, 'name', e.target.value)}
-                                                fullWidth
-                                            />
-                                        </TableCell>
-                                        <TableCell>
-                                            <TextField
-                                                value={item.description}
-                                                onChange={(e) => handleInputChange(index, 'description', e.target.value)}
-                                                fullWidth
+                                            <Autocomplete
+                                                options={jewelryData}
+                                                getOptionLabel={(option) => option.name}
+                                                value={item}
+                                                onChange={(event, newValue) => {
+                                                    handleInputChange(index, 'name', newValue.name);
+                                                    handleInputChange(index, 'price', newValue.price);
+                                                    handleInputChange(index, 'qty', 1); // Default quantity
+                                                }}
+                                                renderInput={(params) => <TextField {...params} label="Select Item" fullWidth />}
+                                                style={{ marginBottom: 16 }}
                                             />
                                         </TableCell>
                                         <TableCell>
                                             <TextField
                                                 type="number"
                                                 value={item.qty}
-                                                onChange={(e) => handleInputChange(index, 'qty', e.target.value)}
                                                 fullWidth
+                                                InputProps={{
+                                                    readOnly: true,
+                                                }}
                                             />
                                         </TableCell>
                                         <TableCell>
                                             <TextField
                                                 type="number"
                                                 value={item.price}
-                                                onChange={(e) => handleInputChange(index, 'price', e.target.value)}
                                                 fullWidth
+                                                InputProps={{
+                                                    readOnly: true,
+                                                }}
                                             />
                                         </TableCell>
                                         <TableCell>
@@ -211,29 +260,18 @@ const InvoiceTemplate = ({ open, onClose, onSubmit }) => {
                                 ))}
                             </TableBody>
                         </Table>
-                        <Button onClick={handleAddItem}>Add Item</Button>
+                        <Button onClick={ handleAddItem }  style={{ marginBottom: 16 }}>Add Item</Button>
                     </Grid>
 
                     <Grid container spacing={2}>
                         <Grid item xs={6}>
-                            <FormControl fullWidth>
-                                <InputLabel>Currency</InputLabel>
-                                <Select
-                                    value={currency}
-                                    onChange={(e) => setCurrency(e.target.value)}
-                                >
-                                    <MenuItem value="USD">USD</MenuItem>
-                                    <MenuItem value="EUR">EUR</MenuItem>
-                                    <MenuItem value="GBP">GBP</MenuItem>
-                                    {/* Add more currencies as needed */}
-                                </Select>
-                            </FormControl>
                             <TextField
                                 label="Tax Rate (%)"
                                 type="number"
                                 value={taxRate}
                                 onChange={(e) => setTaxRate(parseFloat(e.target.value))}
                                 fullWidth
+                                style={{ marginBottom: 16 }}
                             />
                             <TextField
                                 label="Discount Rate (%)"
@@ -265,8 +303,10 @@ const InvoiceTemplate = ({ open, onClose, onSubmit }) => {
                     </Grid>
 
                 </Grid>
-                <Button onClick={onClose} color="primary">Cancel</Button>
-                <Button onClick={handleSubmit} color="primary">Save</Button>
+                <Box display="flex" justifyContent="flex-end" mt={2}>
+                    <Button onClick={onClose} color="primary" style={{ marginRight: 8 }}>Cancel</Button>
+                    <Button onClick={handleSubmit} color="primary">Save</Button>
+                </Box>
             </DialogContent>
         </Dialog>
     );

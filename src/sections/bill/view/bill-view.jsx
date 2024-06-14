@@ -95,6 +95,8 @@ export default function BillPage() {
     filterName,
   });
 
+  console.log('dataFiltered:', dataFiltered);
+
   const notFound = !dataFiltered.length && !!filterName;
 
   const handleCloseBillForm = () => {
