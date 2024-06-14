@@ -73,7 +73,7 @@ export default function UserTableRow({
           </Stack>
         </TableCell>
 
-        <TableCell>{roleId}</TableCell>
+        <TableCell>{password}</TableCell>
 
         <TableCell>{email}</TableCell>
 

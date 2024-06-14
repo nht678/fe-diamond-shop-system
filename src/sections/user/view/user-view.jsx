@@ -198,8 +198,8 @@ export default function UserPage() {
                 onRequestSort={handleSort}
                 onSelectAllClick={handleSelectAllClick}
                 headLabel={[
-                  { id: 'name', label: 'Name' },
-                  { id: 'roleId', label: 'RoleID' },
+                  { id: 'name', label: 'Username' },
+                  { id: 'password', label: 'Password' },
                   { id: 'email', label: 'Email'},
                   { id: 'role', label: 'Role' },
                   { id: '' },
