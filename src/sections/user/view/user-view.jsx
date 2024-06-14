@@ -200,12 +200,15 @@ export default function UserPage() {
                   .map((user) => (
                     <UserTableRow
                       key={user.username}
+                      id={user.id}
+                      password={user.password}
                       username={user.username}
                       email={user.email}
-                      role={user.role.roleName}
-                      status="Active" // Example status, update as needed
+                      role={user.role}
                       selected={selected.indexOf(user.username) !== -1}
                       handleClick={(event) => handleClick(event, user.username)}
+                      onDelete={() => deleteUser(user.id)} 
+                      onUpdate={updateUser}
                     />
                   ))}
 
