@@ -1,6 +1,7 @@
+import React from 'react';
+import * as Yup from 'yup';
 import PropTypes from 'prop-types';
-import { toast } from 'react-toastify';
-import React, { useState } from 'react';
+import { useFormik } from 'formik';
 import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
 import { Row, Col, Modal, Button } from 'react-bootstrap';
@@ -16,71 +17,43 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 
 
 export default function NewModal({ show, handleClose, createUser }) {
-    const initialState = {
-        username: '',
-        roleId: '',
-        counterId: '',
-        role: '',
-        email: '',
-        password: '',
-    };
+    const validationSchem = Yup.object().shape({
+        username: Yup.string()
+            .matches(/^[A-Za-z0-9]{8,20}$/, "Username must be 8-20 characters long, contain no special characters.")
+            .required('Username is required.'),
+        password: Yup.string()
+            .min(8, 'Password must be at least 8 characters long.')
+            .matches(/[A-Z]/, 'Password must contain at least one uppercase letter.')
+            .matches(/[a-z]/, 'Password must contain at least one lowercase letter.')
+            .matches(/\d/, 'Password must contain at least one number.')
+            .matches(/[!@#$%^&*(),.?":{}|<>]/, 'Password must contain at least one special character.')
+            .required('Password is required.'),
+        email: Yup.string()
+        .matches(/^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/, "Invalid email address.")
+            .email('Invalid email address.')
+            .required('Email is required.'),
+        roleId: Yup.string().required('Role ID is required.'),
+        counterId: Yup.string().required('Counter ID is required.'),
+        role: Yup.string().required('Role is required.'),
+        
+    });
 
-    const [userData, setUserData] = useState(initialState);
-    const [errors, setErrors] = useState({});
-
-    const handleInputChange = (event) => {
-        const { name, value } = event.target;
-        setUserData({
-            ...userData,
-            [name]: value
-        });
-    };
-
-    const validateUsername = (username) => {
-        const regex = /^[A-Za-z0-9]{8,20}$/;
-        return regex.test(username) && username.trim() !== '';
-    };
-
-    const validateEmail = (email) => {
-        const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        return regex.test(email);
-    };
-
-    const validatePassword = (password) => {
-        const minLength = 8;
-        const hasUpperCase = /[A-Z]/.test(password);
-        const hasLowerCase = /[a-z]/.test(password);
-        const hasNumbers = /\d/.test(password);
-        const hasSpecialChars = /[!@#$%^&*(),.?":{}|<>]/.test(password);
-        return password.length >= minLength && hasUpperCase && hasLowerCase && hasNumbers && hasSpecialChars;
-    };
-
-    const validate = () => {
-        const tempErrors = {};
-        tempErrors.username = validateUsername(userData.username) ? "" : "Username must be 8-20 characters long, contain no special characters, and not be blank or spaces only.";
-        tempErrors.password = validatePassword(userData.password) ? "" : "Password must be at least 8 characters long, contain uppercase and lowercase letters, numbers, and special characters.";
-        tempErrors.email = validateEmail(userData.email) ? "" : "Invalid email address.";
-        tempErrors.roleId = userData.roleId.trim() ? "" : "This field is required.";
-        tempErrors.counterId = userData.counterId.trim() ? "" : "This field is required.";
-        tempErrors.role = userData.role.trim() ? "" : "This field is required.";
-
-        setErrors(tempErrors);
-        return Object.values(tempErrors).every(x => x === "");
-    };
-
-    const handleSubmit = (event) => {
-        event.preventDefault();
-        if (validate()) {
-            createUser(userData);
-            setUserData(initialState);  // Clear the state after submission
+    const formik = useFormik({
+        initialValues: {
+            username: '',
+            roleId: '',
+            counterId: '',
+            role: '',
+            email: '',
+            password: '',
+        },
+        validationSchema: validationSchem,
+        onSubmit: (values) => {
+            createUser(values);
+            formik.resetForm(); // Clear the form after submission
             handleClose();
-        } else {
-            toast.error('Please fix the errors before submitting.', {
-                theme: "colored",
-                position: "bottom-right"
-            });
-        }
-    };
+        },
+    });
 
     return (
         <>
@@ -102,11 +75,13 @@ export default function NewModal({ show, handleClose, createUser }) {
                 `}
             </style>
             <Modal size="lg" show={show} onHide={handleClose} aria-labelledby="contained-modal-title-vcenter" centered>
+            <Form onSubmit={formik.handleSubmit}>
                 <Modal.Header closeButton>
+                
                     <Modal.Title>Add New User</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <Form onSubmit={handleSubmit}>
+                
                         <Row>
                             <Col md={6} className="me-5 ms-3">
                                 <InputGroup className="mb-4 mt-4">
@@ -115,10 +90,11 @@ export default function NewModal({ show, handleClose, createUser }) {
                                         label="Username"
                                         variant="outlined"
                                         name='username'
-                                        value={userData.username}
-                                        onChange={handleInputChange}
-                                        error={!!errors.username}
-                                        helperText={errors.username}
+                                        value={formik.values.username}
+                                        onChange={formik.handleChange}
+                                        onBlur={formik.handleBlur}
+                                        error={formik.touched.username && Boolean(formik.errors.username)}
+                                        helperText={formik.touched.username && formik.errors.username}
                                         required
                                         sx={{
                                             width: 400,
@@ -138,10 +114,11 @@ export default function NewModal({ show, handleClose, createUser }) {
                                         variant="outlined"
                                         name='password'
                                         type="password"
-                                        value={userData.password}
-                                        onChange={handleInputChange}
-                                        error={!!errors.password}
-                                        helperText={errors.password}
+                                        value={formik.values.password}
+                                        onChange={formik.handleChange}
+                                        onBlur={formik.handleBlur}
+                                        error={formik.touched.password && Boolean(formik.errors.password)}
+                                        helperText={formik.touched.password && formik.errors.password}
                                         required
                                         sx={{
                                             width: 300,
@@ -160,10 +137,11 @@ export default function NewModal({ show, handleClose, createUser }) {
                                         label="Email"
                                         variant="outlined"
                                         name='email'
-                                        value={userData.email}
-                                        onChange={handleInputChange}
-                                        error={!!errors.email}
-                                        helperText={errors.email}
+                                        value={formik.values.email}
+                                        onChange={formik.handleChange}
+                                        onBlur={formik.handleBlur}
+                                        error={formik.touched.email && Boolean(formik.errors.email)}
+                                        helperText={formik.touched.email && formik.errors.email}
                                         required
                                         sx={{
                                             width: 300,
@@ -182,11 +160,14 @@ export default function NewModal({ show, handleClose, createUser }) {
                                         <InputLabel>Role ID</InputLabel>
                                         <Input
                                             name='roleId'
-                                            value={userData.roleId}
-                                            onChange={handleInputChange}
-                                            error={!!errors.roleId}
+                                            value={formik.values.roleId}
+                                            onChange={formik.handleChange}
+                                            onBlur={formik.handleBlur}
+                                            error={formik.touched.roleId && Boolean(formik.errors.roleId)}
                                         />
-                                        {errors.roleId && <p style={{ color: 'red' }}>{errors.roleId}</p>}
+                                        {formik.touched.roleId && formik.errors.roleId && (
+                                            <p style={{ color: 'red' }}>{formik.errors.roleId}</p>
+                                        )}
                                     </FormControl>
                                 </InputGroup>
 
@@ -195,11 +176,14 @@ export default function NewModal({ show, handleClose, createUser }) {
                                         <InputLabel>Counter ID</InputLabel>
                                         <Input
                                             name='counterId'
-                                            value={userData.counterId}
-                                            onChange={handleInputChange}
-                                            error={!!errors.counterId}
+                                            value={formik.values.counterId}
+                                            onChange={formik.handleChange}
+                                            onBlur={formik.handleBlur}
+                                            error={formik.touched.counterId && Boolean(formik.errors.counterId)}
                                         />
-                                        {errors.counterId && <p style={{ color: 'red' }}>{errors.counterId}</p>}
+                                        {formik.touched.counterId && formik.errors.counterId && (
+                                            <p style={{ color: 'red' }}>{formik.errors.counterId}</p>
+                                        )}
                                     </FormControl>
                                 </InputGroup>
                             </Col>
@@ -210,27 +194,35 @@ export default function NewModal({ show, handleClose, createUser }) {
                                         <FormLabel>Role</FormLabel>
                                         <RadioGroup
                                             name='role'
-                                            value={userData.role}
-                                            onChange={handleInputChange}
+                                            value={formik.values.role}
+                                            onChange={formik.handleChange}
+                                            onBlur={formik.handleBlur}
                                             style={{ flexDirection: 'row' }}
                                         >
                                             <FormControlLabel value="Admin" control={<Radio />} label="Admin" />
                                             <FormControlLabel value="Staff" control={<Radio />} label="Staff" />
                                             <FormControlLabel value="Manager" control={<Radio />} label="Manager" />
                                         </RadioGroup>
-                                        {errors.role && <p style={{ color: 'red' }}>{errors.role}</p>}
+                                        {formik.touched.role && formik.errors.role && (
+                                            <p style={{ color: 'red' }}>{formik.errors.role}</p>
+                                        )}
                                     </FormControl>
                                 </InputGroup>
                             </Col>
                         </Row>
-                    </Form>
+                    
                 </Modal.Body>
+                
                 <Modal.Footer>
                     <Button variant="secondary" onClick={handleClose}>
                         Close
                     </Button>
-                    <Button variant="primary" onClick={handleSubmit}>Add</Button>
+                    <Button variant="primary" type="submit">Add</Button>
+                    
                 </Modal.Footer>
+                </Form>
+                
+                
             </Modal>
         </>
     );
