@@ -25,6 +25,8 @@ import { Delete as DeleteIcon } from '@mui/icons-material';
 import { staff } from 'src/_mock/staff';
 import { customer } from 'src/_mock/customer';
 import { fetchAllJew } from 'src/_mock/jewellery';
+import Iconify from 'src/components/iconify';
+import InvoicePreviewDialog from './bill-preview-dialog';
 
 const InvoiceTemplate = ({ open, onClose, onSubmit }) => {
     const [currentDate, setCurrentDate] = useState(new Date());
@@ -37,6 +39,7 @@ const InvoiceTemplate = ({ open, onClose, onSubmit }) => {
     const [taxRate, setTaxRate] = useState(0);
     const [discountRate, setDiscountRate] = useState(0);
     const [jewelryData, setJewelryData] = useState([]);
+    const [previewOpen, setPreviewOpen] = useState(false);
 
 
     const staffData = staff;
@@ -50,6 +53,14 @@ const InvoiceTemplate = ({ open, onClose, onSubmit }) => {
 
         fetchData();
     }, []);
+
+    const handlePreviewClick = () => {
+        setPreviewOpen(true);
+    };
+
+    const handlePreviewClose = () => {
+        setPreviewOpen(false);
+    };
 
     const handleAddItem = () => {
         setItems([...items, { name: '', qty: 1, price: 0 }])
@@ -119,20 +130,20 @@ const InvoiceTemplate = ({ open, onClose, onSubmit }) => {
                                     style={{ marginBottom: 16 }}
                                 />
                                 <FormControl fullWidth variant="outlined" style={{ marginBottom: 16 }}>
-                                <InputLabel id="demo-simple-select-outlined-label">Currency</InputLabel>
-                                <Select
-                                    labelId="demo-simple-select-outlined-label"
-                                    id="demo-simple-select-outlined"
-                                    value={currency}
-                                    onChange={(e) => setCurrency(e.target.value)}
-                                    label="Currency"
-                                >
-                                    <MenuItem value="USD">USD</MenuItem>
-                                    <MenuItem value="EUR">EUR</MenuItem>
-                                    <MenuItem value="GBP">GBP</MenuItem>
-                                    {/* Add more currencies as needed */}
-                                </Select>
-                            </FormControl>
+                                    <InputLabel id="demo-simple-select-outlined-label">Currency</InputLabel>
+                                    <Select
+                                        labelId="demo-simple-select-outlined-label"
+                                        id="demo-simple-select-outlined"
+                                        value={currency}
+                                        onChange={(e) => setCurrency(e.target.value)}
+                                        label="Currency"
+                                    >
+                                        <MenuItem value="USD">USD</MenuItem>
+                                        <MenuItem value="EUR">EUR</MenuItem>
+                                        <MenuItem value="GBP">GBP</MenuItem>
+                                        {/* Add more currencies as needed */}
+                                    </Select>
+                                </FormControl>
                             </Grid>
                         </Grid>
                     </Grid>
@@ -260,7 +271,7 @@ const InvoiceTemplate = ({ open, onClose, onSubmit }) => {
                                 ))}
                             </TableBody>
                         </Table>
-                        <Button onClick={ handleAddItem }  style={{ marginBottom: 16 }}>Add Item</Button>
+                        <Button onClick={handleAddItem} style={{ marginBottom: 16 }}>Add Item</Button>
                     </Grid>
 
                     <Grid container spacing={2}>
@@ -304,9 +315,29 @@ const InvoiceTemplate = ({ open, onClose, onSubmit }) => {
 
                 </Grid>
                 <Box display="flex" justifyContent="flex-end" mt={2}>
-                    <Button onClick={onClose} color="primary" style={{ marginRight: 8 }}>Cancel</Button>
-                    <Button onClick={handleSubmit} color="primary">Save</Button>
-                </Box>
+    <Button onClick={onClose} color="primary" style={{ marginRight: 8 }}>Cancel</Button>
+    <Button onClick={handlePreviewClick} color="primary">Preview</Button>
+    <InvoicePreviewDialog 
+        open={previewOpen} 
+        onClose={handlePreviewClose} 
+        invoiceData={{
+            currentDate,
+            dueDate,
+            invoiceNumber,
+            billTo,
+            billFrom,
+            items,
+            currency,
+            taxRate,
+            discountRate,
+            subtotal: calculateSubtotal(),
+            discount: calculateDiscount(),
+            tax: calculateTax(),
+            total: calculateTotal(),
+        }} 
+    />
+    <Button onClick={handleSubmit} color="primary">Save</Button>
+</Box>
             </DialogContent>
         </Dialog>
     );
