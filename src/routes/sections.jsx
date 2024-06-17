@@ -15,7 +15,16 @@ export const GoldPrice = lazy(() => import ('src/pages/goldprice'))
 // ----------------------------------------------------------------------
 
 export default function Router() {
+  const isAuthenticated = false;
   const routes = useRoutes([
+    {
+      path: '/',
+      element: isAuthenticated ? <Navigate to="/dashboard" /> : <Navigate to="/login" replace />,
+    },
+    {
+      path: 'login',
+      element: <LoginPage />,
+    },
     {
       element: (
         <DashboardLayout>
@@ -25,7 +34,7 @@ export default function Router() {
         </DashboardLayout>
       ),
       children: [
-        { element: <IndexPage />, index: true },
+        { element: <IndexPage />},
         { path: 'user', element: <UserPage /> },
         { path: 'promotion', element: <Promotion /> },
         { path: 'customer', element: <Customer /> },
@@ -33,12 +42,10 @@ export default function Router() {
         { path: 'staff', element: <Staff /> },
         { path: 'bill', element: <Bill /> },
         { path: 'goldprice', element: <GoldPrice /> },
+        { path: 'dashboard', element: <IndexPage /> },  // Add this line
       ],
     },
-    {
-      path: 'login',
-      element: <LoginPage />,
-    },
+  
     {
       path: '*',
       element: <Navigate to="/404" replace />,

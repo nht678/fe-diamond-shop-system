@@ -1,4 +1,7 @@
 import { useState } from 'react';
+import axios from 'axios';
+// import "bootstrap/dist/css/bootstrap.min.css";
+import { toast } from "react-toastify";
 
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
@@ -27,25 +30,45 @@ import Iconify from 'src/components/iconify';
 export default function LoginView() {
   const theme = useTheme();
 
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
   const router = useRouter();
 
   const [showPassword, setShowPassword] = useState(false);
 
-  
 
-  const handleClick = () => {
-    router.push('/dashboard');
-  };
+  const handleClick = async() =>{
+    try {
+      const response = await axios.post("http://localhost:5188/api/User/Login", { email, password });
+      localStorage.setItem("TOKEN", response.data.token);
+      console.log("res",response)
+      if (response.status === 200) {
+        router.push('/dashboard');
+        toast.success('Bạn đã đăng nhập. Chào mừng đã vào cổng');
+      } else {
+        toast.error("Error information login");
+      }
+    } catch (e) {
+      toast.error("Error information login");
+    }
+  }
+  // const handleClick = () => {
+  //   router.push('/dashboard');
+  // };
 
   const renderForm = (
     
    <>
       <Stack spacing={3}>
-        <TextField name="username" label="Username"  />
+        <TextField
+        onChange={(e) => setEmail(e.target.value)}
+        name="email" label="Email"  />
 
         <TextField
           name="password"
           label="Password"
+          onChange={(e) => setPassword(e.target.value)}
           type={showPassword ? 'text' : 'password'}
           InputProps={{
             endAdornment: (

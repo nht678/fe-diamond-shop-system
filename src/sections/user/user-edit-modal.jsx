@@ -72,7 +72,7 @@ export default function EditModal({ show, handleClose, name, role, roleId, email
                             <Col md={6} className="me-5 ms-3"  >
                                 <InputGroup className="mb-4 mt-4">
                                     <TextField id="fullWidth" label="Username" variant="outlined" name='username' value={formData.username} required onChange={handleChange} sx={{
-                                        width: 400,
+                                        width: 300,
 
                                         '& .MuiOutlinedInput-root': {
                                             '& fieldset': {
@@ -110,7 +110,7 @@ export default function EditModal({ show, handleClose, name, role, roleId, email
                                 </InputGroup>
 
                             </Col>
-                            <Col md={5}>
+                            {/* <Col md={5}>
                                 <InputGroup className="mb-4 mt-3 ">
                                     <FormControl fullWidth sx={{ m: 1 }} variant="standard">
                                         <InputLabel htmlFor="standard-adornment-amount">Role ID</InputLabel>
@@ -134,7 +134,7 @@ export default function EditModal({ show, handleClose, name, role, roleId, email
                                 </InputGroup>
 
 
-                            </Col>
+                            </Col> */}
 
 
                             <Col md={6}>

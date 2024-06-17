@@ -97,7 +97,7 @@ export default function NewModal({ show, handleClose, createUser }) {
                                         helperText={formik.touched.username && formik.errors.username}
                                         required
                                         sx={{
-                                            width: 400,
+                                            width: 300,
                                             '& .MuiOutlinedInput-root': {
                                                 '& fieldset': {
                                                     borderColor: 'gray', // sets the border color
@@ -154,7 +154,7 @@ export default function NewModal({ show, handleClose, createUser }) {
                                     />
                                 </InputGroup>
                             </Col>
-                            <Col md={5}>
+                            {/* <Col md={5}>
                                 <InputGroup className="mb-4 mt-3">
                                     <FormControl fullWidth sx={{ m: 1 }} variant="standard">
                                         <InputLabel>Role ID</InputLabel>
@@ -186,7 +186,7 @@ export default function NewModal({ show, handleClose, createUser }) {
                                         )}
                                     </FormControl>
                                 </InputGroup>
-                            </Col>
+                            </Col> */}
 
                             <Col md={6}>
                                 <InputGroup className="mb-4 mt-3 ms-5">
