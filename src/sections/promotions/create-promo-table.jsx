@@ -10,7 +10,7 @@ import DialogContent from '@mui/material/DialogContent';
 
 function PromotionForm({ open, onClose, onSubmit }) {
     const initialFormState = {
-        promotionId: '',
+        // promotionId: '',
         type: '',
         discountRate: '',
         startDate: '',
@@ -36,7 +36,7 @@ function PromotionForm({ open, onClose, onSubmit }) {
         <Dialog open={open} onClose={onClose} aria-labelledby="form-dialog-title">
             <DialogTitle id="form-dialog-title">New Promotion</DialogTitle>
             <DialogContent>
-                <TextField
+                {/* <TextField
                     autoFocus
                     margin="dense"
                     name="promotionId"
@@ -45,7 +45,7 @@ function PromotionForm({ open, onClose, onSubmit }) {
                     fullWidth
                     onChange={handleChange}
                     InputProps={{ style: { marginBottom: 10 } }}
-                />
+                /> */}
                 <TextField
                     margin="dense"
                     name="type"

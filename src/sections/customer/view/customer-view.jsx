@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import axios from 'axios';
+import { useState, useEffect } from 'react';
 
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
@@ -10,7 +11,7 @@ import Typography from '@mui/material/Typography';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
 
-import { customer, addCustomer } from 'src/_mock/customer';
+// import { customer, addCustomer } from 'src/_mock/customer';
 
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
@@ -22,6 +23,7 @@ import UserTableHead from '../customer-table-head';
 import CustomerForm from '../create-customer-table';
 import UserTableToolbar from '../customer-table-toolbar';
 import { emptyRows, applyFilter, getComparator } from '../utils';
+
 
 
 // ----------------------------------------------------------------------
@@ -57,6 +59,9 @@ export default function CustomerPage() {
 
   //   fetchCustomers();
   // }, []);
+  
+  const [customer,setCustomer] = useState([]);
+
   const [page, setPage] = useState(0);
 
   const [order, setOrder] = useState('asc');
@@ -70,6 +75,14 @@ export default function CustomerPage() {
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
   const [showCustomerForm, setShowCustomerForm] = useState(false);
+
+  useEffect(()=>{
+    getCustomer();
+  },[])
+  const getCustomer = async() =>{
+    const res =await axios.get("http://localhost:5188/api/Customer");
+    setCustomer(res.data);
+  }
 
   const handleSort = (event, id) => {
     const isAsc = orderBy === id && order === 'asc';
@@ -133,7 +146,7 @@ export default function CustomerPage() {
   };
 
   const handleNewCustomerClick = (newCustomerData) => {
-    addCustomer(newCustomerData);
+    // addCustomer(newCustomerData);
     setShowCustomerForm(false);
   };
 
@@ -187,9 +200,9 @@ export default function CustomerPage() {
                   .map((row) => (
                     <UserTableRow
                       key={row.id}
-                      CusID={row.CusID}
+                      CusID={row.id}
                       name={row.name}
-                      phoneNumber={row.phoneNumber}
+                      phoneNumber={row.phone}
                       address={row.address}
                       point={row.point}
                       gender={row.gender}

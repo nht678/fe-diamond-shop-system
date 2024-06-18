@@ -1,25 +1,25 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import {
-    Dialog,
-    DialogTitle,
-    DialogContent,
-    TextField,
-    Typography,
+    Box,
     Grid,
-    Button,
     Table,
+    Dialog,
+    Button,
+    Select,
+    TableRow,
+    MenuItem,
+    TextField,
     TableBody,
     TableCell,
     TableHead,
-    TableRow,
-    Select,
-    MenuItem,
+    Typography,
     InputLabel,
-    FormControl,
-    Box,
     IconButton,
+    DialogTitle,
+    FormControl,
     Autocomplete,
+    DialogContent,
 } from '@mui/material';
 import { Delete as DeleteIcon } from '@mui/icons-material';
 import { staff } from 'src/_mock/staff';

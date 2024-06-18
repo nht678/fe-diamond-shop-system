@@ -10,7 +10,7 @@ import Typography from '@mui/material/Typography';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
 
-import { addBill, bill } from 'src/_mock/bill';
+import { bill, addBill } from 'src/_mock/bill';
 
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';

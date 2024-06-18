@@ -1,20 +1,20 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
+  Box,
   Grid,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Typography,
-  Button,
   Table,
+  Dialog,
+  Button,
+  Divider,
+  TableRow,
   TableBody,
   TableCell,
   TableHead,
-  TableRow,
-  Box,
-  Divider
+  Typography,
+  DialogTitle,
+  DialogContent,
+  DialogActions
 } from '@mui/material';
 import { Print as PrintIcon, GetApp as GetAppIcon } from '@mui/icons-material';
 import html2canvas from 'html2canvas';

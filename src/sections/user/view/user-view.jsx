@@ -12,7 +12,7 @@ import Typography from '@mui/material/Typography';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
 
-import { fetchAllUsers } from "src/_mock/user";
+// import { fetchAllUsers } from "src/_mock/user";
 
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
@@ -47,8 +47,9 @@ export default function UserPage() {
   }, [])
 
   const getUser = async () => {
-    const res = await fetchAllUsers();
-    setUserList(res.data)
+    const res = await axios.get("http://localhost:5188/api/User/GetUsers");
+    console.log("res",res);
+    setUserList(res.data);
   }
 
   console.log(userList)
@@ -204,7 +205,7 @@ export default function UserPage() {
                       password={user.password}
                       username={user.username}
                       email={user.email}
-                      role={user.role}
+                      role={user.role.roleName}
                       selected={selected.indexOf(user.username) !== -1}
                       handleClick={(event) => handleClick(event, user.username)}
                       onDelete={() => deleteUser(user.id)} 

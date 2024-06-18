@@ -10,20 +10,20 @@ import DialogContent from '@mui/material/DialogContent';
 
 
 function PromotionEditForm({ open, onClose, onSubmit, promotion }) {
-    const [formState, setFormState] = React.useState({
-        promotionId: promotion ? promotion.promotionId : '',
-        type: promotion ? promotion.type : '',
-        discountRate: promotion ? promotion.discountRate : '',
-        startDate: promotion ? promotion.startDate : '',
-        endDate: promotion ? promotion.endDate : '',
-        approveManager: promotion ? promotion.approveManager : '',
-        description: promotion ? promotion.description : '',
-    });
+  const [formState, setFormState] = React.useState({
+    // promotionId: promotion ? promotion.promotionId : '',
+    type: promotion ? promotion.type : '',
+    discountRate: promotion ? promotion.discountRate : '',
+    startDate: promotion ? promotion.startDate : '',
+    endDate: promotion ? promotion.endDate : '',
+    approveManager: promotion ? promotion.approveManager : '',
+    description: promotion ? promotion.description : '',
+  });
 
   React.useEffect(() => {
     if (promotion) {
       setFormState({
-        promotionId: promotion.promotionId,
+        // promotionId: promotion.promotionId,
         type: promotion.type,
         discountRate: promotion.discountRate,
         startDate: promotion.startDate,
@@ -48,7 +48,7 @@ function PromotionEditForm({ open, onClose, onSubmit, promotion }) {
     <Dialog open={open} onClose={onClose} aria-labelledby="form-dialog-title">
       <DialogTitle id="form-dialog-title">Edit Promotion</DialogTitle>
       <DialogContent>
-        <TextField
+        {/* <TextField
           autoFocus
           margin="dense"
           name="promotionId"
@@ -57,67 +57,67 @@ function PromotionEditForm({ open, onClose, onSubmit, promotion }) {
           fullWidth
           onChange={handleChange}
           value={formState.promotionId}
+        /> */}
+        <TextField
+          margin="dense"
+          name="type"
+          label="Type"
+          value={formState.type}
+          type="text"
+          fullWidth
+          onChange={handleChange}
+          InputProps={{ style: { marginBottom: 10 } }}
         />
         <TextField
-                    margin="dense"
-                    name="type"
-                    label="Type"
-                    value={formState.type}
-                    type="text"
-                    fullWidth
-                    onChange={handleChange}
-                    InputProps={{ style: { marginBottom: 10 } }}
-                />
-                <TextField
-                    margin="dense"
-                    name="discountRate"
-                    label="Discount Rate"
-                    value={formState.discountRate}
-                    type="text"
-                    fullWidth
-                    onChange={handleChange}
-                    InputProps={{ style: { marginBottom: 10 } }}
-                />
-                <TextField
-                    margin="dense"
-                    name="startDate"
-                    label=""
-                    value={formState.startDate}
-                    type="date"
-                    fullWidth
-                    onChange={handleChange}
-                    InputProps={{ style: { marginBottom: 10 } }}
-                />
-                <TextField
-                    margin="dense"
-                    name="endDate"
-                    value={formState.endDate}
-                    label=""
-                    type="date"
-                    fullWidth
-                    onChange={handleChange}
-                    InputProps={{ style: { marginBottom: 10 } }}
-                />
-                <TextField
-                    margin="dense"
-                    name="approveManager"
-                    label="Approval Manager"
-                    value={formState.approveManager}
-                    type="text"
-                    fullWidth
-                    onChange={handleChange}
-                    InputProps={{ style: { marginBottom: 10 } }}
-                />
-                <TextField
-                    margin="dense"
-                    name="description"
-                    label="Description"
-                    value={formState.description}
-                    type="text"
-                    fullWidth
-                    onChange={handleChange}
-                    InputProps={{ style: { marginBottom: 10 } }}
-                />
+          margin="dense"
+          name="discountRate"
+          label="Discount Rate"
+          value={formState.discountRate}
+          type="text"
+          fullWidth
+          onChange={handleChange}
+          InputProps={{ style: { marginBottom: 10 } }}
+        />
+        <TextField
+          margin="dense"
+          name="startDate"
+          label=""
+          value={formState.startDate}
+          type="date"
+          fullWidth
+          onChange={handleChange}
+          InputProps={{ style: { marginBottom: 10 } }}
+        />
+        <TextField
+          margin="dense"
+          name="endDate"
+          value={formState.endDate}
+          label=""
+          type="date"
+          fullWidth
+          onChange={handleChange}
+          InputProps={{ style: { marginBottom: 10 } }}
+        />
+        <TextField
+          margin="dense"
+          name="approveManager"
+          label="Approval Manager"
+          value={formState.approveManager}
+          type="text"
+          fullWidth
+          onChange={handleChange}
+          InputProps={{ style: { marginBottom: 10 } }}
+        />
+        <TextField
+          margin="dense"
+          name="description"
+          label="Description"
+          value={formState.description}
+          type="text"
+          fullWidth
+          onChange={handleChange}
+          InputProps={{ style: { marginBottom: 10 } }}
+        />
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose}>Cancel</Button>

@@ -17,7 +17,7 @@ function CustomerForm({ open, onClose, onSubmit }) {
         phoneNumber: '',
         point: '',
         gender: '',
-        
+
     };
 
     const [formState, setFormState] = React.useState(initialFormState);
@@ -37,17 +37,7 @@ function CustomerForm({ open, onClose, onSubmit }) {
         <Dialog open={open} onClose={onClose} aria-labelledby="form-dialog-title">
             <DialogTitle id="form-dialog-title">New Customer</DialogTitle>
             <DialogContent>
-            <TextField
-          autoFocus
-          margin="dense"
-          name="promotionId"
-          label="Promotion ID"
-          type="text"
-          fullWidth
-          onChange={handleChange}
-          value={formState.CusID}
-        />
-        <TextField
+                <TextField
                     margin="dense"
                     name="name"
                     label="Name"
