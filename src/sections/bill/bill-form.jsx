@@ -26,7 +26,9 @@ import { staff } from 'src/_mock/staff';
 import { customer } from 'src/_mock/customer';
 import { fetchAllJew } from 'src/_mock/jewellery';
 import Iconify from 'src/components/iconify';
+import { promotion } from 'src/_mock/promotion';
 import InvoicePreviewDialog from './bill-preview-dialog';
+// import { PayPalScriptProvider, PayPalButtons } from '@paypal/react-paypal-js';
 
 const InvoiceTemplate = ({ open, onClose, onSubmit }) => {
     const [currentDate, setCurrentDate] = useState(new Date());
@@ -36,10 +38,11 @@ const InvoiceTemplate = ({ open, onClose, onSubmit }) => {
     const [billFrom, setBillFrom] = useState(null);
     const [items, setItems] = useState([]);
     const [currency, setCurrency] = useState('USD');
-    const [taxRate, setTaxRate] = useState(0);
     const [discountRate, setDiscountRate] = useState(0);
     const [jewelryData, setJewelryData] = useState([]);
     const [previewOpen, setPreviewOpen] = useState(false);
+    const [promotionData, setPromotionData] = useState(promotion);
+    const [selectedPromotion, setSelectedPromotion] = useState(null);
 
 
     const staffData = staff;
@@ -84,17 +87,33 @@ const InvoiceTemplate = ({ open, onClose, onSubmit }) => {
     const calculateDiscount = () =>
         calculateSubtotal() * (discountRate / 100);
 
-    const calculateTax = () =>
-        (calculateSubtotal() - calculateDiscount()) * (taxRate / 100);
-
     const calculateTotal = () =>
-        calculateSubtotal() - calculateDiscount() + calculateTax();
+        calculateSubtotal() - calculateDiscount();
 
     const handleSubmit = event => {
         event.preventDefault();
         onSubmit(/* form data */);
         onClose();
     };
+
+    // const createOrder = (data, actions) => {
+    //     return actions.order.create({
+    //         purchase_units: [{
+    //             amount: {
+    //                 value: calculateTotal().toFixed(2),
+    //                 currency_code: currency
+    //             }
+    //         }]
+    //     });
+    // };
+
+    // const onApprove = (data, actions) => {
+    //     return actions.order.capture().then(details => {
+    //         console.log('Payment Approved: ', details);
+    //         onSubmit(details);
+    //         onClose();
+    //     });
+    // };
 
     return (
         <Dialog open={open} onClose={onClose} fullScreen>
@@ -277,19 +296,23 @@ const InvoiceTemplate = ({ open, onClose, onSubmit }) => {
                     <Grid container spacing={2}>
                         <Grid item xs={6}>
                             <TextField
-                                label="Tax Rate (%)"
-                                type="number"
-                                value={taxRate}
-                                onChange={(e) => setTaxRate(parseFloat(e.target.value))}
-                                fullWidth
-                                style={{ marginBottom: 16 }}
-                            />
-                            <TextField
                                 label="Discount Rate (%)"
                                 type="number"
                                 value={discountRate}
                                 onChange={(e) => setDiscountRate(parseFloat(e.target.value))}
                                 fullWidth
+                                style={{ marginBottom: 16 }}
+                                disabled
+                            />
+                            <Autocomplete
+                                options={promotionData}
+                                getOptionLabel={(option) => option.description}
+                                value={selectedPromotion}
+                                onChange={(event, newValue) => {
+                                    setSelectedPromotion(newValue);
+                                    if (newValue) setDiscountRate(newValue.discountRate); 
+                                }}
+                                renderInput={(params) => <TextField {...params} label="Promotion" fullWidth />}
                             />
                         </Grid>
                         <Grid item xs={6}>
@@ -302,10 +325,6 @@ const InvoiceTemplate = ({ open, onClose, onSubmit }) => {
                                 <Typography variant="subtitle1">Discount:</Typography>
                                 <Typography variant="subtitle1">{`${currency} ${calculateDiscount().toFixed(2)}`}</Typography>
                             </Box>
-                            <Box display="flex" justifyContent="space-between" mb={1}>
-                                <Typography variant="subtitle1">Tax:</Typography>
-                                <Typography variant="subtitle1">{`${currency} ${calculateTax().toFixed(2)}`}</Typography>
-                            </Box>
                             <Box display="flex" justifyContent="space-between">
                                 <Typography variant="h6">Total:</Typography>
                                 <Typography variant="h6">{`${currency} ${calculateTotal().toFixed(2)}`}</Typography>
@@ -315,29 +334,33 @@ const InvoiceTemplate = ({ open, onClose, onSubmit }) => {
 
                 </Grid>
                 <Box display="flex" justifyContent="flex-end" mt={2}>
-    <Button onClick={onClose} color="primary" style={{ marginRight: 8 }}>Cancel</Button>
-    <Button onClick={handlePreviewClick} color="primary">Preview</Button>
-    <InvoicePreviewDialog 
-        open={previewOpen} 
-        onClose={handlePreviewClose} 
-        invoiceData={{
-            currentDate,
-            dueDate,
-            invoiceNumber,
-            billTo,
-            billFrom,
-            items,
-            currency,
-            taxRate,
-            discountRate,
-            subtotal: calculateSubtotal(),
-            discount: calculateDiscount(),
-            tax: calculateTax(),
-            total: calculateTotal(),
-        }} 
-    />
-    <Button onClick={handleSubmit} color="primary">Save</Button>
-</Box>
+                    <Button onClick={onClose} color="primary" style={{ marginRight: 8 }}>Cancel</Button>
+                    <Button onClick={handlePreviewClick} color="primary">Preview</Button>
+                    <InvoicePreviewDialog
+                        open={previewOpen}
+                        onClose={handlePreviewClose}
+                        invoiceData={{
+                            currentDate,
+                            dueDate,
+                            invoiceNumber,
+                            billTo,
+                            billFrom,
+                            items,
+                            currency,
+                            discountRate,
+                            subtotal: calculateSubtotal(),
+                            discount: calculateDiscount(),
+                            total: calculateTotal(),
+                        }}
+                    />
+                    {/* <PayPalScriptProvider options={{ "client-id": "YOUR_PAYPAL_CLIENT_ID" }}>
+                        <PayPalButtons
+                            createOrder={createOrder}
+                            onApprove={onApprove}
+                            style={{ layout: 'horizontal' }}
+                        />
+                    </PayPalScriptProvider> */}
+                </Box>
             </DialogContent>
         </Dialog>
     );
