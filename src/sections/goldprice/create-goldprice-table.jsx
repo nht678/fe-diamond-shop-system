@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 
-import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
+import { Dialog, Button, TextField, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 
 function GoldPriceForm({ open, onClose, onSubmit }) {
     const initialFormState = {

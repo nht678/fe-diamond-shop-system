@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import axios from 'axios';
+import { useState, useEffect } from 'react';
 
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
@@ -9,7 +10,7 @@ import Typography from '@mui/material/Typography';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
 
-import { goldprice } from 'src/_mock/goldprice';
+// import { goldprice } from 'src/_mock/goldprice';
 
 import Scrollbar from 'src/components/scrollbar';
 
@@ -20,9 +21,11 @@ import GoldpriceTableRow from '../goldprice-table-row';
 import GoldpriceTableToolbar from '../goldprice-table-toolbar';
 import { emptyRows, applyFilter, getComparator } from '../utils';
 
+
 // ----------------------------------------------------------------------
 
 export default function GoldPriceView() {
+  const [goldprice, setGoldprice] = useState([]);
   const [page, setPage] = useState(0);
 
   const [order, setOrder] = useState('asc');
@@ -34,6 +37,17 @@ export default function GoldPriceView() {
   const [filterName, setFilterName] = useState('');
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
+
+
+  useEffect(() => {
+    getGoldprice();
+  }, [])
+  const getGoldprice = async () => {
+
+    const res = await axios.get("http://localhost:5188/api/Price/GetGoldPrices");
+    setGoldprice(res.data);
+  }
+
 
   const handleSort = (event, id) => {
     const isAsc = orderBy === id && order === 'asc';
@@ -97,13 +111,14 @@ export default function GoldPriceView() {
   //   setShowStaffForm(false);
   // };
 
+
   return (
     <Container>
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
         <Typography variant="h4"> Gold Price </Typography>
       </Stack>
 
-      
+
 
       <Card>
         <GoldpriceTableToolbar
@@ -131,7 +146,7 @@ export default function GoldPriceView() {
                 ]}
               />
               <TableBody>
-                {goldprice
+                {dataFiltered
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((row) => (
                     <GoldpriceTableRow

@@ -1,4 +1,6 @@
+import axios from 'axios';
 import { useState } from 'react';
+import { toast } from 'react-toastify';
 import PropTypes from 'prop-types';
 
 import Grid from '@mui/material/Grid';
@@ -19,11 +21,13 @@ import Iconify from 'src/components/iconify';
 
 import PromotionEditForm from './promo-edit-modal';
 import PromotionDeleteForm from './promo-del-modal';
+// import { Edit } from '@mui/icons-material';
 
 
 // ----------------------------------------------------------------------
 
 export default function UserTableRow({
+  autocrement,
   selected,
   promotionId,
   type,
@@ -65,6 +69,12 @@ export default function UserTableRow({
   };
 
   const onSubmit = (updatedData) => {
+    const res = axios.put(`http://localhost:5188/api/Promotion/UpdatePromotion?id=${promotionId}`,updatedData)
+    if (res === 1){
+      toast.success("Edit promotion success");
+    }else{
+      toast.error('Edit promotion fail')
+    }
     handleEditClose();
   };
 
@@ -78,9 +88,17 @@ export default function UserTableRow({
     handleCloseMenu();
   };
 
-  const onDelete = () => {
+  const onDelete = async(promotion) => {
+    const res = await axios.delete(`http://localhost:5188/api/Promotion/DeletePromotion?id=${promotion}`);
+    if(res.data === 0 || res.data === 1){
+      toast.success("Delete success");
+    }else{
+      toast.error("Delete fail")
+    }
     handleDeleteClose();
+    // window.location.reload();
   };
+
 
 
   return (
@@ -89,7 +107,7 @@ export default function UserTableRow({
         <TableCell padding="checkbox">
           <Checkbox disableRipple checked={selected} onChange={handleClick} />
         </TableCell>
-        <TableCell>{promotionId}</TableCell>
+        <TableCell>{autocrement}</TableCell>
         <TableCell>{type}</TableCell>
         <TableCell>{`${discountRate}%`}</TableCell>
         <TableCell>{startDate}</TableCell>
@@ -186,6 +204,7 @@ export default function UserTableRow({
 }
 
 UserTableRow.propTypes = {
+  autocrement:PropTypes.number,
   promotionId: PropTypes.any,
   type: PropTypes.string,
   approveManager: PropTypes.string,

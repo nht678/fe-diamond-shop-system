@@ -1,4 +1,6 @@
-import { useState } from 'react';
+import axios from 'axios';
+import { useState, useEffect } from 'react';
+import { toast } from 'react-toastify';
 
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
@@ -10,7 +12,7 @@ import Typography from '@mui/material/Typography';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
 
-import { promotion, addPromotion } from 'src/_mock/promotion';
+// import { promotion, addPromotion } from 'src/_mock/promotion';
 
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
@@ -26,6 +28,8 @@ import { emptyRows, applyFilter, getComparator } from '../utils';
 // ----------------------------------------------------------------------
 
 export default function PromotionView() {
+  const [promotion, setPromotion] = useState([]);
+
   const [page, setPage] = useState(0);
 
   const [order, setOrder] = useState('asc');
@@ -39,6 +43,15 @@ export default function PromotionView() {
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
   const [showPromotionForm, setShowPromotionForm] = useState(false);
+
+  useEffect(() => {
+    getPromotion();
+  },[])
+
+  const getPromotion = async () => {
+    const res = await axios.get("http://localhost:5188/api/Promotion/GetPromotions");
+    setPromotion(res.data);
+  }
 
   const handleSort = (event, id) => {
     const isAsc = orderBy === id && order === 'asc';
@@ -101,8 +114,14 @@ export default function PromotionView() {
     setShowPromotionForm(false);
   };
 
-  const handleNewPromotionClick = (newPromotionData) => {
-    addPromotion(newPromotionData);
+  const handleNewPromotionClick = async (newPromotionData) => {
+    // addPromotion(newPromotionData);
+    const res = await axios.post("http://localhost:5188/api/Promotion/AddNewPromotion", newPromotionData);
+     if(res.data === 1) {
+      toast.success("Create promotion success")
+     }else{
+      toast.error("Create promotion fail")
+     }
     setShowPromotionForm(false);
   };
 
@@ -154,9 +173,10 @@ export default function PromotionView() {
               <TableBody>
                 {dataFiltered
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map((row) => (
+                  .map((row,index) => (
                     <UserTableRow
                       key={row.id}
+                      autocrement={index}
                       promotionId={row.promotionId}
                       type={row.type}
                       approveManager={row.approveManager}

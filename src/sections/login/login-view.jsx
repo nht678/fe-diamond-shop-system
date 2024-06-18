@@ -50,7 +50,7 @@ export default function LoginView() {
         toast.error("Error information login");
       }
     } catch (e) {
-      toast.error("Error information login");
+      toast.error("Error information login response");
     }
   }
   // const handleClick = () => {

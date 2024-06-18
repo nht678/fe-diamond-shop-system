@@ -10,7 +10,7 @@ import { RouterLink } from 'src/routes/components';
 // ----------------------------------------------------------------------
 
 const Logo = forwardRef(({ disabledLink = false, sx, ...other }, ref) => {
-  const theme = useTheme();
+  // const theme = useTheme();
 
   // OR using local (public folder)
   // -------------------------------------------------------

@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { Grid, Button,  Dialog,  DialogTitle, DialogActions, DialogContent,   Typography } from '@mui/material';
+import { Grid, Button,  Dialog,  Typography, DialogTitle, DialogActions,   DialogContent } from '@mui/material';
 
 export default function GoldpriceDeleteForm({ open, onClose, onDelete, goldprice }) {
   const handleDeleteClick = () => {
