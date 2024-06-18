@@ -20,6 +20,7 @@ import { Print as PrintIcon, GetApp as GetAppIcon } from '@mui/icons-material';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 
+
 const InvoicePreviewDialog = ({ open, onClose, invoiceData }) => {
   const handlePrint = () => {
     window.print();
@@ -61,27 +62,25 @@ const InvoicePreviewDialog = ({ open, onClose, invoiceData }) => {
       <DialogTitle id="invoiceTitle">Invoice Preview</DialogTitle>
       <DialogContent id='invoiceCapture'>
 
-        <Grid container spacing={2}>
-          {/* Company Logo */}
+        <Grid container spacing={5}>
           <Grid item xs={6}>
-            <Box> {/* Replace this with your logo */}
-              <Typography variant="h5">Company Logo Here</Typography>
-            </Box>
-          </Grid>
-
-          {/* Invoice Info */}
-          <Grid item xs={6}>
-            <Box textAlign="right">
+            <Box textAlign="left">
               <Typography variant="h5">Invoice #{invoiceData.invoiceNumber}</Typography>
               <Typography>Date: {new Date(invoiceData.currentDate).toLocaleDateString()}</Typography>
               <Typography>Due Date: {new Date(invoiceData.dueDate).toLocaleDateString()}</Typography>
+            </Box>
+          </Grid>
+
+          <Grid item xs={6}>
+            <Box textAlign="right">
+           <img src="/assets/logo.svg" alt="" style={{ width: 90 }}/>
             </Box>
           </Grid>
         </Grid>
 
         <Divider sx={{ marginY: 2 }} />
 
-        <Grid container spacing={2}>
+        <Grid container spacing={10}>
           {/* Bill To */}
           <Grid item xs={6}>
             <Typography variant="h6">Bill To:</Typography>
@@ -129,7 +128,6 @@ const InvoicePreviewDialog = ({ open, onClose, invoiceData }) => {
                 <Box display="flex" flexDirection="column">
                   <Typography variant="h6">Subtotal:</Typography>
                   <Typography variant="h6">Discount:</Typography>
-
                   <Typography variant="h4">Total:</Typography>
                 </Box>
               </TableCell>
