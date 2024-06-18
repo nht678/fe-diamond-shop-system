@@ -37,25 +37,25 @@ export default function LoginView() {
 
   const [showPassword, setShowPassword] = useState(false);
 
-
-  const handleClick = async() =>{
-    try {
-      const response = await axios.post("http://localhost:5188/api/User/Login", { email, password });
-      localStorage.setItem("TOKEN", response.data.token);
-      console.log("res",response)
-      if (response.status === 200) {
-        router.push('/dashboard');
-        toast.success('Bạn đã đăng nhập. Chào mừng đã vào cổng');
-      } else {
-        toast.error("Error information login");
-      }
-    } catch (e) {
-      toast.error("Error information login response");
-    }
-  }
-  // const handleClick = () => {
-  //   router.push('/dashboard');
-  // };
+// comment cho de dang nhap
+  // const handleClick = async() =>{
+  //   try {
+  //     const response = await axios.post("http://localhost:5188/api/User/Login", { email, password });
+  //     localStorage.setItem("TOKEN", response.data.token);
+  //     console.log("res",response)
+  //     if (response.status === 200) {
+  //       router.push('/dashboard');
+  //       toast.success('Bạn đã đăng nhập. Chào mừng đã vào cổng');
+  //     } else {
+  //       toast.error("Error information login");
+  //     }
+  //   } catch (e) {
+  //     toast.error("Error information login response");
+  //   }
+  // }
+  const handleClick = () => {
+    router.push('/dashboard');
+  };
 
   const renderForm = (
     
