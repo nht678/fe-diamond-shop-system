@@ -12,7 +12,7 @@ import Typography from '@mui/material/Typography';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
 
-import { fetchAllJew} from 'src/_mock/jewellery';
+// import { fetchAllJew} from 'src/_mock/jewellery';
 
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
@@ -57,7 +57,8 @@ export default function JewelleryView() {
   }, [])
 
   const getJew = async () => {
-    const res = await fetchAllJew();
+    const res = await axios.get("http://localhost:5188/api/Jewelry/GetJewelries");
+    console.log("res",res)
     setJewList(res.data)
   }
 
@@ -204,11 +205,10 @@ export default function JewelleryView() {
                 onSelectAllClick={handleSelectAllClick}
                 headLabel={[
                   { id: 'name', label: 'Name' },
-                  { id: 'weight', label: 'Weight' },
-                  { id: 'price', label: 'Price' },
-                  { id: 'stoneCost', label: 'Gem Cost' },
+                  { id: 'type', label: 'Type' },
+                  { id: 'jewelryPrice', label: 'JewelryPrice' },
                   { id: 'laborCost', label: 'Labor Cost' },
-                  { id: 'status', label: 'Status' },
+                  { id: 'barcode', label: 'Barcode' },
                   { id: '' },
 
 
@@ -222,13 +222,18 @@ export default function JewelleryView() {
                       key={row.id}
                       id={row.id}
                       name={row.name}
-                      weight={row.weight}
-                      price={row.price}
+                      goldweight={row.materials[0].gold.goldQuantity}
+                      goldprice={row.materials[0].gold.goldPrice}
+                      goldType={row.materials[0].gold.goldType}
+                      gemType={row.materials[0].gem.gem}
+                      gemweight={row.materials[0].gem.gemQuantity}
+                      gemPrice={row.materials[0].gem.gemPrice}
+                      totalPrice={row.totalPrice}
+                      type={row.type}
+                      barcode={row.barcode}
+                      jewelryPrice={row.jewelryPrice}
                       gemCost={row.gemCost}
                       laborCost={row.laborCost}
-                      status={row.status}
-                      typeID={row.typeID}
-                      warrantyID={row.warrantyID}
                       selected={selected.indexOf(row.name) !== -1}
                       handleClick={(event) => handleClick(event, row.name)}
                       onDelete={() => deleteJewellery(row.id)} 
