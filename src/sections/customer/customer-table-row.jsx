@@ -111,10 +111,6 @@ export default function UserTableRow({
         <DialogContent>
           <Grid container spacing={2}>
             <Grid item xs={12}>
-              <Typography variant="h6">ID:</Typography>
-              <Typography>{CusID}</Typography>
-            </Grid>
-            <Grid item xs={12}>
               <Typography variant="h6">Name:</Typography>
               <Typography>{name}</Typography>
             </Grid>

@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import axios from 'axios';
-// import "bootstrap/dist/css/bootstrap.min.css";
 import { toast } from "react-toastify";
+import { jwtDecode } from 'jwt-decode';
+
 
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
@@ -42,7 +43,8 @@ export default function LoginView() {
   //   try {
   //     const response = await axios.post("http://localhost:5188/api/User/Login", { email, password });
   //     localStorage.setItem("TOKEN", response.data.token);
-  //     console.log("res",response)
+  //     const token = jwtDecode(response.data.token);
+  //     // localStorage.setItem("ROLE",role)
   //     if (response.status === 200) {
   //       router.push('/dashboard');
   //       toast.success('Bạn đã đăng nhập. Chào mừng đã vào cổng');
@@ -53,6 +55,7 @@ export default function LoginView() {
   //     toast.error("Error information login response");
   //   }
   // }
+
   const handleClick = () => {
     router.push('/dashboard');
   };

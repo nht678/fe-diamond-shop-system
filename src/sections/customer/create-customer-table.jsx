@@ -7,16 +7,20 @@ import TextField from '@mui/material/TextField';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
+import Radio from '@mui/material/Radio';
+import RadioGroup from '@mui/material/RadioGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormControl from '@mui/material/FormControl';
+import FormLabel from '@mui/material/FormLabel';
 
 
 function CustomerForm({ open, onClose, onSubmit }) {
     const initialFormState = {
-        CusId: '',
         name: '',
         address: '',
-        phoneNumber: '',
+        phone: '',
         point: '',
-        gender: '',
+        gender: 'female',
 
     };
 
@@ -77,16 +81,19 @@ function CustomerForm({ open, onClose, onSubmit }) {
                     onChange={handleChange}
                     InputProps={{ style: { marginBottom: 10 } }}
                 />
-                <TextField
-                    margin="dense"
-                    name="gender"
-                    label="Gender"
-                    value={formState.gender}
-                    type="text"
-                    fullWidth
-                    onChange={handleChange}
-                    InputProps={{ style: { marginBottom: 10 } }}
-                />
+                <FormControl>
+                    <FormLabel id="demo-row-radio-buttons-group-label">Gender</FormLabel>
+                    <RadioGroup
+                        row
+                        aria-labelledby="demo-row-radio-buttons-group-label"
+                        name="gender"
+                        value={formState.gender}
+                        onChange={handleChange}
+                    >
+                        <FormControlLabel value="female" control={<Radio />} label="Female" />
+                        <FormControlLabel value="male" control={<Radio />} label="Male" />
+                    </RadioGroup>
+                </FormControl>
             </DialogContent>
             <DialogActions>
                 <Button onClick={onClose}>Cancel</Button>

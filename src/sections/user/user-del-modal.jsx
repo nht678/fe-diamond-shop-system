@@ -4,7 +4,7 @@ import { Row, Col, Modal, Button } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faUser, faLock, faEnvelope, faTriangleExclamation} from '@fortawesome/free-solid-svg-icons'
 
-export default function DelModal({ show, handleClose, name, role, roleId, email, password, counterId, onDelete }) {
+export default function DelModal({ show, handleClose, fullName, role, email, password, onDelete }) {
 
 
   return (
@@ -17,7 +17,7 @@ export default function DelModal({ show, handleClose, name, role, roleId, email,
       <Row>
 
             <Col >
-            <p><FontAwesomeIcon icon={faUser} /><strong> &nbsp; Username: &nbsp; </strong> {name}</p>
+            <p><FontAwesomeIcon icon={faUser} /><strong> &nbsp; FullName: &nbsp; </strong> {fullName}</p>
             <p><FontAwesomeIcon icon={faLock}/> <strong> &nbsp; Password: &nbsp; </strong> {password}</p> <br/>
             <p> <strong> - &nbsp; Role: </strong>&nbsp; {role}</p>
             <p><FontAwesomeIcon icon={faEnvelope} /> &nbsp; Email: &nbsp;{email}</p>
@@ -41,12 +41,10 @@ export default function DelModal({ show, handleClose, name, role, roleId, email,
 DelModal.propTypes = {
   show: PropTypes.bool.isRequired,
   handleClose: PropTypes.func.isRequired,
-  name: PropTypes.string.isRequired,
+  fullName: PropTypes.string.isRequired,
   password: PropTypes.any.isRequired,
   email: PropTypes.any.isRequired,
   role: PropTypes.any.isRequired,
-  roleId: PropTypes.string.isRequired,
-  counterId: PropTypes.string.isRequired,
   onDelete: PropTypes.func.isRequired,
 
 };

@@ -29,6 +29,7 @@ import { emptyRows, applyFilter, getComparator } from '../utils';
 
 export default function PromotionView() {
   const [promotion, setPromotion] = useState([]);
+  console.log("promotion",promotion)
 
   const [page, setPage] = useState(0);
 
@@ -176,7 +177,6 @@ export default function PromotionView() {
                   .map((row,index) => (
                     <UserTableRow
                       key={row.id}
-                      autocrement={index}
                       promotionId={row.promotionId}
                       type={row.type}
                       approveManager={row.approveManager}

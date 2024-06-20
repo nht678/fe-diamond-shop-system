@@ -1,8 +1,9 @@
 import PropTypes from 'prop-types';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
 import { Row, Col, Modal, Button } from 'react-bootstrap';
+
 
 import Radio from '@mui/material/Radio';
 import TextField from '@mui/material/TextField';
@@ -11,17 +12,27 @@ import RadioGroup from '@mui/material/RadioGroup';
 import FormControl from '@mui/material/FormControl';
 import FormControlLabel from '@mui/material/FormControlLabel';
 
-export default function EditModal({ show, handleClose, name, role, roleId, email, password, counterId, onUpdate }) {
+export default function EditModal({ show, handleClose, fullName, roleId, email, password,gender, onUpdate }) {
 
 
     const [formData, setFormData] = useState({
-        username: name,
-        role,
+        fullName,
         roleId,
         email,
         password,
-        counterId,
+        gender
+
     });
+    useEffect(() => {
+        setFormData({
+            fullName,
+            roleId,
+            email,
+            password,
+            gender
+        });
+    }, [fullName, roleId, email, password,gender]);
+    console.log(gender)
 
 
 
@@ -62,14 +73,14 @@ export default function EditModal({ show, handleClose, name, role, roleId, email
             </style>
             <Modal size="lg" show={show} onHide={handleClose} aria-labelledby="contained-modal-title-vcenter" centered>
                 <Modal.Header closeButton>
-                    <Modal.Title>Add New User</Modal.Title>
+                    <Modal.Title>Update New User</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <Form onSubmit={handleSubmit}>
                         <Row>
                             <Col md={6} className="me-5 ms-3"  >
                                 <InputGroup className="mb-4 mt-4">
-                                    <TextField id="fullWidth" label="Username" variant="outlined" name='username' value={formData.username} required onChange={handleChange} sx={{
+                                    <TextField id="fullWidth" label="fullName" variant="outlined" name='fullName' value={formData.fullName} required onChange={handleChange} sx={{
                                         width: 300,
 
                                         '& .MuiOutlinedInput-root': {
@@ -108,32 +119,6 @@ export default function EditModal({ show, handleClose, name, role, roleId, email
                                 </InputGroup>
 
                             </Col>
-                            {/* <Col md={5}>
-                                <InputGroup className="mb-4 mt-3 ">
-                                    <FormControl fullWidth sx={{ m: 1 }} variant="standard">
-                                        <InputLabel htmlFor="standard-adornment-amount">Role ID</InputLabel>
-                                        <Input
-                                            id="standard-adornment-amount"
-                                            name='roleId'
-                                            value={formData.roleId} onChange={handleChange}
-                                        />
-                                    </FormControl>
-                                </InputGroup>
-
-                                <InputGroup className="mb-4 mt-3 ">
-                                    <FormControl fullWidth sx={{ m: 1 }} variant="standard">
-                                        <InputLabel htmlFor="standard-adornment-amount">Counter ID</InputLabel>
-                                        <Input
-                                            id="standard-adornment-amount"
-                                            name='counterId'
-                                            value={formData.counterId} onChange={handleChange}
-                                        />
-                                    </FormControl>
-                                </InputGroup>
-
-
-                            </Col> */}
-
 
                             <Col md={6}>
                                 <InputGroup className="mb-4 mt-3 ms-5">
@@ -141,14 +126,32 @@ export default function EditModal({ show, handleClose, name, role, roleId, email
                                         <FormLabel id="demo-controlled-radio-buttons-group">Role</FormLabel>
                                         <RadioGroup
                                             aria-labelledby="demo-controlled-radio-buttons-group"
-                                            name='role'
-                                            value={formData.role}
+                                            name='roleId'
+                                            value={formData.roleId}
                                             onChange={handleChange}
                                             style={{ flexDirection: 'row' }}
                                         >
-                                            <FormControlLabel value="Admin" control={<Radio />} label="Admin" />
-                                            <FormControlLabel value="Staff" control={<Radio />} label="Staff" />
-                                            <FormControlLabel value="Manager" control={<Radio />} label="Manager" />
+                                            <FormControlLabel value="1" control={<Radio />} label="Admin" />
+                                            <FormControlLabel value="2" control={<Radio />} label="Manager" />
+                                            <FormControlLabel value="3" control={<Radio />} label="Staff" />
+                                        </RadioGroup>
+                                    </FormControl>
+                                </InputGroup>
+                            </Col>
+                            <Col md={12}>
+                                <InputGroup className="mb-4 mt-3 ms-5">
+                                    <FormControl>
+                                        <FormLabel id="demo-row-radio-buttons-group-label">Gender</FormLabel>
+                                        <RadioGroup
+                                            row
+                                            aria-labelledby="demo-row-radio-buttons-group-label"
+                                            name="gender"
+                                            value={formData.gender}
+                                            onChange={handleChange}
+
+                                        >
+                                            <FormControlLabel value="female" control={<Radio />} label="Female" />
+                                            <FormControlLabel value="male" control={<Radio />} label="Male" />
                                         </RadioGroup>
                                     </FormControl>
                                 </InputGroup>
@@ -174,13 +177,11 @@ export default function EditModal({ show, handleClose, name, role, roleId, email
 EditModal.propTypes = {
     show: PropTypes.bool.isRequired,
     handleClose: PropTypes.func.isRequired,
-    name: PropTypes.string.isRequired,
+    fullName: PropTypes.string.isRequired,
     password: PropTypes.any.isRequired,
     email: PropTypes.any.isRequired,
-    role: PropTypes.any.isRequired,
     roleId: PropTypes.string.isRequired,
-    counterId: PropTypes.string.isRequired,
     onUpdate: PropTypes.func.isRequired,
-
+    gender: PropTypes
 
 };

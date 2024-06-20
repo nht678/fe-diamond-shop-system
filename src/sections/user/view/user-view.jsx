@@ -38,8 +38,9 @@ export default function UserPage() {
   const [page, setPage] = useState(0);
   const [order, setOrder] = useState('asc');
   const [selected, setSelected] = useState([]);
-  const [orderBy, setOrderBy] = useState('username');
+  const [orderBy, setOrderBy] = useState('name');
   const [filterName, setFilterName] = useState('');
+  console.log("filterName",filterName)
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
   useEffect(() => {
@@ -56,7 +57,7 @@ export default function UserPage() {
 
   const deleteUser = async (id) => {
     try {
-      await axios.delete(`https://663c446717145c4d8c359da1.mockapi.io/api/user/users/${id}`);
+      await axios.delete(`http://localhost:5188/api/User/DeleteUser/${id}`);
       setUserList(userList.filter((item) => item.id !== id));
       toast.success('Delete user successful !', {
         position: "bottom-right",
@@ -71,23 +72,24 @@ export default function UserPage() {
 
   const createUser = async (newItem) => {
     try {
-      const response = await axios.post('https://663c446717145c4d8c359da1.mockapi.io/api/user/users', newItem);
-      setUserList([...userList, response.data]);
+      const response = await axios.post('http://localhost:5188/api/User/AddUser', newItem);
+      // setUserList([...userList, response.data]);
       handleClose();
       toast.success('Create user successful !', {
         position: "bottom-right",
         theme: "colored",
       });
+      getUser();
     } catch (error) {
       console.error('There was an error creating:', error);
     }
-  };
+  }
+
 
   const updateUser = async (id, updatedData) => {
     try {
-      const response = await axios.put(`https://663c446717145c4d8c359da1.mockapi.io/api/user/users/${id}`, updatedData);
+      const response = await axios.put(`http://localhost:5188/api/User/UpdateUser/${id}`, updatedData);
       const updatedUser = response.data;
-  
       setUserList(prevData =>
         prevData.map(item => (item.id === id ? updatedUser : item))
       );
@@ -111,19 +113,19 @@ export default function UserPage() {
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelecteds = userList.map((user) => user.username);
+      const newSelecteds = userList.map((user) => user.name);
       setSelected(newSelecteds);
       return;
     }
     setSelected([]);
   };
 
-  const handleClick = (event, username) => {
-    const selectedIndex = selected.indexOf(username);
+  const handleClick = (event, name) => {
+    const selectedIndex = selected.indexOf(name);
     let newSelected = [];
 
     if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selected, username);
+      newSelected = newSelected.concat(selected, name);
     } else if (selectedIndex === 0) {
       newSelected = newSelected.concat(selected.slice(1));
     } else if (selectedIndex === selected.length - 1) {
@@ -159,7 +161,7 @@ export default function UserPage() {
   });
 
   const notFound = !dataFiltered.length && !!filterName;
-
+  
   return (
     <Container>
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
@@ -189,7 +191,7 @@ export default function UserPage() {
                 onRequestSort={handleSort}
                 onSelectAllClick={handleSelectAllClick}
                 headLabel={[
-                  { id: 'username', label: 'Username' },
+                  { id: 'name', label: 'name' },
                   { id: 'email', label: 'Email' },
                   { id: 'role', label: 'Role' },
                   { id: '' },
@@ -200,16 +202,18 @@ export default function UserPage() {
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((user) => (
                     <UserTableRow
-                      key={user.username}
-                      id={user.id}
+                      key={user.userId}
+                      id={user.userId}
                       password={user.password}
-                      username={user.username}
+                      fullName={user.fullName}
                       email={user.email}
                       role={user.role.roleName}
-                      selected={selected.indexOf(user.username) !== -1}
-                      handleClick={(event) => handleClick(event, user.username)}
-                      onDelete={() => deleteUser(user.id)} 
+                      roleId={user.role.roleId}
+                      selected={selected.indexOf(user.id) !== -1}
+                      handleClick={(event) => handleClick(event, user.id)}
+                      onDelete={() => deleteUser(user.userId)} 
                       onUpdate={updateUser}
+                      gender={user.gender}
                     />
                   ))}
 

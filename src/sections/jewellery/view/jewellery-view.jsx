@@ -12,7 +12,7 @@ import Typography from '@mui/material/Typography';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
 
-import { fetchAllJew} from 'src/_mock/jewellery';
+// import { fetchAllJew} from 'src/_mock/jewellery';
 
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
@@ -51,67 +51,64 @@ export default function JewelleryView() {
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
   useEffect(() => {
-
     getJew();
-
-  }, [])
-
+  }, [jewList]);
+  
   const getJew = async () => {
-    const res = await fetchAllJew();
-    setJewList(res.data)
-  }
-
-  console.log(jewList)
-
-  const deleteJewellery = async (id) => {
     try {
-      await axios.delete(`https://663c446717145c4d8c359da1.mockapi.io/api/user/jewellery/${id}`);
-      setJewList(jewList.filter((item) => item.id !== id));
-      toast.success('Delete successful !', {
-        position: "bottom-right",
-        theme: "colored",
-        });
-
-      console.log('Delete successful');
+      const response = await axios.get("http://localhost:5188/api/Jewelry/GetJewelries");
+      setJewList(response.data); // Cập nhật state với dữ liệu từ server
     } catch (error) {
-      console.error('There was an error deleting the item:', error);
+      console.error('Error fetching jewellery:', error);
     }
   };
+  
 
- const createJew = async (newItem) => {
+  const createJew = async (newItem) => {
     try {
-      const response = await axios.post('https://663c446717145c4d8c359da1.mockapi.io/api/user/jewellery', newItem);
-      setJewList([...jewList, response.data]);
+      const response = await axios.post('http://localhost:5188/api/Jewelry/CreateJewelry', newItem);
+      setJewList([...jewList, newItem]); // Thêm newItem vào danh sách hiện tại
       handleClose();
       toast.success('Create successful !', {
         position: "bottom-right",
         theme: "colored",
-        });
+      });
     } catch (error) {
       console.error('There was an error creating the item:', error);
     }
   };
-
+  
+  const deleteJewellery = async (id) => {
+    try {
+      await axios.delete(`http://localhost:5188/api/Jewelry/DeleteJewelry/${id}`);
+      setJewList(jewList.filter((item) => item.id !== id)); // Loại bỏ phần tử đã xóa khỏi danh sách hiện tại
+      toast.success('Delete successful !', {
+        position: "bottom-right",
+        theme: "colored",
+      });
+    } catch (error) {
+      console.error('There was an error deleting the item:', error);
+    }
+  };
   const updateJew = async (id, updatedData) => {
     try {
-      const response = await axios.put(`https://663c446717145c4d8c359da1.mockapi.io/api/user/jewellery/${id}`, updatedData);
-      const updatedJewellery = response.data;
-  
-      // Update the state with the new data
+      const response = await axios.put(`http://localhost:5188/api/Jewelry/UpdateJewelry/${id}`, updatedData);
+      // Cập nhật state với dữ liệu mới
       setJewList(prevData =>
-        prevData.map(item => (item.id === id ? updatedJewellery : item))
+        prevData.map(item => (item.id === id ? updatedData : item))
       );
+  
       toast.success('Update successful !', {
         position: "bottom-right",
         theme: "colored",
-        });
+      });
   
-      return updatedJewellery;
     } catch (error) {
       console.error('Error updating jewellery:', error);
       throw error;
     }
   };
+  
   
 
 
@@ -204,11 +201,10 @@ export default function JewelleryView() {
                 onSelectAllClick={handleSelectAllClick}
                 headLabel={[
                   { id: 'name', label: 'Name' },
-                  { id: 'weight', label: 'Weight' },
-                  { id: 'price', label: 'Price' },
-                  { id: 'stoneCost', label: 'Gem Cost' },
+                  { id: 'type', label: 'Type' },
+                  { id: 'jewelryPrice', label: 'JewelryPrice' },
                   { id: 'laborCost', label: 'Labor Cost' },
-                  { id: 'status', label: 'Status' },
+                  { id: 'barcode', label: 'Barcode' },
                   { id: '' },
 
 
@@ -219,16 +215,21 @@ export default function JewelleryView() {
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((row) => (
                     <UserTableRow
-                      key={row.id}
-                      id={row.id}
+                      key={row.jewelryId}
+                      id={row.jewelryId}
                       name={row.name}
-                      weight={row.weight}
-                      price={row.price}
+                      goldweight={row.materials && row.materials.length > 0 && row.materials[0].gold ? row.materials[0].gold.goldQuantity : ''}
+                      goldprice={row.materials && row.materials.length > 0 && row.materials[0].gold ? row.materials[0].gold.goldPrice : ''}
+                      goldType={row.materials && row.materials.length > 0 && row.materials[0].gold ? row.materials[0].gold.goldType : ''}
+                      gemType={row.materials && row.materials.length > 0 && row.materials[0].gem ? row.materials[0].gem.gem : ''}
+                      gemweight={row.materials && row.materials.length > 0 && row.materials[0].gem ? row.materials[0].gem.gemQuantity : ''}
+                      gemPrice={row.materials && row.materials.length > 0 && row.materials[0].gem ? row.materials[0].gem.gemPrice : ''}
+                      totalPrice={row.totalPrice}
+                      type={row.type}
+                      barcode={row.barcode}
+                      jewelryPrice={row.jewelryPrice}
                       gemCost={row.gemCost}
                       laborCost={row.laborCost}
-                      status={row.status}
-                      typeID={row.typeID}
-                      warrantyID={row.warrantyID}
                       selected={selected.indexOf(row.name) !== -1}
                       handleClick={(event) => handleClick(event, row.name)}
                       onDelete={() => deleteJewellery(row.id)} 

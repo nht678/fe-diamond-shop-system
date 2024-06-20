@@ -59,4 +59,5 @@ DelModal.propTypes = {
     typeID: PropTypes.string.isRequired,
     warrantyID: PropTypes.string.isRequired,
     onDelete: PropTypes.func.isRequired,
+
   };

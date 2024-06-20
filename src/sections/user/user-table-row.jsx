@@ -23,8 +23,7 @@ import EditModal from './user-edit-modal';
 export default function UserTableRow({
   id,
   selected,
-  username,
-  counterId,
+  fullName,
   role,
   email,
   handleClick,
@@ -32,7 +31,10 @@ export default function UserTableRow({
   password,
   onDelete,
   onUpdate,
+  gender,
+
 }) {
+  console.log("id",id)
 
   const [open, setOpen] = useState(null);
   const [showDel, setShowDel] = useState(false);
@@ -68,7 +70,7 @@ export default function UserTableRow({
         <TableCell component="th" scope="row" padding="none">
           <Stack direction="row" alignItems="center" spacing={2}>
             <Typography variant="subtitle2" noWrap>
-              {username}
+              {fullName}
             </Typography>
           </Stack>
         </TableCell>
@@ -110,11 +112,11 @@ export default function UserTableRow({
         </MenuItem>
       </Popover>
 
-      <DelModal show={showDel} handleClose={handleCloseDel} name={username} roleId={roleId} role={role} email={email} password={password} counterId={counterId} onDelete={onDelete}/>
+      <DelModal show={showDel} handleClose={handleCloseDel} fullName={fullName} roleId={roleId}  email={email} password={password} onDelete={onDelete} role={role}/>
 
-      <InfoModal show={show} handleClose={handleClose} name={username} roleId={roleId} role={role} email={email} password={password} counterId={counterId}  />
+      <InfoModal show={show} handleClose={handleClose} fullName={fullName} roleId={roleId}  email={email} password={password} role={role} />
 
-      <EditModal show={showEd} handleClose={handleCloseEd}  name={username} roleId={roleId} role={role} email={email} password={password} counterId={counterId} onUpdate={(updatedData) => onUpdate(id, updatedData)} />
+      <EditModal show={showEd} handleClose={handleCloseEd}  fullName={fullName} roleId={roleId} email={email} password={password} role={role} gender={gender}  onUpdate={(updatedData) => onUpdate(id, updatedData)} />
     </>
   );
 }
@@ -122,13 +124,13 @@ export default function UserTableRow({
 UserTableRow.propTypes = {
   id: PropTypes.any,
   roleId: PropTypes.any,
-  counterId: PropTypes.any,
   handleClick: PropTypes.func,
   email: PropTypes.any,
-  username: PropTypes.any,
-  role: PropTypes.any,
+  role: PropTypes.string,
+  fullName: PropTypes.any,
   selected: PropTypes.any,
   password: PropTypes.any,
   onDelete: PropTypes.func,
   onUpdate: PropTypes.func,
+  gender: PropTypes.string
 };
