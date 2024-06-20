@@ -146,7 +146,7 @@ export default function CustomerPage() {
   };
 
   const handleNewCustomerClick = (newCustomerData) => {
-    // addCustomer(newCustomerData);
+    const res = axios.post("http://localhost:5188/api/Customer/CreateCustomer", newCustomerData);
     setShowCustomerForm(false);
   };
 

@@ -8,26 +8,25 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 
-
 function PromotionEditForm({ open, onClose, onSubmit, promotion }) {
   const [formState, setFormState] = React.useState({
-    // promotionId: promotion ? promotion.promotionId : '',
     type: promotion ? promotion.type : '',
     discountRate: promotion ? promotion.discountRate : '',
-    startDate: promotion ? promotion.startDate : '',
-    endDate: promotion ? promotion.endDate : '',
+    startDate: promotion.startDate ? new Date(promotion.startDate).toISOString().split('T')[0] : '',
+    endDate:promotion.endDate ? new Date(promotion.endDate).toISOString().split('T')[0] : '',
     approveManager: promotion ? promotion.approveManager : '',
     description: promotion ? promotion.description : '',
   });
 
+  console.log('promotion', promotion);
+  console.log('formState', formState);
   React.useEffect(() => {
     if (promotion) {
       setFormState({
-        // promotionId: promotion.promotionId,
         type: promotion.type,
         discountRate: promotion.discountRate,
-        startDate: promotion.startDate,
-        endDate: promotion.endDate,
+        startDate: promotion.startDate ? new Date(promotion.startDate).toISOString().split('T')[0] : '',
+        endDate: promotion.endDate ? new Date(promotion.endDate).toISOString().split('T')[0] : '',
         approveManager: promotion.approveManager,
         description: promotion.description,
       });
@@ -48,16 +47,6 @@ function PromotionEditForm({ open, onClose, onSubmit, promotion }) {
     <Dialog open={open} onClose={onClose} aria-labelledby="form-dialog-title">
       <DialogTitle id="form-dialog-title">Edit Promotion</DialogTitle>
       <DialogContent>
-        {/* <TextField
-          autoFocus
-          margin="dense"
-          name="promotionId"
-          label="Promotion ID"
-          type="text"
-          fullWidth
-          onChange={handleChange}
-          value={formState.promotionId}
-        /> */}
         <TextField
           margin="dense"
           name="type"
@@ -81,7 +70,7 @@ function PromotionEditForm({ open, onClose, onSubmit, promotion }) {
         <TextField
           margin="dense"
           name="startDate"
-          label=""
+          label="Start Date"
           value={formState.startDate}
           type="date"
           fullWidth
@@ -92,7 +81,7 @@ function PromotionEditForm({ open, onClose, onSubmit, promotion }) {
           margin="dense"
           name="endDate"
           value={formState.endDate}
-          label=""
+          label="End Date"
           type="date"
           fullWidth
           onChange={handleChange}
@@ -135,11 +124,11 @@ PromotionEditForm.propTypes = {
     promotionId: PropTypes.any,
     type: PropTypes.string,
     discountRate: PropTypes.number,
-    startDate: PropTypes.instanceOf(Date),
-    endDate: PropTypes.instanceOf(Date),
+    startDate: PropTypes.string,
+    endDate: PropTypes.string,
     approveManager: PropTypes.string,
     description: PropTypes.string,
   }),
 };
 
-export default PromotionEditForm; 
+export default PromotionEditForm;

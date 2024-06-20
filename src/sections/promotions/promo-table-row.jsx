@@ -27,7 +27,6 @@ import PromotionDeleteForm from './promo-del-modal';
 // ----------------------------------------------------------------------
 
 export default function UserTableRow({
-  autocrement,
   selected,
   promotionId,
   type,
@@ -68,14 +67,18 @@ export default function UserTableRow({
     setEditOpen(false);
   };
 
-  const onSubmit = (updatedData) => {
-    const res = axios.put(`http://localhost:5188/api/Promotion/UpdatePromotion?id=${promotionId}`,updatedData)
-    if (res === 1){
+  const onSubmit = async(updatedData) => {
+   try{
+    const res = await axios.put(`http://localhost:5188/api/Promotion/UpdatePromotion?${promotionId}`,updatedData)
+    if (res === 0){
       toast.success("Edit promotion success");
     }else{
       toast.error('Edit promotion fail')
     }
     handleEditClose();
+   }catch(e){
+    toast.error('Error response')
+   }
   };
 
   const handleDeleteOpen = () => {
@@ -88,15 +91,20 @@ export default function UserTableRow({
     handleCloseMenu();
   };
 
-  const onDelete = async(promotion) => {
-    const res = await axios.delete(`http://localhost:5188/api/Promotion/DeletePromotion?id=${promotion}`);
-    if(res.data === 0 || res.data === 1){
-      toast.success("Delete success");
-    }else{
-      toast.error("Delete fail")
+  const onDelete = async() => {
+    try{
+      const res = await axios.delete(`http://localhost:5188/api/Promotion/DeletePromotion?id=${promotionId}`);
+      if(res.data === 1 ){
+        toast.success("Delete success");
+      }else{
+        toast.error("Delete fail")
+      }
+      handleDeleteClose();
+      // window.location.reload();
+    }catch(e){
+      toast.error("error response")
     }
-    handleDeleteClose();
-    // window.location.reload();
+   
   };
 
 
@@ -107,7 +115,7 @@ export default function UserTableRow({
         <TableCell padding="checkbox">
           <Checkbox disableRipple checked={selected} onChange={handleClick} />
         </TableCell>
-        <TableCell>{autocrement}</TableCell>
+        
         <TableCell>{type}</TableCell>
         <TableCell>{`${discountRate}%`}</TableCell>
         <TableCell>{startDate}</TableCell>
@@ -204,7 +212,7 @@ export default function UserTableRow({
 }
 
 UserTableRow.propTypes = {
-  autocrement:PropTypes.number,
+ 
   promotionId: PropTypes.any,
   type: PropTypes.string,
   approveManager: PropTypes.string,

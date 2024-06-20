@@ -4,20 +4,20 @@ import { Row, Col, Modal, Button } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faUser, faLock, faEnvelope} from '@fortawesome/free-solid-svg-icons'
 
-export default function InfoModal({ show, handleClose, name, role, roleId, email, password, counterId }) {
+export default function InfoModal({ show, handleClose, fullName, role, email, password, }) {
 
 
   return (
     <Modal size="md" show={show} onHide={handleClose} aria-labelledby="contained-modal-title-vcenter" centered>
       <Modal.Header closeButton>
-        <Modal.Title>{name}</Modal.Title>
+        <Modal.Title>{fullName}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         
       <Row>
 
             <Col >
-            <p><FontAwesomeIcon icon={faUser} /><strong> &nbsp; Username: &nbsp; </strong> {name}</p>
+            <p><FontAwesomeIcon icon={faUser} /><strong> &nbsp; fullName: &nbsp; </strong> {fullName}</p>
             <p><FontAwesomeIcon icon={faLock}/> <strong> &nbsp; Password: &nbsp; </strong> {password}</p> <br/>
             <p> <strong> - &nbsp; Role: </strong>&nbsp; {role}</p>
             <p><FontAwesomeIcon icon={faEnvelope} /> &nbsp; Email: &nbsp;{email}</p>
@@ -38,12 +38,10 @@ export default function InfoModal({ show, handleClose, name, role, roleId, email
 InfoModal.propTypes = {
   show: PropTypes.bool.isRequired,
   handleClose: PropTypes.func.isRequired,
-  name: PropTypes.string.isRequired,
+  fullName: PropTypes.string.isRequired,
   password: PropTypes.any.isRequired,
   email: PropTypes.any.isRequired,
   role: PropTypes.any.isRequired,
-  roleId: PropTypes.string.isRequired,
-  counterId: PropTypes.string.isRequired,
 };
 
 

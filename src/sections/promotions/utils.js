@@ -47,6 +47,7 @@ export function applyFilter({ inputData, comparator, filterName }) {
   inputData = stabilizedThis.map((el) => el[0]);
 
   if (filterName) {
+    console.log("inputdata", inputData)
     inputData = inputData.filter(
       (promotion) => promotion.type.toLowerCase().indexOf(filterName.toLowerCase()) !== -1
     );
