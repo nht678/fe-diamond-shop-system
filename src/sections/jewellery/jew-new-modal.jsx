@@ -9,42 +9,86 @@ import { Autocomplete } from '@mui/material';
 import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
 import FormControl from '@mui/material/FormControl';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import Barcode from 'react-barcode';
+import './jew-modal.css';
+import { toast } from 'react-toastify';
 
 export default function NewModal({ show, handleClose, createJew }) {
     const [goldtype, setGoldtype] = useState([]);
     const [gemtype, setGemtype] = useState([]);
     const [jewelleryType, setJewelleryType] = useState([]);
+    const [imageName, setImageName] = useState('');
+    const [imagePreviewUrl, setImagePreviewUrl] = useState('');
 
     const formik = useFormik({
         initialValues: {
             jewelryTypeId: '',
             name: '',
+            code: '',
             jewelryMaterial: {
                 gemId: '',
                 goldId: '',
                 goldQuantity: 50,
-                gemQuantity: 50
+                gemQuantity: 50,
             },
             barcode: '',
-            laborCost: ''
+            laborCost: '',
+            warrantyTime: '',
         },
-        onSubmit: (values) => {
-            createJew(values);
-            formik.resetForm();
-            handleClose();
+        onSubmit: async (values) => {
+            console.log(values);
+            values.previewImage = imageName;
+            const res = await createJew(values);
+            if (res.status === 200) {
+                toast.success('Jewellery added successfully');
+                formik.resetForm();
+                handleClose();
+            }
+        },
+        validate: (values) => {
+            const errors = {};
+            const validateFields = [
+                'name',
+                'code',
+                'laborCost',
+                'barcode',
+                'jewelryTypeId',
+            ];
+            validateFields.forEach((field) => {
+                if (!values[field]) {
+                    errors[field] = 'Required';
+                }
+            });
+            // nếu trống gemId hoặc goldId thì báo lỗi
+            if (!values.jewelryMaterial.gemId) {
+                errors['jewelryMaterial.gemId'] = 'Required';
+            }
+            if (!values.jewelryMaterial.goldId) {
+                errors['jewelryMaterial.goldId'] = 'Required';
+            }
+            return errors;
         },
     });
 
     useEffect(() => {
-        getGemPrices();
-        getGoldPrices();
-        getJewelleryTypes();
+        const fetchData = async () => {
+            try {
+                await Promise.all([getGemPrices(), getGoldPrices(), getJewelleryTypes()]);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        };
+        fetchData();
     }, []);
 
     const getGoldPrices = async () => {
         try {
             const response = await axios.get('http://localhost:5188/api/Price/GetGoldPrices');
-            const goldOptions = response.data.map((item) => ({ label: item.type, value: item.goldId }));
+            const goldOptions = response.data.map((item) => ({
+                label: item.type,
+                value: item.goldId,
+            }));
             setGoldtype(goldOptions);
         } catch (error) {
             console.error('Error fetching gold prices:', error);
@@ -54,7 +98,10 @@ export default function NewModal({ show, handleClose, createJew }) {
     const getGemPrices = async () => {
         try {
             const response = await axios.get('http://localhost:5188/api/Price/GetGemPrices');
-            const gemOptions = response.data.map((item) => ({ label: item.type, value: item.gemId }));
+            const gemOptions = response.data.map((item) => ({
+                label: item.type,
+                value: item.gemId,
+            }));
             setGemtype(gemOptions);
         } catch (error) {
             console.error('Error fetching gem prices:', error);
@@ -63,24 +110,125 @@ export default function NewModal({ show, handleClose, createJew }) {
 
     const getJewelleryTypes = async () => {
         try {
-            const response = await axios.get('http://localhost:5188/api/JewelryType/GetJewelryTypes');
-            const jewelryOptions = response.data.map((item) => ({ label: item.name, value: item.jewelryTypeId }));
+            const response = await axios.get(
+                'http://localhost:5188/api/JewelryType/GetJewelryTypes'
+            );
+            const jewelryOptions = response.data.map((item) => ({
+                label: item.name,
+                value: item.jewelryTypeId,
+            }));
             setJewelleryType(jewelryOptions);
         } catch (error) {
             console.error('Error fetching jewellery types:', error);
         }
     };
 
+    const handleImageUpload = async (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            const formData = new FormData();
+            formData.append('files', file);
+            formData.append('type', 0);
+            try {
+                const response = await axios.post('http://localhost:5188/api/File', formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                    },
+                });
+                if (response.data.data && response.data.data.length > 0) {
+                    const fileName = response.data.data[0];
+                    setImageName(fileName);
+                }
+
+                // Generate a preview URL
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                    setImagePreviewUrl(reader.result);
+                };
+                reader.readAsDataURL(file);
+            } catch (error) {
+                console.error('Error uploading image:', error);
+            }
+        }
+    };
+
+    // Replace non-ASCII characters from the barcode
+    const handleBarcodeChange = (event) => {
+        // eslint-disable-next-line no-control-regex
+        const value = event.target.value.replace(/[^\x00-\x7F]/g, '');
+        formik.setFieldValue('barcode', value);
+    };
+
     return (
-        <Modal size="lg" show={show} onHide={handleClose}>
+        <Modal show={show} onHide={handleClose} size="lg" centered>
             <Modal.Header closeButton>
                 <Modal.Title>Add New Jewellery</Modal.Title>
             </Modal.Header>
             <Modal.Body>
                 <Form onSubmit={formik.handleSubmit}>
                     <Row>
-                        <Col md={6} className="">
-                            <InputGroup className="mb-4 mt-4">
+                        {/* Left Column */}
+                        <Col md={6}>
+                            {/* Upload Image */}
+                            <InputGroup className="mb-4 mt-3">
+                                <FormControl fullWidth>
+                                    <Form.Label>Upload Image</Form.Label>
+                                    <Form.Control type="file" onChange={handleImageUpload} />
+                                    {imagePreviewUrl && (
+                                        <img
+                                            src={imagePreviewUrl}
+                                            alt="Preview"
+                                            style={{ marginTop: '10px', maxWidth: '300px' }}
+                                        />
+                                    )}
+                                </FormControl>
+                            </InputGroup>
+                        </Col>
+                        {/* Right Column */}
+                        <Col md={6}>
+                            {/* Barcode */}
+                            <Col md={6}>
+                                {formik.values.barcode && (
+                                    <div>
+                                        <Barcode value={formik.values.barcode} height={30} />
+                                    </div>
+                                )}
+                                <InputGroup className="mb-4 mt-3">
+                                    <FormControl fullWidth>
+                                        <TextField
+                                            label="Barcode"
+                                            name="barcode"
+                                            value={formik.values.barcode}
+                                            onChange={handleBarcodeChange}
+                                            onBlur={formik.handleBlur}
+                                            sx={{ width: 300 }}
+                                        />
+                                    </FormControl>
+                                </InputGroup>
+                            </Col>
+                            {/* Jewellery Code */}
+                            <InputGroup className="mb-4 mt-3">
+                                <TextField
+                                    label="Jewellery Code"
+                                    variant="outlined"
+                                    name="code"
+                                    value={formik.values.code}
+                                    // onChange={formik.handleChange}
+                                    onChange={(e) => {
+                                        formik.setFieldValue('code', e.target.value.toUpperCase());
+                                        formik.setFieldValue(
+                                            'barcode',
+                                            e.target.value.toUpperCase()
+                                        );
+                                    }}
+                                    onBlur={formik.handleBlur}
+                                    error={formik.touched.code && Boolean(formik.errors.code)}
+                                    helperText={formik.touched.code && formik.errors.code}
+                                    sx={{ width: 300 }}
+                                />
+                            </InputGroup>
+                            {/* Jewellery Name */}
+                            <InputGroup className="mb-4 mt-3">
                                 <TextField
                                     label="Jewellery Name"
                                     variant="outlined"
@@ -90,58 +238,45 @@ export default function NewModal({ show, handleClose, createJew }) {
                                     onBlur={formik.handleBlur}
                                     error={formik.touched.name && Boolean(formik.errors.name)}
                                     helperText={formik.touched.name && formik.errors.name}
-                                    sx={{
-                                        width: 300,
-                                        '& .MuiOutlinedInput-root': {
-                                            '& fieldset': {
-                                                borderColor: 'gray',
-                                            },
-                                        },
-                                    }}
+                                    sx={{ width: 300 }}
                                 />
                             </InputGroup>
-                            <InputGroup className="mb-4 mt-4 ">
-                                <FormControl fullWidth variant="standard">
+                            {/* Labor Cost */}
+                            <InputGroup className="mb-4 mt-3">
+                                <FormControl fullWidth>
                                     <TextField
-                                        label="LaborCost"
+                                        label="Labor Cost"
                                         InputProps={{
-                                            startAdornment: <InputAdornment position="start">$</InputAdornment>,
+                                            startAdornment: (
+                                                <InputAdornment position="start">$</InputAdornment>
+                                            ),
                                         }}
                                         name="laborCost"
                                         value={formik.values.laborCost}
                                         onChange={formik.handleChange}
                                         onBlur={formik.handleBlur}
-                                        sx={{
-                                            maxWidth: 300,
-                                            '& .MuiOutlinedInput-root': {
-                                                '& fieldset': {
-                                                    borderColor: 'gray',
-                                                },
-                                            },
-                                        }}
+                                        type="number"
+                                        sx={{ width: 300 }}
                                     />
-                                </FormControl>
-                            </InputGroup>
-                        </Col>
-                        <Col md={5}>
-                            <InputGroup className="mb-4 mt-3 ms-5">
-                                <FormControl fullWidth variant="standard">
                                     <TextField
-                                        label="BarCost"
-                                        InputProps={{
-                                            startAdornment: <InputAdornment position="start">$</InputAdornment>,
-                                        }}
-                                        name="barcode"
-                                        value={formik.values.barcode}
+                                        className="mt-4"
+                                        label="Warranty Time"
+                                        name="warrantyTime"
+                                        value={formik.values.warrantyTime}
                                         onChange={formik.handleChange}
                                         onBlur={formik.handleBlur}
+                                        type="number"
+                                        sx={{ width: 300 }}
                                     />
                                 </FormControl>
                             </InputGroup>
                         </Col>
+                        {/* Gold Material */}
                         <Col md={6}>
-                            <InputGroup className="mb-4 mt-3 ms-3">
-                                <Form.Label>GoldWeight: {formik.values.jewelryMaterial.goldQuantity} grams</Form.Label>
+                            <InputGroup className="mb-4 mt-3">
+                                <Form.Label>
+                                    Gold Weight: {formik.values.jewelryMaterial.goldQuantity} grams
+                                </Form.Label>
                                 <Form.Range
                                     className="custom-range"
                                     name="jewelryMaterial.goldQuantity"
@@ -154,24 +289,38 @@ export default function NewModal({ show, handleClose, createJew }) {
                                     style={{ width: '100%' }}
                                 />
                             </InputGroup>
-                        </Col>
-                        <Col md={6}>
-                            <InputGroup className="mb-4 mt-3 ms-5">
+                            <InputGroup className="mb-4 mt-3">
                                 <Autocomplete
                                     disablePortal
-                                    id="combo-box-demo"
+                                    id="goldtype-autocomplete"
                                     options={goldtype}
-                                    onChange={(event, value) => formik.setFieldValue('jewelryMaterial.goldId', value ? value.value : '')}
-                                    value={goldtype.find(option => option.value === formik.values.jewelryMaterial.goldId) || null}
+                                    onChange={(event, value) =>
+                                        formik.setFieldValue(
+                                            'jewelryMaterial.goldId',
+                                            value ? value.value : ''
+                                        )
+                                    }
+                                    value={
+                                        goldtype.find(
+                                            (option) =>
+                                                option.value ===
+                                                formik.values.jewelryMaterial.goldId
+                                        ) || null
+                                    }
                                     onBlur={formik.handleBlur}
                                     sx={{ width: 300 }}
-                                    renderInput={(params) => <TextField {...params} label="GoldType" />}
+                                    renderInput={(params) => (
+                                        <TextField {...params} label="Gold Type" />
+                                    )}
                                 />
                             </InputGroup>
                         </Col>
+                        {/* Gem Material */}
                         <Col md={6}>
-                            <InputGroup className="mb-4 mt-3 ms-3">
-                                <Form.Label>GemWeight: {formik.values.jewelryMaterial.gemQuantity} grams</Form.Label>
+                            <InputGroup className="mb-4 mt-3">
+                                <Form.Label>
+                                    Gem Weight: {formik.values.jewelryMaterial.gemQuantity} grams
+                                </Form.Label>
                                 <Form.Range
                                     className="custom-range"
                                     name="jewelryMaterial.gemQuantity"
@@ -184,34 +333,51 @@ export default function NewModal({ show, handleClose, createJew }) {
                                     style={{ width: '100%' }}
                                 />
                             </InputGroup>
-                        </Col>
-                        <Col md={6}>
-                            <InputGroup className="mb-4 mt-3 ms-5">
+                            <InputGroup className="mb-4 mt-3">
                                 <Autocomplete
                                     disablePortal
-                                    id="combo-box-demo"
+                                    id="gemtype-autocomplete"
                                     options={gemtype}
-                                    onChange={(event, value) => formik.setFieldValue('jewelryMaterial.gemId', value ? value.value : '')}
-                                    value={gemtype.find(option => option.value === formik.values.jewelryMaterial.gemId) || null}
+                                    onChange={(event, value) =>
+                                        formik.setFieldValue(
+                                            'jewelryMaterial.gemId',
+                                            value ? value.value : ''
+                                        )
+                                    }
+                                    value={
+                                        gemtype.find(
+                                            (option) =>
+                                                option.value === formik.values.jewelryMaterial.gemId
+                                        ) || null
+                                    }
                                     onBlur={formik.handleBlur}
                                     sx={{ width: 300 }}
-                                    renderInput={(params) => <TextField {...params} label="GemType" />}
+                                    renderInput={(params) => (
+                                        <TextField {...params} label="Gem Type" />
+                                    )}
                                 />
                             </InputGroup>
                         </Col>
-                        <Col md={{ span: 6, offset: 6 }}>
-                            <InputGroup className="mb-4 mt-3 ms-5">
-                                <Autocomplete
-                                    disablePortal
-                                    id="combo-box-demo"
-                                    options={jewelleryType}
-                                    onChange={(event, value) => formik.setFieldValue('jewelryTypeId', value ? value.value : '')}
-                                    value={jewelleryType.find(option => option.value === formik.values.jewelryTypeId) || null}
-                                    onBlur={formik.handleBlur}
-                                    sx={{ width: 300 }}
-                                    renderInput={(params) => <TextField {...params} label="Type" />}
-                                />
-                            </InputGroup>
+                        {/* Jewellery Type */}
+                        <Col md={6} className="mb-4 mt-3">
+                            <Autocomplete
+                                disablePortal
+                                id="jewellerytype-autocomplete"
+                                options={jewelleryType}
+                                onChange={(event, value) =>
+                                    formik.setFieldValue('jewelryTypeId', value ? value.value : '')
+                                }
+                                value={
+                                    jewelleryType.find(
+                                        (option) => option.value === formik.values.jewelryTypeId
+                                    ) || null
+                                }
+                                onBlur={formik.handleBlur}
+                                sx={{ width: 300 }}
+                                renderInput={(params) => (
+                                    <TextField {...params} label="Jewellery Type" />
+                                )}
+                            />
                         </Col>
                     </Row>
                     <Modal.Footer>

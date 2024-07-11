@@ -34,13 +34,13 @@ export default function Header({ onOpenNav }) {
         </IconButton>
       )}
 
-      <Searchbar />
+      {/* <Searchbar /> */}
 
       <Box sx={{ flexGrow: 1 }} />
 
       <Stack direction="row" alignItems="center" spacing={1}>
-        <LanguagePopover />
-        <NotificationsPopover />
+        {/* <LanguagePopover /> */}
+        {/* <NotificationsPopover /> */}
         <AccountPopover />
       </Stack>
     </>
@@ -51,7 +51,7 @@ export default function Header({ onOpenNav }) {
       sx={{
         boxShadow: 'none',
         height: HEADER.H_MOBILE,
-        zIndex: theme.zIndex.appBar-50,
+        zIndex: theme.zIndex.appBar - 50,
         ...bgBlur({
           color: theme.palette.background.default,
         }),

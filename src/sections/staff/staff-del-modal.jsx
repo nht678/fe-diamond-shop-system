@@ -18,8 +18,8 @@ export default function StaffDeleteForm({ open, onClose, onDelete, staff }) {
             <Typography>{staff.staffId}</Typography>
           </Grid>
           <Grid item xs={12}>
-            <Typography variant="h6">Username:</Typography>
-            <Typography>{staff.userName}</Typography>
+            <Typography variant="h6">Code:</Typography>
+            <Typography>{staff.code}</Typography>
           </Grid>
           <Grid item xs={12}>
             <Typography variant="h6">Password:</Typography>
@@ -61,7 +61,7 @@ StaffDeleteForm.propTypes = {
   onDelete: PropTypes.func.isRequired,
   staff: PropTypes.shape({
     staffId: PropTypes.string,
-    userName: PropTypes.string,
+    code: PropTypes.string,
     email: PropTypes.string,
     roleId: PropTypes.string,
     counterId: PropTypes.number,
