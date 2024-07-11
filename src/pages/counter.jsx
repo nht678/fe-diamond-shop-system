@@ -1,17 +1,17 @@
 import { Helmet } from 'react-helmet-async';
 
-import { UserView } from 'src/sections/user/view';
+import { CounterView } from 'src/sections/counter/view';
 
 // ----------------------------------------------------------------------
 
-export default function UserPage() {
+export default function Counter() {
   return (
     <>
       <Helmet>
-        <title> User | Minimal UI </title>
+        <title> Counter</title>
       </Helmet>
 
-      <UserView />
+      <CounterView />
     </>
   );
 }
