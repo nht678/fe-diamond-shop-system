@@ -39,26 +39,35 @@ export default function LoginView() {
   const [showPassword, setShowPassword] = useState(false);
 
 // comment cho de dang nhap
-  // const handleClick = async() =>{
-  //   try {
-  //     const response = await axios.post("http://localhost:5188/api/User/Login", { email, password });
-  //     localStorage.setItem("TOKEN", response.data.token);
-  //     const token = jwtDecode(response.data.token);
-  //     // localStorage.setItem("ROLE",role)
-  //     if (response.status === 200) {
-  //       router.push('/dashboard');
-  //       toast.success('Bạn đã đăng nhập. Chào mừng đã vào cổng');
-  //     } else {
-  //       toast.error("Error information login");
-  //     }
-  //   } catch (e) {
-  //     toast.error("Error information login response");
-  //   }
-  // }
-
-  const handleClick = () => {
+const handleClick = async() =>{
+  try {
+    const response = await axios.post("http://localhost:5188/api/User/Login", { email, password });
+    localStorage.setItem("TOKEN", response.data.token);
+    const token = jwtDecode(response.data.token);
+    // Assuming role is derived from the decoded token, this line was missing its definition
+    const role = token.role; // Extract role from token
+    console.log(role);
+    localStorage.setItem("ROLE", role);
+  if (role === "1") {
     router.push('/dashboard');
-  };
+    window.location.reload();
+  }else if (role === "2") {
+    router.push('/dashboard');
+    window.location.reload();
+  } else if (role === "3") {
+    router.push('/sale');
+    window.location.reload();
+  }
+  } catch (e) {
+    toast.error("Error information login response");
+  }
+  
+}
+  
+
+  // const handleClick = () => {
+  //   router.push('/dashboard');
+  // };
 
   const renderForm = (
     

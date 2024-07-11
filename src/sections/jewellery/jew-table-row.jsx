@@ -14,146 +14,131 @@ import IconButton from '@mui/material/IconButton';
 // import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 
+// eslint-disable-next-line import/no-extraneous-dependencies
+import Barcode from 'react-barcode';
 import InfoModal from './jew-modal';
 import DelModal from './jew-del-modal';
 import EditModal from './jew-edit-modal';
 
-
-
-
 // ----------------------------------------------------------------------
 
-export default function UserTableRow({
-  id,
-  selected,
-  name,
-  goldweight,
-  goldprice,
-  laborCost,
-  handleClick,
-  onDelete,
-  onUpdate,
-  barcode,
-  jewelryPrice,
-  goldType,
-  gemType,
-  gemweight,
-  gemPrice,
-  totalPrice,
-  type
-}) {
-  const [open, setOpen] = useState(null);
-  const [showDel, setShowDel] = useState(false);
+export default function UserTableRow({ selected, onDelete, onUpdate, handleClick, row }) {
+    const [open, setOpen] = useState(null);
+    const [showDel, setShowDel] = useState(false);
 
-  const handleCloseDel = () => setShowDel(false);
-  const handleShowDel = () => setShowDel(true);
+    const handleCloseDel = () => setShowDel(false);
+    const handleShowDel = () => setShowDel(true);
 
-  const [showEd, setShowEd] = useState(false);
+    const [showEd, setShowEd] = useState(false);
 
-  const handleCloseEd = () => setShowEd(false);
-  const handleShowEd = () => setShowEd(true);
+    const handleCloseEd = () => setShowEd(false);
+    const handleShowEd = () => setShowEd(true);
 
-  const [show, setShow] = useState(false);
+    const [show, setShow] = useState(false);
 
-  const handleClose = () => setShow(false);
-  const handleShow = () => setShow(true);
+    const handleClose = () => setShow(false);
+    const handleShow = () => setShow(true);
 
+    const handleOpenMenu = (event) => {
+        setOpen(event.currentTarget);
+    };
 
+    const handleCloseMenu = () => {
+        setOpen(null);
+    };
 
-  const handleOpenMenu = (event) => {
-    setOpen(event.currentTarget);
-  };
+    return (
+        <>
+            <TableRow hover tabIndex={-1} role="checkbox" selected={selected}>
+                <TableCell padding="checkbox">
+                    <Checkbox disableRipple checked={selected} onChange={handleClick} />
+                </TableCell>
+                <TableCell>
+                    <img
+                        src={`http://localhost:5188/api/File/image/${row.previewImage}?type=1&width=50&height=50`}
+                        alt={row.name}
+                        style={{ width: 50, height: 50, borderRadius: 8 }}
+                    />
+                </TableCell>
+                <TableCell>{row.code}</TableCell>
+                <TableCell>{row.name}</TableCell>
+                <TableCell>{row.type}</TableCell>
+                <TableCell>{row.warrantyTime}</TableCell>
+                <TableCell>{row.jewelryPrice}</TableCell>
+                <TableCell>{row.laborCost}</TableCell>
+                <TableCell>
+                    <Barcode value={row.barcode} height={30} />
+                </TableCell>
 
+                <TableCell align="right">
+                    <Button variant="outline-primary" onClick={handleShow}>
+                        More Info
+                    </Button>
+                    <IconButton onClick={handleOpenMenu}>
+                        <Iconify icon="eva:more-vertical-fill" />
+                    </IconButton>
+                </TableCell>
+            </TableRow>
 
+            <Popover
+                open={!!open}
+                anchorEl={open}
+                onClose={handleCloseMenu}
+                anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
+                transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+                PaperProps={{
+                    sx: { width: 140 },
+                }}
+            >
+                <MenuItem
+                    onClick={() => {
+                        handleCloseMenu();
+                        handleShowEd();
+                    }}
+                >
+                    <Iconify icon="eva:edit-fill" sx={{ mr: 2 }} onClick={handleShowEd} />
+                    Edit
+                </MenuItem>
 
-  const handleCloseMenu = () => {
-    setOpen(null);
-  };
+                <MenuItem
+                    onClick={() => {
+                        handleCloseMenu();
+                        handleShowDel();
+                    }}
+                    sx={{ color: 'error.main' }}
+                >
+                    <Iconify icon="eva:trash-2-outline" sx={{ mr: 2 }} onClick={handleShowDel} />
+                    Delete
+                </MenuItem>
+            </Popover>
 
-  return (
-    <>
-      <TableRow hover tabIndex={-1} role="checkbox" selected={selected}>
-        <TableCell padding="checkbox">
-          <Checkbox disableRipple checked={selected} onChange={handleClick} />
-        </TableCell>
+            {show && <InfoModal show={show} handleClose={handleClose} row={row} />}
 
-        <TableCell component="th" scope="row" padding="none">
-          <Stack direction="row" alignItems="center" spacing={2}>
+            {showDel && (
+                <DelModal
+                    show={showDel}
+                    handleClose={handleCloseDel}
+                    row={row}
+                    onDelete={onDelete}
+                />
+            )}
 
-            <Typography variant="subtitle2" noWrap>
-              {name}
-            </Typography>
-          </Stack>
-        </TableCell>
-
-        <TableCell>{type}</TableCell>
-
-        <TableCell>{jewelryPrice}$</TableCell>
-
-        <TableCell>{laborCost}$</TableCell>
-
-        <TableCell>
-          {/* <Label color={(status === 'Out-stock' && 'error') || 'success'}>{status}</Label> */}
-          {barcode}
-        </TableCell>
-
-
-
-        <TableCell align="right">
-          <Button variant="outline-primary" onClick={handleShow}>More Info</Button>
-          <IconButton onClick={handleOpenMenu}>
-            <Iconify icon="eva:more-vertical-fill" />
-          </IconButton>
-        </TableCell>
-      </TableRow>
-
-      <Popover
-        open={!!open}
-        anchorEl={open}
-        onClose={handleCloseMenu}
-        anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
-        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-        PaperProps={{
-          sx: { width: 140 },
-        }}
-      >
-        <MenuItem onClick={() => { handleCloseMenu(); handleShowEd(); }}>
-          <Iconify icon="eva:edit-fill" sx={{ mr: 2 }} onClick={handleShowEd} />
-          Edit
-        </MenuItem>
-
-        <MenuItem onClick={() => { handleCloseMenu(); handleShowDel(); }} sx={{ color: 'error.main' }}>
-          <Iconify icon="eva:trash-2-outline" sx={{ mr: 2 }} onClick={handleShowDel} />
-          Delete
-        </MenuItem>
-      </Popover>
-
-      <InfoModal show={show} handleClose={handleClose} name={name} goldprice={goldprice} goldweight={goldweight} laborCost={laborCost} goldType={goldType}  gemType={gemType} gemweight={gemweight} gemPrice={gemPrice} jewelryPrice={jewelryPrice} barcode={barcode} totalPrice={totalPrice} />
-
-      <DelModal show={showDel} handleClose={handleCloseDel} name={name} goldprice={goldprice} goldweight={goldweight} laborCost={laborCost} goldType={goldType}  gemType={gemType} gemweight={gemweight} gemPrice={gemPrice} jewelryPrice={jewelryPrice} barcode={barcode} totalPrice={totalPrice} onDelete={onDelete} />
-
-      <EditModal show={showEd} handleClose={handleCloseEd} name={name} goldprice={goldprice} goldweight={goldweight} laborCost={laborCost} goldType={goldType}  gemType={gemType} gemweight={gemweight} gemPrice={gemPrice} jewelryPrice={jewelryPrice} barcode={barcode} totalPrice={totalPrice} onUpdate={(updatedData) => onUpdate(id, updatedData)} />
-
-    </>
-  );
+            {showEd && (
+                <EditModal
+                    show={showEd}
+                    handleClose={handleCloseEd}
+                    row={row}
+                    onUpdate={onUpdate}
+                />
+            )}
+        </>
+    );
 }
 
 UserTableRow.propTypes = {
-  id: PropTypes.any,
-  goldprice: PropTypes.any,
-  handleClick: PropTypes.func,
-  laborCost: PropTypes.any,
-  name: PropTypes.any,
-  goldweight: PropTypes.any,
-  selected: PropTypes.any,
-  onDelete: PropTypes.func,
-  onUpdate: PropTypes.func,
-  barcode: PropTypes.string,
-  jewelryPrice: PropTypes.number,
-  goldType: PropTypes.string,
-  gemType: PropTypes.string,
-  gemweight: PropTypes.number,
-  gemPrice: PropTypes.number,
-  totalPrice: PropTypes.number,
-  type: PropTypes.string
+    handleClick: PropTypes.func,
+    selected: PropTypes.any,
+    onDelete: PropTypes.func,
+    onUpdate: PropTypes.func,
+    row: PropTypes.object,
 };

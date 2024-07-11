@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
@@ -9,12 +9,13 @@ import TableBody from '@mui/material/TableBody';
 import Typography from '@mui/material/Typography';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
-
-import { staff, addStaff } from 'src/_mock/staff';
+import { toast } from 'react-toastify';
 
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 
+import { useParams, useNavigate } from 'react-router-dom';
+import { Backdrop, CircularProgress, IconButton } from '@mui/material';
 import TableNoData from '../table-no-data';
 import UserTableRow from '../staff-table-row';
 import StaffForm from '../create-staff-table';
@@ -26,167 +27,243 @@ import { emptyRows, applyFilter, getComparator } from '../utils';
 // ----------------------------------------------------------------------
 
 export default function StaffView() {
-  const [page, setPage] = useState(0);
+    const [page, setPage] = useState(0);
+    const [isLoading, setIsLoading] = useState(false);
+    const [order, setOrder] = useState('asc');
+    const [selected, setSelected] = useState([]);
+    const [orderBy, setOrderBy] = useState('name');
+    const [filterName, setFilterName] = useState('');
+    const [rowsPerPage, setRowsPerPage] = useState(5);
+    const [showStaffForm, setShowStaffForm] = useState(false);
+    const [staffs, setStaff] = useState([]);
+    const [counter, setCounter] = useState({});
 
-  const [order, setOrder] = useState('asc');
+    const navigate = useNavigate();
+    const { counterId } = useParams();
 
-  const [selected, setSelected] = useState([]);
+    const handleBeforeRouteChange = async () => {
+        if (counterId) {
+            const response = await fetch(`http://localhost:5188/api/Counter/GetById/${counterId}`);
+            const data = await response.json();
+            setCounter(data);
+        }
+    };
 
-  const [orderBy, setOrderBy] = useState('name');
+    const handleBackNavigate = () => {
+        if (counterId) {
+            navigate(`/counter`);
+        }
+    };
 
-  const [filterName, setFilterName] = useState('');
+    const getTitlePage = () => {
+        let defaultTitle = 'Staff';
+        if (counter && counter.name) {
+            defaultTitle = `Staff of Counter: ${counter.name}`;
+        }
+        return defaultTitle;
+    };
 
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+    const handleSort = (event, id) => {
+        const isAsc = orderBy === id && order === 'asc';
+        if (id !== '') {
+            setOrder(isAsc ? 'desc' : 'asc');
+            setOrderBy(id);
+        }
+    };
 
-  const [showStaffForm, setShowStaffForm] = useState(false);
+    const handleSelectAllClick = (event) => {
+        // if (event.target.checked) {
+        //   const newSelecteds = staff.map((n) => n.name);
+        //   setSelected(newSelecteds);
+        //   return;
+        // }
+        // setSelected([]);
+    };
 
-  const handleSort = (event, id) => {
-    const isAsc = orderBy === id && order === 'asc';
-    if (id !== '') {
-      setOrder(isAsc ? 'desc' : 'asc');
-      setOrderBy(id);
-    }
-  };
+    const handleClick = (event, name) => {
+        const selectedIndex = selected.indexOf(name);
+        let newSelected = [];
+        if (selectedIndex === -1) {
+            newSelected = newSelected.concat(selected, name);
+        } else if (selectedIndex === 0) {
+            newSelected = newSelected.concat(selected.slice(1));
+        } else if (selectedIndex === selected.length - 1) {
+            newSelected = newSelected.concat(selected.slice(0, -1));
+        } else if (selectedIndex > 0) {
+            newSelected = newSelected.concat(
+                selected.slice(0, selectedIndex),
+                selected.slice(selectedIndex + 1)
+            );
+        }
+        setSelected(newSelected);
+    };
 
-  const handleSelectAllClick = (event) => {
-    if (event.target.checked) {
-      const newSelecteds = staff.map((n) => n.name);
-      setSelected(newSelecteds);
-      return;
-    }
-    setSelected([]);
-  };
+    const handleChangePage = (event, newPage) => {
+        setPage(newPage);
+    };
 
-  const handleClick = (event, name) => {
-    const selectedIndex = selected.indexOf(name);
-    let newSelected = [];
-    if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selected, name);
-    } else if (selectedIndex === 0) {
-      newSelected = newSelected.concat(selected.slice(1));
-    } else if (selectedIndex === selected.length - 1) {
-      newSelected = newSelected.concat(selected.slice(0, -1));
-    } else if (selectedIndex > 0) {
-      newSelected = newSelected.concat(
-        selected.slice(0, selectedIndex),
-        selected.slice(selectedIndex + 1)
-      );
-    }
-    setSelected(newSelected);
-  };
+    const handleChangeRowsPerPage = (event) => {
+        setPage(0);
+        setRowsPerPage(parseInt(event.target.value, 10));
+    };
 
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
+    const handleFilterByName = (event) => {
+        setPage(0);
+        setFilterName(event.target.value);
+    };
 
-  const handleChangeRowsPerPage = (event) => {
-    setPage(0);
-    setRowsPerPage(parseInt(event.target.value, 10));
-  };
+    const dataFiltered = applyFilter({
+        inputData: staffs,
+        comparator: getComparator(order, orderBy),
+        filterName,
+    });
 
-  const handleFilterByName = (event) => {
-    setPage(0);
-    setFilterName(event.target.value);
-  };
+    const notFound = !dataFiltered.length && !!filterName;
 
-  const dataFiltered = applyFilter({
-    inputData: staff,
-    comparator: getComparator(order, orderBy),
-    filterName,
-  });
+    const handleCloseStaffForm = () => {
+        setShowStaffForm(false);
+    };
 
-  const notFound = !dataFiltered.length && !!filterName;
+    const handleNewStaffClick = async (newStaffData, resetFormData) => {
+        setIsLoading(true);
+        const response = await fetch('http://localhost:5188/api/User/AddUser', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(newStaffData),
+        });
+        const data = await response.json();
+        setIsLoading(false);
+        if (data.success) {
+            fetchAllStaff();
+            handleCloseStaffForm();
+            toast.success('New staff has been added');
+            if (resetFormData) {
+                resetFormData();
+            }
+        } else {
+            toast.error(data.message);
+        }
+    };
 
-  const handleCloseStaffForm = () => {
-    setShowStaffForm(false);
-  };
+    const fetchAllStaff = async () => {
+        let fetchLink = 'http://localhost:5188/api/User/GetUsers';
+        if (counterId) {
+            fetchLink = `http://localhost:5188/api/User/GetUsers?counterId=${counterId}`;
+        }
+        const response = await fetch(fetchLink);
+        const data = await response.json();
+        setStaff(data);
+    };
 
-  const handleNewStaffClick = (newStaffData) => {
-    addStaff(newStaffData);
-    setShowStaffForm(false);
-  };
+    useEffect(() => {
+        handleBeforeRouteChange();
+        fetchAllStaff();
+    }, []);
 
-  return (
-    <Container>
-      <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
-        <Typography variant="h4">Staff</Typography>
+    return (
+        <Container
+            style={{
+                marginLeft: 0,
+                marginRight: 0,
+                maxWidth: '100%',
+            }}
+        >
+            <Backdrop
+                sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+                open={isLoading}
+            >
+                <CircularProgress color="inherit" />
+            </Backdrop>
+            <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
+                <Typography variant="h4">
+                    <IconButton onClick={handleBackNavigate} color="inherit">
+                        <Iconify icon="eva:arrow-back-fill" />
+                    </IconButton>
+                    <span>{getTitlePage()}</span>
+                </Typography>
 
-        <Button
-          onClick={() => setShowStaffForm(true)}
-          variant="contained" color="inherit" startIcon={<Iconify icon="eva:plus-fill" />}>
-          New Staff
-        </Button>
-      </Stack>
+                <Button
+                    onClick={() => setShowStaffForm(true)}
+                    variant="contained"
+                    color="inherit"
+                    startIcon={<Iconify icon="eva:plus-fill" />}
+                >
+                    New Staff
+                </Button>
+            </Stack>
 
-      <StaffForm open={showStaffForm} onClose={handleCloseStaffForm}
-        onSubmit={handleNewStaffClick}
-      />
+            <StaffForm
+                open={showStaffForm}
+                onClose={handleCloseStaffForm}
+                onSubmit={handleNewStaffClick}
+                counterIdParam={counterId}
+            />
 
-      <Card>
-        <UserTableToolbar
-          numSelected={selected.length}
-          filterName={filterName}
-          onFilterName={handleFilterByName}
-        />
-
-        <Scrollbar>
-          <TableContainer sx={{ overflow: 'unset' }}>
-            <Table sx={{ minWidth: 800 }}>
-              <UserTableHead
-                order={order}
-                orderBy={orderBy}
-                rowCount={staff.length}
-                numSelected={selected.length}
-                onRequestSort={handleSort}
-                onSelectAllClick={handleSelectAllClick}
-                headLabel={[
-                  { id: 'userName', label: 'UserName' },
-                  { id: 'email', label: 'Email' },
-                  { id: 'password', label: 'Password' },
-                  { id: 'roleId', label: 'RoleId' },
-                  { id: 'status', label: 'Status' },
-                  { id: '' },
-                ]}
-              />
-              <TableBody>
-                {dataFiltered
-                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map((row) => (
-                    <UserTableRow
-                      key={row.id}
-                      userName={row.userName}
-                      email={row.email}
-                      password={row.password}
-                      roleId={row.roleId}
-                      counterId={row.counterId}
-                      status={row.status}
-                      staffId={row.staffId}
-                      selected={selected.indexOf(row.userName) !== -1}
-                      handleClick={(event) => handleClick(event, row.userName)}
-                    />
-                  ))}
-
-                <TableEmptyRows
-                  height={77}
-                  emptyRows={emptyRows(page, rowsPerPage, staff.length)}
+            <Card>
+                <UserTableToolbar
+                    numSelected={selected.length}
+                    filterName={filterName}
+                    onFilterName={handleFilterByName}
                 />
 
-                {notFound && <TableNoData query={filterName} />}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </Scrollbar>
+                <Scrollbar>
+                    <TableContainer sx={{ overflow: 'unset' }}>
+                        <Table sx={{ minWidth: 800 }}>
+                            <UserTableHead
+                                order={order}
+                                orderBy={orderBy}
+                                rowCount={staffs.length}
+                                numSelected={selected.length}
+                                onRequestSort={handleSort}
+                                onSelectAllClick={handleSelectAllClick}
+                                headLabel={[
+                                    { id: 'code', label: 'Code' },
+                                    { id: 'fullName', label: 'Full Name' },
+                                    { id: 'email', label: 'Email' },
+                                    { id: 'gender', label: 'Gender' },
+                                    { id: 'phoneNumber', label: 'Phone Number' },
+                                    { id: 'roleId', label: 'Role' },
+                                    { id: 'counterName', label: 'Counter Name' },
+                                    { id: 'status', label: 'Status' },
+                                    { id: '' },
+                                ]}
+                            />
+                            <TableBody>
+                                {dataFiltered
+                                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                                    .map((row) => (
+                                        <UserTableRow
+                                            key={row.id}
+                                            row={row}
+                                            selected={selected.indexOf(row.code) !== -1}
+                                            handleClick={(event) => handleClick(event, row.code)}
+                                            onReload={fetchAllStaff}
+                                        />
+                                    ))}
 
-        <TablePagination
-          page={page}
-          component="div"
-          count={staff.length}
-          rowsPerPage={rowsPerPage}
-          onPageChange={handleChangePage}
-          rowsPerPageOptions={[5, 10, 25]}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-        />
-      </Card>
-    </Container>
-  );
+                                <TableEmptyRows
+                                    height={77}
+                                    emptyRows={emptyRows(page, rowsPerPage, staffs.length)}
+                                />
+
+                                {notFound && <TableNoData query={filterName} />}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
+                </Scrollbar>
+
+                <TablePagination
+                    page={page}
+                    component="div"
+                    count={staffs.length}
+                    rowsPerPage={rowsPerPage}
+                    onPageChange={handleChangePage}
+                    rowsPerPageOptions={[5, 10, 25]}
+                    onRowsPerPageChange={handleChangeRowsPerPage}
+                />
+            </Card>
+        </Container>
+    );
 }
