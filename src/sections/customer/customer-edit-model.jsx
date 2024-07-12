@@ -7,28 +7,21 @@ import TextField from '@mui/material/TextField';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
-
+import Radio from '@mui/material/Radio';
+import RadioGroup from '@mui/material/RadioGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormControl from '@mui/material/FormControl';
+import FormLabel from '@mui/material/FormLabel';
 
 function CustomerEditForm({ open, onClose, onSubmit, customer }) {
-    const [formState, setFormState] = React.useState({
-        CusID: customer ? customer.CusID : '',
-        name: customer ? customer.name : '',
-        address: customer ? customer.address : '',
-        phoneNumber: customer ? customer.phoneNumber : '',
-        point: customer ? customer.point : '',
-        gender: customer ? customer.gender : '',
-    });
+  const [formState, setFormState] = React.useState({
+    ...customer,
+  });
 
   React.useEffect(() => {
     if (customer) {
       setFormState({
-        CusID: customer.CusID,
-        name: customer.name,
-        address: customer.address,
-        phoneNumber: customer.phoneNumber,
-        point: customer.point,
-        gender: customer.gender,
-        
+        ...customer,
       });
     }
   }, [customer]);
@@ -50,63 +43,56 @@ function CustomerEditForm({ open, onClose, onSubmit, customer }) {
         <TextField
           autoFocus
           margin="dense"
-          name="promotionId"
-          label="Promotion ID"
+          name="code"
+          label="Code"
           type="text"
           fullWidth
           onChange={handleChange}
-          value={formState.CusID}
+          value={formState.code}
         />
         <TextField
-                    margin="dense"
-                    name="name"
-                    label="Name"
-                    value={formState.name}
-                    type="text"
-                    fullWidth
-                    onChange={handleChange}
-                    InputProps={{ style: { marginBottom: 10 } }}
-                />
-                <TextField
-                    margin="dense"
-                    name="address"
-                    label="Address"
-                    value={formState.address}
-                    type="text"
-                    fullWidth
-                    onChange={handleChange}
-                    InputProps={{ style: { marginBottom: 10 } }}
-                />
-                <TextField
-                    margin="dense"
-                    name="phoneNumber"
-                    label="Phone Number"
-                    value={formState.phoneNumber}
-                    type="text"
-                    fullWidth
-                    onChange={handleChange}
-                    InputProps={{ style: { marginBottom: 10 } }}
-                />
-                <TextField
-                    margin="dense"
-                    name="point"
-                    label="Point"
-                    value={formState.point}
-                    type="point"
-                    fullWidth
-                    onChange={handleChange}
-                    InputProps={{ style: { marginBottom: 10 } }}
-                />
-                <TextField
-                    margin="dense"
-                    name="gender"
-                    label="Gender"
-                    value={formState.gender}
-                    type="text"
-                    fullWidth
-                    onChange={handleChange}
-                    InputProps={{ style: { marginBottom: 10 } }}
-                />
+          margin="dense"
+          name="fullName"
+          label="Full Name"
+          value={formState.fullName}
+          type="text"
+          fullWidth
+          onChange={handleChange}
+          InputProps={{ style: { marginBottom: 10 } }}
+        />
+        <TextField
+          margin="dense"
+          name="address"
+          label="Address"
+          value={formState.address}
+          type="text"
+          fullWidth
+          onChange={handleChange}
+          InputProps={{ style: { marginBottom: 10 } }}
+        />
+        <TextField
+          margin="dense"
+          name="phone"
+          label="Phone Number"
+          value={formState.phone}
+          type="text"
+          fullWidth
+          onChange={handleChange}
+          InputProps={{ style: { marginBottom: 10 } }}
+        />
+        <FormControl>
+          <FormLabel id="demo-row-radio-buttons-group-label">Gender</FormLabel>
+          <RadioGroup
+            row
+            aria-labelledby="demo-row-radio-buttons-group-label"
+            name="gender"
+            value={formState.gender}
+            onChange={handleChange}
+          >
+            <FormControlLabel value="Female" control={<Radio />} label="Female" />
+            <FormControlLabel value="Male" control={<Radio />} label="Male" />
+          </RadioGroup>
+        </FormControl>
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose}>Cancel</Button>
@@ -120,14 +106,7 @@ CustomerEditForm.propTypes = {
   open: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
   onSubmit: PropTypes.func.isRequired,
-  customer: PropTypes.shape({
-    CusID: PropTypes.any,
-    name: PropTypes.string,
-    address: PropTypes.any,
-    phoneNumber: PropTypes.any,
-    point: PropTypes.number,
-    gender: PropTypes.string,
-  }),
+  customer: PropTypes.object,
 };
 
-export default CustomerEditForm; 
+export default CustomerEditForm;
