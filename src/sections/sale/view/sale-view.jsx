@@ -1,49 +1,38 @@
-import axios from 'axios';
 import { useState, useEffect } from 'react';
 
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Table from '@mui/material/Table';
+import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
 import TableBody from '@mui/material/TableBody';
 import Typography from '@mui/material/Typography';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
 
-// import { goldprice } from 'src/_mock/goldprice';
-
+import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 
-import GoldpriceTableNoData from '../goldprice-no-data';
-import GoldpriceTableHead from '../goldprice-table-head';
-import GoldpriceTableEmptyRows from '../goldprice-empty-rows';
-import GoldpriceTableRow from '../goldprice-table-row';
-import GoldpriceTableToolbar from '../goldprice-table-toolbar';
+import axios from 'axios';
+import TableNoData from '../table-no-data';
+import UserTableRow from '../sale-table-row';
+import UserTableHead from '../sale-table-head';
+import TableEmptyRows from '../table-empty-rows';
+import UserTableToolbar from '../sale-table-toolbar';
 import { emptyRows, applyFilter, getComparator } from '../utils';
+import InvoiceTemplate from '../sale-form';
 
 // ----------------------------------------------------------------------
 
-export default function GoldPriceView() {
-    const [goldprice, setGoldprice] = useState([]);
+export default function SalePage() {
     const [page, setPage] = useState(0);
-
     const [order, setOrder] = useState('asc');
-
     const [selected, setSelected] = useState([]);
-
     const [orderBy, setOrderBy] = useState('name');
-
     const [filterName, setFilterName] = useState('');
-
     const [rowsPerPage, setRowsPerPage] = useState(5);
-
-    useEffect(() => {
-        getGoldprice();
-    }, []);
-    const getGoldprice = async () => {
-        const res = await axios.get('http://localhost:5188/api/Price/GetGoldPrices');
-        setGoldprice(res.data);
-    };
+    const [showBillForm, setShowBillForm] = useState(false);
+    const [bills, setBills] = useState([]);
 
     const handleSort = (event, id) => {
         const isAsc = orderBy === id && order === 'asc';
@@ -55,18 +44,18 @@ export default function GoldPriceView() {
 
     const handleSelectAllClick = (event) => {
         if (event.target.checked) {
-            const newSelecteds = goldprice.map((n) => n.name);
+            const newSelecteds = bills.map((n) => n.name);
             setSelected(newSelecteds);
             return;
         }
         setSelected([]);
     };
 
-    const handleClick = (event, id) => {
-        const selectedIndex = selected.indexOf(id);
+    const handleClick = (event, name) => {
+        const selectedIndex = selected.indexOf(name);
         let newSelected = [];
         if (selectedIndex === -1) {
-            newSelected = newSelected.concat(selected, id);
+            newSelected = newSelected.concat(selected, name);
         } else if (selectedIndex === 0) {
             newSelected = newSelected.concat(selected.slice(1));
         } else if (selectedIndex === selected.length - 1) {
@@ -94,18 +83,35 @@ export default function GoldPriceView() {
         setFilterName(event.target.value);
     };
 
+    const fetchBill = async () => {
+        try {
+            const response = await axios.get('http://localhost:5188/api/Bill/GetBills?type=1');
+            setBills(response.data);
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    useEffect(() => {
+        fetchBill();
+    }, []);
+
     const dataFiltered = applyFilter({
-        inputData: goldprice,
+        inputData: bills,
         comparator: getComparator(order, orderBy),
         filterName,
     });
 
     const notFound = !dataFiltered.length && !!filterName;
 
-    // const handleNewStaffClick = (newStaffData) => {
-    //   addStaff(newStaffData);
-    //   setShowStaffForm(false);
-    // };
+    const handleCloseBillForm = () => {
+        setShowBillForm(false);
+    };
+
+    const handleNewBillClick = (newBillData) => {
+        // addBill(newBillData);
+        setShowBillForm(true);
+    };
 
     return (
         <Container
@@ -116,11 +122,24 @@ export default function GoldPriceView() {
             }}
         >
             <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
-                <Typography variant="h4"> Gold Price </Typography>
+                <Typography variant="h4">Sale</Typography>
+
+                <Button
+                    onClick={() => setShowBillForm(true)}
+                    variant="contained"
+                    color="inherit"
+                    startIcon={<Iconify icon="eva:plus-fill" />}
+                >
+                    New Sale Bill
+                </Button>
+
+                {showBillForm && (
+                    <InvoiceTemplate open={showBillForm} onClose={handleCloseBillForm} />
+                )}
             </Stack>
 
             <Card>
-                <GoldpriceTableToolbar
+                <UserTableToolbar
                     numSelected={selected.length}
                     filterName={filterName}
                     onFilterName={handleFilterByName}
@@ -129,18 +148,21 @@ export default function GoldPriceView() {
                 <Scrollbar>
                     <TableContainer sx={{ overflow: 'unset' }}>
                         <Table sx={{ minWidth: 800 }}>
-                            <GoldpriceTableHead
+                            <UserTableHead
                                 order={order}
                                 orderBy={orderBy}
+                                rowCount={bills.length}
                                 numSelected={selected.length}
                                 onRequestSort={handleSort}
                                 onSelectAllClick={handleSelectAllClick}
                                 headLabel={[
-                                    { id: 'city', label: 'City' },
-                                    { id: 'buyPrice', label: 'Buy Price' },
-                                    { id: 'sellPrice', label: 'Sell Price' },
-                                    { id: 'type', label: 'Type' },
-                                    { id: 'lastUpdated', label: 'Last Updated' },
+                                    { id: 'billId', label: 'BillId' },
+                                    { id: 'customerName', label: 'Customer Name' },
+                                    { id: 'staffName', label: 'Staff Name' },
+                                    { id: 'discountRate', label: 'Discount Rate' },
+                                    { id: 'totalAmount', label: 'TotalAmount' },
+                                    { id: 'saleDate', label: 'Sale Date' },
+                                    { id: 'paymentStatus', label: 'Payment Status' },
                                     { id: '' },
                                 ]}
                             />
@@ -148,24 +170,20 @@ export default function GoldPriceView() {
                                 {dataFiltered
                                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                     .map((row) => (
-                                        <GoldpriceTableRow
+                                        <UserTableRow
                                             key={row.id}
-                                            city={row.city}
-                                            buyPrice={row.buyPrice}
-                                            sellPrice={row.sellPrice}
-                                            type={row.type}
-                                            lastUpdated={row.lastUpdated}
-                                            selected={selected.indexOf(row.city) !== -1}
-                                            handleClick={(event) => handleClick(event, row.city)}
+                                            row={row}
+                                            selected={selected.indexOf(row.billId) !== -1}
+                                            handleClick={(event) => handleClick(event, row.billId)}
                                         />
                                     ))}
 
-                                <GoldpriceTableEmptyRows
+                                <TableEmptyRows
                                     height={77}
-                                    emptyRows={emptyRows(page, rowsPerPage, goldprice.length)}
+                                    emptyRows={emptyRows(page, rowsPerPage, bills.length)}
                                 />
 
-                                {notFound && <GoldpriceTableNoData query={filterName} />}
+                                {notFound && <TableNoData query={filterName} />}
                             </TableBody>
                         </Table>
                     </TableContainer>
@@ -174,6 +192,7 @@ export default function GoldPriceView() {
                 <TablePagination
                     page={page}
                     component="div"
+                    count={bills.length}
                     rowsPerPage={rowsPerPage}
                     onPageChange={handleChangePage}
                     rowsPerPageOptions={[5, 10, 25]}
