@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { useState, useEffect } from 'react';
+import { toast } from 'react-toastify';
 
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
@@ -23,8 +24,6 @@ import UserTableHead from '../customer-table-head';
 import CustomerForm from '../create-customer-table';
 import UserTableToolbar from '../customer-table-toolbar';
 import { emptyRows, applyFilter, getComparator } from '../utils';
-
-
 
 // ----------------------------------------------------------------------
 
@@ -59,8 +58,8 @@ export default function CustomerPage() {
 
   //   fetchCustomers();
   // }, []);
-  
-  const [customer,setCustomer] = useState([]);
+
+  const [customer, setCustomer] = useState([]);
 
   const [page, setPage] = useState(0);
 
@@ -76,13 +75,13 @@ export default function CustomerPage() {
 
   const [showCustomerForm, setShowCustomerForm] = useState(false);
 
-  useEffect(()=>{
+  useEffect(() => {
     getCustomer();
-  },[])
-  const getCustomer = async() =>{
-    const res =await axios.get("http://localhost:5188/api/Customer");
+  }, []);
+  const getCustomer = async () => {
+    const res = await axios.get('http://localhost:5188/api/Customer');
     setCustomer(res.data);
-  }
+  };
 
   const handleSort = (event, id) => {
     const isAsc = orderBy === id && order === 'asc';
@@ -145,13 +144,29 @@ export default function CustomerPage() {
     setShowCustomerForm(false);
   };
 
-  const handleNewCustomerClick = (newCustomerData) => {
-    const res = axios.post("http://localhost:5188/api/Customer/CreateCustomer", newCustomerData);
+  const handleNewCustomerClick = async (newCustomerData) => {
+    const res = await axios.post(
+      'http://localhost:5188/api/Customer/CreateCustomer',
+      newCustomerData
+    );
+    if (res.status === 200) {
+      toast.success('Create customer successfully');
+    } else {
+      toast.error('Create customer failed');
+    }
+    getCustomer();
+
     setShowCustomerForm(false);
   };
 
   return (
-    <Container>
+    <Container
+      style={{
+        marginLeft: 0,
+        marginRight: 0,
+        maxWidth: '100%',
+      }}
+    >
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
         <Typography variant="h4">Customer</Typography>
 
@@ -165,7 +180,9 @@ export default function CustomerPage() {
         </Button>
       </Stack>
 
-      <CustomerForm open={showCustomerForm} onClose={handleCloseCustomerForm}
+      <CustomerForm
+        open={showCustomerForm}
+        onClose={handleCloseCustomerForm}
         onSubmit={handleNewCustomerClick}
       />
 
@@ -187,9 +204,11 @@ export default function CustomerPage() {
                 onRequestSort={handleSort}
                 onSelectAllClick={handleSelectAllClick}
                 headLabel={[
-                  { id: 'name', label: 'Name' },
+                  { id: 'code', label: 'Code' },
+                  { id: 'fullName', label: 'Full Name' },
+                  { id: 'gender', label: 'Gender' },
                   { id: 'address', label: 'Address' },
-                  { id: 'phoneNumber', label: 'Phone Number' },
+                  { id: 'phone', label: 'Phone Number' },
                   { id: 'point', label: 'Point' },
                   { id: ' ', label: ' ' },
                 ]}
@@ -199,15 +218,11 @@ export default function CustomerPage() {
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((row) => (
                     <UserTableRow
-                      key={row.id}
-                      CusID={row.id}
-                      name={row.name}
-                      phoneNumber={row.phone}
-                      address={row.address}
-                      point={row.point}
-                      gender={row.gender}
-                      selected={selected.indexOf(row.CusID) !== -1}
-                      handleClick={(event) => handleClick(event, row.CusID)}
+                      key={row.customerId}
+                      row={row}
+                      selected={selected.indexOf(row.customerId) !== -1}
+                      handleClick={(event) => handleClick(event, row.customerId)}
+                      getCustomer={getCustomer}
                     />
                   ))}
 
