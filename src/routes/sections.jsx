@@ -24,7 +24,7 @@ export default function Router() {
         case '1':
             childrenRoutes = [
                 { element: <IndexPage /> },
-                { path: 'dashboard' , element: <Dashboard />},
+                { path: 'dashboard', element: <Dashboard /> },
                 { path: 'customer', element: <Customer /> },
             ];
             break;

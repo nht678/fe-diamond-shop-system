@@ -39,6 +39,8 @@ export default function NewModal({ show, handleClose, createJew }) {
         onSubmit: async (values) => {
             console.log(values);
             values.previewImage = imageName;
+            // Chuyển đổi warrantyTime thành số nguyên nếu có giá trị, hoặc giữ nguyên null
+        values.warrantyTime = values.warrantyTime ? parseInt(values.warrantyTime, 10) : null;
             const res = await createJew(values);
             if (res.status === 200) {
                 toast.success('Jewellery added successfully');

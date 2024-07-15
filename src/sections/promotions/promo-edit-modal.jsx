@@ -1,5 +1,6 @@
-import React from 'react';
+import React,{useEffect} from 'react';
 import PropTypes from 'prop-types';
+import axios from 'axios';
 
 import Dialog from '@mui/material/Dialog';
 import Button from '@mui/material/Button';
@@ -10,25 +11,29 @@ import DialogContent from '@mui/material/DialogContent';
 
 function PromotionEditForm({ open, onClose, onSubmit, promotion }) {
   const [formState, setFormState] = React.useState({
-    type: promotion ? promotion.type : '',
-    discountRate: promotion ? promotion.discountRate : '',
+    ...promotion,
     startDate: promotion.startDate ? new Date(promotion.startDate).toISOString().split('T')[0] : '',
-    endDate:promotion.endDate ? new Date(promotion.endDate).toISOString().split('T')[0] : '',
-    approveManager: promotion ? promotion.approveManager : '',
-    description: promotion ? promotion.description : '',
+    endDate: promotion.endDate ? new Date(promotion.endDate).toISOString().split('T')[0] : '',
   });
+  const [promotions, setPromotions] = React.useState([]);
 
-  console.log('promotion', promotion);
-  console.log('formState', formState);
+  useEffect(() => {
+    const fetchPromotions = async () => {
+      const response = await axios.get('http://localhost:5188/api/Promotion/GetPromotions');
+      setPromotions(response.data);
+    };
+
+    fetchPromotions();
+  }, []);
+
   React.useEffect(() => {
     if (promotion) {
       setFormState({
-        type: promotion.type,
-        discountRate: promotion.discountRate,
-        startDate: promotion.startDate ? new Date(promotion.startDate).toISOString().split('T')[0] : '',
+        ...promotion,
+        startDate: promotion.startDate
+          ? new Date(promotion.startDate).toISOString().split('T')[0]
+          : '',
         endDate: promotion.endDate ? new Date(promotion.endDate).toISOString().split('T')[0] : '',
-        approveManager: promotion.approveManager,
-        description: promotion.description,
       });
     }
   }, [promotion]);
@@ -37,9 +42,41 @@ function PromotionEditForm({ open, onClose, onSubmit, promotion }) {
     setFormState({ ...formState, [event.target.name]: event.target.value });
   };
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    onSubmit(formState);
+  const handleSubmit = (e) => {
+    e.preventDefault(); // Ngăn chặn hành động submit mặc định của form
+  
+    // Chuyển startDate và endDate sang đối tượng Date
+    const startDateObj = new Date(formState.startDate);
+    const endDateObj = new Date(formState.endDate);
+    const currentDate = new Date();
+  
+    // Đặt giờ, phút, giây, và mili giây về 0 để chỉ so sánh ngày
+    currentDate.setHours(0, 0, 0, 0);
+  
+    // Kiểm tra điều kiện
+    if (startDateObj < currentDate || endDateObj < currentDate) {
+      alert("Start date and end date cannot be in the past.");
+      return; // Dừng hàm nếu điều kiện không được thoả mãn
+    }
+  
+    // Kiểm tra xem startDate và endDate của mã giảm giá mới có trùng với mã giảm giá nào hiện có không
+    const isOverlapping = promotions.some((promo) => {
+      const existingStartDate = new Date(promo.startDate);
+      const existingEndDate = new Date(promo.endDate);
+  
+      return (
+        (startDateObj >= existingStartDate && startDateObj <= existingEndDate) ||
+        (endDateObj >= existingStartDate && endDateObj <= existingEndDate) ||
+        (startDateObj <= existingStartDate && endDateObj >= existingEndDate)
+      );
+    });
+  
+    if (isOverlapping) {
+      alert("The new promotion dates overlap with an existing promotion.");
+      return; // Dừng hàm nếu điều kiện không được thoả mãn
+    }
+  
+    onSubmit(formState); // Gọi addPromotion
     onClose();
   };
 
@@ -49,19 +86,9 @@ function PromotionEditForm({ open, onClose, onSubmit, promotion }) {
       <DialogContent>
         <TextField
           margin="dense"
-          name="type"
-          label="Type"
-          value={formState.type}
-          type="text"
-          fullWidth
-          onChange={handleChange}
-          InputProps={{ style: { marginBottom: 10 } }}
-        />
-        <TextField
-          margin="dense"
-          name="discountRate"
-          label="Discount Rate"
-          value={formState.discountRate}
+          name="description"
+          label="Promotion"
+          value={formState.description}
           type="text"
           fullWidth
           onChange={handleChange}
@@ -89,19 +116,9 @@ function PromotionEditForm({ open, onClose, onSubmit, promotion }) {
         />
         <TextField
           margin="dense"
-          name="approveManager"
-          label="Approval Manager"
-          value={formState.approveManager}
-          type="text"
-          fullWidth
-          onChange={handleChange}
-          InputProps={{ style: { marginBottom: 10 } }}
-        />
-        <TextField
-          margin="dense"
-          name="description"
-          label="Description"
-          value={formState.description}
+          name="discountRate"
+          label="Discount Rate"
+          value={formState.discountRate}
           type="text"
           fullWidth
           onChange={handleChange}

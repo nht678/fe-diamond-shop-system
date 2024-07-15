@@ -6,7 +6,6 @@ const test = () =>  (
             <div className="col-md-12">
               <h3 className="title-section mb-2">Chính Sách Bảo Hành Và Thu Đổi</h3>
               <div className="share-socials">
-                <span> Chia sẻ:</span>
                 <div className="list">
 
                   <img
@@ -75,8 +74,7 @@ const test = () =>  (
                       fontSize: 20
                     }}
                   >
-                    2. Khách hàng kiểm tra kỹ các loại dấu, ký hiệu của Bảo Tín Mạnh
-                    Hải đóng trên sản phẩm, cân lại sản phẩm, kiểm tra lại số tiền
+                    2. Khách hàng kiểm tra kỹ các loại dấu, cân lại sản phẩm, kiểm tra lại số tiền
                     đã chi trả và thông tin trên giấy đảm bảo vàng, giấy kiểm định
                     (nếu có) so với thực tế trước khi rời khỏi quầy giao dịch.; Công
                     ty không chịu trách nhiệm giải quyết bất kì khiếu nại thiếu, sai
@@ -138,7 +136,7 @@ const test = () =>  (
                     }}
                   >
                     4. Khách hàng được bán lại, đổi, bảo hành sản phẩm tại tất cả
-                    các chi nhánh của Bảo Tín Mạnh Hải trên toàn quốc.
+                    các chi nhánh trên toàn quốc.
                   </span>
                 </p>
                 <p>

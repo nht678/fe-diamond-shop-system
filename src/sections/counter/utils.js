@@ -45,9 +45,10 @@ export function applyFilter({ inputData, comparator, filterName }) {
   });
 
   inputData = stabilizedThis.map((el) => el[0]);
+
   if (filterName) {
-    inputData = inputData.filter((userList) =>
-      userList.fullName && userList.fullName.toLowerCase().indexOf(filterName.toLowerCase()) !== -1
+    inputData = inputData.filter(
+      (staff) => staff.userName.toLowerCase().indexOf(filterName.toLowerCase()) !== -1
     );
   }
 

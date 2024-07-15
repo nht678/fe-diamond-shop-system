@@ -78,13 +78,21 @@ export default function EditModal({ show, handleClose, onUpdate, row }) {
                 gemQuantity: row.materials[0]?.gem.gemQuantity,
                 jewelryMaterialId: row.materials[0]?.jewelryMaterialId,
             },
-            warrantyTime: row.warrantyTime,
+            warrantyTime: row.warrantyTime || '', // Đảm bảo khởi tạo với giá trị chuỗi trống nếu không có giá trị
             barcode: row.barcode,
             laborCost: row.laborCost,
             previewImage: row.previewImage,
         },
         onSubmit: async (values) => {
-            await onUpdate(row.jewelryId, values);
+            // Chuyển đổi warrantyTime thành số nguyên hoặc null
+            const payload = {
+                ...values,
+                warrantyTime: values.warrantyTime ? parseInt(values.warrantyTime, 10) : null,
+            };
+    
+            console.log(payload); // Log payload để kiểm tra
+    
+            await onUpdate(row.jewelryId, payload);
             handleClose();
         },
         validate: (values) => {
@@ -111,7 +119,7 @@ export default function EditModal({ show, handleClose, onUpdate, row }) {
             return errors;
         },
     });
-
+    
     const handleImageUpload = async (event) => {
         const file = event.target.files[0];
         if (file) {
@@ -275,6 +283,7 @@ export default function EditModal({ show, handleClose, onUpdate, row }) {
                                     onChange={formik.handleChange}
                                     onBlur={formik.handleBlur}
                                     type="number"
+                                    InputProps={{ inputProps: { min: 0 } }} // Đảm bảo giá trị là số nguyên dương
                                     sx={{
                                         maxWidth: 300,
                                         '& .MuiOutlinedInput-root': {

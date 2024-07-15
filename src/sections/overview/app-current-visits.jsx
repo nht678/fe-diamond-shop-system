@@ -1,77 +1,43 @@
+import React from 'react';
 import PropTypes from 'prop-types';
-
+import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
-import { styled, useTheme } from '@mui/material/styles';
+import Chart, { useChart } from 'src/components/chart'; // Đây là module Chart và useChart tùy chỉnh của bạn
 
-import { fNumber } from 'src/utils/format-number';
-
-import Chart, { useChart } from 'src/components/chart';
-
-// ----------------------------------------------------------------------
-
-const CHART_HEIGHT = 400;
-
-const LEGEND_HEIGHT = 72;
-
-const StyledChart = styled(Chart)(({ theme }) => ({
-  height: CHART_HEIGHT,
-  '& .apexcharts-canvas, .apexcharts-inner, svg, foreignObject': {
-    height: `100% !important`,
-  },
-  '& .apexcharts-legend': {
-    height: LEGEND_HEIGHT,
-    borderTop: `dashed 1px ${theme.palette.divider}`,
-    top: `calc(${CHART_HEIGHT - LEGEND_HEIGHT}px) !important`,
-  },
-}));
-
-// ----------------------------------------------------------------------
-
-export default function AppCurrentVisits({ title, subheader, chart, ...other }) {
-  const theme = useTheme();
-
-  const { colors, series, options } = chart;
-
-  const chartSeries = series.map((i) => i.value);
+export default function AppSalesByCounterVisits({ title, subheader, chart, ...other }) {
+  const { labels, colors, series, options } = chart;
 
   const chartOptions = useChart({
-    chart: {
-      sparkline: {
-        enabled: true,
-      },
-    },
     colors,
-    labels: series.map((i) => i.label),
-    stroke: {
-      colors: [theme.palette.background.paper],
-    },
-    legend: {
-      floating: true,
-      position: 'bottom',
-      horizontalAlign: 'center',
-    },
-    dataLabels: {
-      enabled: true,
-      dropShadow: {
-        enabled: false,
+    plotOptions: {
+      bar: {
+        columnWidth: '16%',
       },
     },
-    tooltip: {
-      fillSeriesColor: false,
-      y: {
-        formatter: (value) => fNumber(value),
+    fill: {
+      type: series.map(i => i.fill),
+    },
+    labels,
+    xaxis: {
+      type: 'category',
+    },
+    yaxis: [
+      {
         title: {
-          formatter: (seriesName) => `${seriesName}`,
+          text: 'Sales',
         },
       },
-    },
-    plotOptions: {
-      pie: {
-        donut: {
-          labels: {
-            show: false,
-          },
+    ],
+    tooltip: {
+      shared: true,
+      intersect: false,
+      y: {
+        formatter: value => {
+          if (typeof value !== 'undefined') {
+            return `${value.toFixed(2)} vnđ`;
+          }
+          return value;
         },
       },
     },
@@ -80,21 +46,23 @@ export default function AppCurrentVisits({ title, subheader, chart, ...other }) 
 
   return (
     <Card {...other}>
-      <CardHeader title={title} subheader={subheader} sx={{ mb: 5 }} />
+      <CardHeader title={title} subheader={subheader} />
 
-      <StyledChart
-        dir="ltr"
-        type="pie"
-        series={chartSeries}
-        options={chartOptions}
-        width="100%"
-        height={280}
-      />
+      <Box sx={{ p: 3, pb: 1 }}>
+        <Chart
+          dir="ltr"
+          type="bar" // Đổi type từ 'line' sang 'bar' để vẽ biểu đồ cột
+          series={series}
+          options={chartOptions}
+          width="100%"
+          height={364}
+        />
+      </Box>
     </Card>
   );
 }
 
-AppCurrentVisits.propTypes = {
+AppSalesByCounterVisits.propTypes = {
   chart: PropTypes.object,
   subheader: PropTypes.string,
   title: PropTypes.string,

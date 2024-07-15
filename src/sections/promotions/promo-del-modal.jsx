@@ -1,7 +1,15 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { Grid ,Button ,Dialog,Typography ,DialogTitle , DialogContent, DialogActions } from '@mui/material';
+import {
+  Grid,
+  Button,
+  Dialog,
+  Typography,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+} from '@mui/material';
 
 export default function PromotionDeleteForm({ open, onClose, onDelete, promotion }) {
   const handleDeleteClick = () => {
@@ -14,20 +22,8 @@ export default function PromotionDeleteForm({ open, onClose, onDelete, promotion
       <DialogContent>
         <Grid container spacing={2}>
           <Grid item xs={12}>
-            <Typography variant="h6">Promotion ID:</Typography>
-            <Typography>{promotion.promotionId}</Typography>
-          </Grid>
-          <Grid item xs={12}>
-            <Typography variant="h6">Type:</Typography>
-            <Typography>{promotion.type}</Typography>
-          </Grid>
-          <Grid item xs={12}>
-            <Typography variant="h6">DiscountRate:</Typography>
-            <Typography>{`${promotion.discountRate}%`}</Typography>
-          </Grid>
-          <Grid item xs={12}>
-            <Typography variant="h6">Approval Manager:</Typography>
-            <Typography>{promotion.approveManager}</Typography>
+            <Typography variant="h6">Promotion</Typography>
+            <Typography>{promotion.description}</Typography>
           </Grid>
           <Grid item xs={12}>
             <Typography variant="h6">Start Date:</Typography>
@@ -38,16 +34,20 @@ export default function PromotionDeleteForm({ open, onClose, onDelete, promotion
             <Typography>{promotion.endDate}</Typography>
           </Grid>
           <Grid item xs={12}>
-            <Typography variant="h6">Description:</Typography>
-            <Typography>{promotion.description}</Typography>
+            <Typography variant="h6">DiscountRate:</Typography>
+            <Typography>{`${promotion.discountRate}%`}</Typography>
           </Grid>
+          {/* <Grid item xs={12}>
+            <Typography variant="h6">Approval Manager:</Typography>
+            <Typography>{promotion.approveManager}</Typography>
+          </Grid> */}
         </Grid>
       </DialogContent>
       <DialogActions>
         <Button variant="secondary" onClick={onClose}>
           Cancel
         </Button>
-        <Button variant='contained' onClick={handleDeleteClick} color="error">
+        <Button variant="contained" onClick={handleDeleteClick} color="error">
           Delete
         </Button>
       </DialogActions>

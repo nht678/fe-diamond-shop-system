@@ -1,6 +1,5 @@
-import axios from 'axios';
 import { useState, useEffect } from 'react';
-import { toast } from 'react-toastify';
+import axios from 'axios';
 
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
@@ -14,35 +13,28 @@ import TablePagination from '@mui/material/TablePagination';
 
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
-
+import { toast } from 'react-toastify';
 import TableNoData from '../table-no-data';
-import UserTableRow from '../promo-table-row';
-import UserTableHead from '../promo-table-head';
+import CounterTableRow from '../counter-table-row';
+import CrateCounterForm from '../create-counter-table';
+import CounterTableHead from '../counter-table-head';
 import TableEmptyRows from '../table-empty-rows';
-import PromotionForm from '../create-promo-table';
-import UserTableToolbar from '../promo-table-toolbar';
+import CounterTableToolbar from '../counter-table-toolbar';
 import { emptyRows, applyFilter, getComparator } from '../utils';
+
 
 // ----------------------------------------------------------------------
 
-export default function PromotionView() {
-    const [promotion, setPromotion] = useState([]);
+export default function CounterView() {
     const [page, setPage] = useState(0);
     const [order, setOrder] = useState('asc');
     const [selected, setSelected] = useState([]);
     const [orderBy, setOrderBy] = useState('name');
     const [filterName, setFilterName] = useState('');
     const [rowsPerPage, setRowsPerPage] = useState(5);
-    const [showPromotionForm, setShowPromotionForm] = useState(false);
-
-    useEffect(() => {
-        getPromotion();
-    }, []);
-
-    const getPromotion = async () => {
-        const res = await axios.get('http://localhost:5188/api/Promotion/GetPromotions');
-        setPromotion(res.data);
-    };
+    const [showCounterForm, setShowCounterForm] = useState(false);
+    const [counter, setCounter] = useState([]);
+    const [counters, addCounter] = useState([]);
 
     const handleSort = (event, id) => {
         const isAsc = orderBy === id && order === 'asc';
@@ -54,7 +46,7 @@ export default function PromotionView() {
 
     const handleSelectAllClick = (event) => {
         if (event.target.checked) {
-            const newSelecteds = promotion.map((n) => n.name);
+            const newSelecteds = counters.map((n) => n.name);
             setSelected(newSelecteds);
             return;
         }
@@ -94,30 +86,39 @@ export default function PromotionView() {
     };
 
     const dataFiltered = applyFilter({
-        inputData: promotion,
+        inputData: counters,
         comparator: getComparator(order, orderBy),
         filterName,
     });
 
     const notFound = !dataFiltered.length && !!filterName;
 
-    const handleClosePromotionForm = () => {
-        setShowPromotionForm(false);
+    const handleCloseCounterForm = () => {
+        setShowCounterForm(false);
     };
 
-    const handleNewPromotionClick = async (newPromotionData) => {
-        const res = await axios.post(
-            'http://localhost:5188/api/Promotion/AddNewPromotion',
-            newPromotionData
-        );
-        if (res.data === 1) {
-            toast.success('Create promotion success');
-        } else {
-            toast.error('Create promotion fail');
+    const handleNewCounterClick = async (newCounterData) => {
+        const response = await axios.post('http://localhost:5188/api/Counter/CreateCounter', newCounterData);
+        try {
+            if (response.status === 200) {
+                toast.success('Counter created successfully');
+                fetchAllCounters();
+            }
+        } catch (error) {
+            toast.error('Counter creation failed');
         }
-        setShowPromotionForm(false);
-        getPromotion();
     };
+
+    const fetchAllCounters = async () => {
+        const response = await fetch('http://localhost:5188/api/Counter/GetCounters');
+        const data = await response.json();
+        addCounter(data);
+        setCounter(data);
+    };
+
+    useEffect(() => {
+        fetchAllCounters();
+    }, []);
 
     return (
         <Container
@@ -128,26 +129,27 @@ export default function PromotionView() {
             }}
         >
             <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
-                <Typography variant="h4">Promotion</Typography>
+                <Typography variant="h4">Counter</Typography>
 
                 <Button
-                    onClick={() => setShowPromotionForm(true)}
+                    onClick={() => setShowCounterForm(true)}
                     variant="contained"
                     color="inherit"
                     startIcon={<Iconify icon="eva:plus-fill" />}
                 >
-                    New Promotion
+                    New Counter
                 </Button>
             </Stack>
 
-            <PromotionForm
-                open={showPromotionForm}
-                onClose={handleClosePromotionForm}
-                onSubmit={handleNewPromotionClick}
+            <CrateCounterForm
+                open={showCounterForm}
+                onClose={handleCloseCounterForm}
+                onSubmit={handleNewCounterClick}
+                counters={counters}
             />
 
             <Card>
-                <UserTableToolbar
+                <CounterTableToolbar
                     numSelected={selected.length}
                     filterName={filterName}
                     onFilterName={handleFilterByName}
@@ -156,42 +158,35 @@ export default function PromotionView() {
                 <Scrollbar>
                     <TableContainer sx={{ overflow: 'unset' }}>
                         <Table sx={{ minWidth: 800 }}>
-                            <UserTableHead
+                            <CounterTableHead
                                 order={order}
                                 orderBy={orderBy}
-                                rowCount={promotion.length}
+                                rowCount={counters.length}
                                 numSelected={selected.length}
                                 onRequestSort={handleSort}
                                 onSelectAllClick={handleSelectAllClick}
                                 headLabel={[
-                                    { id: 'description', label: 'Promotion' },
-                                    // { id: 'type', label: 'Type' },
-                                    { id: 'discountRate', label: 'DiscountRate' },
-                                    { id: 'startDate', label: 'StartDate' },
-                                    { id: 'endDate', label: 'EndDate' },
-                                    // { id: 'approveManager', label: 'ApproveManager' },
+                                    { id: 'name', label: 'Counter Name' },
+                                    { id: 'numOfStaff', label: 'Number of Staff' },
                                     { id: '', label: '' },
                                 ]}
                             />
                             <TableBody>
                                 {dataFiltered
                                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                                    .map((row, index) => (
-                                        <UserTableRow
-                                            key={row.id}
+                                    .map((row) => (
+                                        <CounterTableRow
+                                            key={row.counterId}
                                             row={row}
-                                            selected={selected.indexOf(row.promotionId) !== -1}
-                                            handleClick={(event) =>
-                                                handleClick(event, row.promotionId)
-                                            }
-                                            getPromotion={getPromotion}
-
+                                            selected={selected.indexOf(row.code) !== -1}
+                                            handleClick={(event) => handleClick(event, row.code)}
+                                            onReload={fetchAllCounters}
                                         />
                                     ))}
 
                                 <TableEmptyRows
                                     height={77}
-                                    emptyRows={emptyRows(page, rowsPerPage, promotion.length)}
+                                    emptyRows={emptyRows(page, rowsPerPage, counters.length)}
                                 />
 
                                 {notFound && <TableNoData query={filterName} />}
@@ -203,7 +198,7 @@ export default function PromotionView() {
                 <TablePagination
                     page={page}
                     component="div"
-                    count={promotion.length}
+                    count={counters.length}
                     rowsPerPage={rowsPerPage}
                     onPageChange={handleChangePage}
                     rowsPerPageOptions={[5, 10, 25]}

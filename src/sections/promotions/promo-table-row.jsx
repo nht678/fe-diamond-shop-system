@@ -23,20 +23,9 @@ import PromotionEditForm from './promo-edit-modal';
 import PromotionDeleteForm from './promo-del-modal';
 // import { Edit } from '@mui/icons-material';
 
-
 // ----------------------------------------------------------------------
 
-export default function UserTableRow({
-  selected,
-  promotionId,
-  type,
-  approveManager,
-  description,
-  discountRate,
-  startDate,
-  endDate,
-  handleClick,
-}) {
+export default function UserTableRow({ selected, row, handleClick, getPromotion}) {
   const [open, setOpen] = useState(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
@@ -67,18 +56,22 @@ export default function UserTableRow({
     setEditOpen(false);
   };
 
-  const onSubmit = async(updatedData) => {
-   try{
-    const res = await axios.put(`http://localhost:5188/api/Promotion/UpdatePromotion?${promotionId}`,updatedData)
-    if (res === 0){
-      toast.success("Edit promotion success");
-    }else{
-      toast.error('Edit promotion fail')
+  const onSubmit = async (updatedData) => {
+    try {
+      const res = await axios.put(
+        `http://localhost:5188/api/Promotion/UpdatePromotion/${row.promotionId}`,
+        updatedData
+      );
+      if (res.status === 200) {
+        toast.success('Edit promotion success');
+        getPromotion();
+      } else {
+        toast.error('Edit promotion fail');
+      }
+      handleEditClose();
+    } catch (e) {
+      toast.error('Error response');
     }
-    handleEditClose();
-   }catch(e){
-    toast.error('Error response')
-   }
   };
 
   const handleDeleteOpen = () => {
@@ -91,23 +84,33 @@ export default function UserTableRow({
     handleCloseMenu();
   };
 
-  const onDelete = async() => {
-    try{
-      const res = await axios.delete(`http://localhost:5188/api/Promotion/DeletePromotion?id=${promotionId}`);
-      if(res.data === 1 ){
-        toast.success("Delete success");
-      }else{
-        toast.error("Delete fail")
+  const onDelete = async () => {
+    try {
+      const res = await axios.delete(
+        `http://localhost:5188/api/Promotion/DeletePromotion?id=${row.promotionId}`
+      );
+      if (res.status === 200) {
+        toast.success('Delete success');
+        getPromotion();
+      } else {
+        toast.error('Delete fail');
       }
       handleDeleteClose();
       // window.location.reload();
-    }catch(e){
-      toast.error("error response")
+    } catch (e) {
+      toast.error('error response');
     }
-   
   };
 
-
+  // convert date to dd/mm/yyyy
+  const convertDate = (date) => {
+    if (!date) return '';
+    const dateObj = new Date(date);
+    const day = dateObj.getDate();
+    const month = dateObj.getMonth() + 1;
+    const year = dateObj.getFullYear();
+    return `${day}/${month}/${year}`;
+  };
 
   return (
     <>
@@ -115,13 +118,15 @@ export default function UserTableRow({
         <TableCell padding="checkbox">
           <Checkbox disableRipple checked={selected} onChange={handleClick} />
         </TableCell>
-        
-        <TableCell>{type}</TableCell>
-        <TableCell>{`${discountRate}%`}</TableCell>
-        <TableCell>{startDate}</TableCell>
-        <TableCell>{endDate}</TableCell>
 
-        <TableCell align='right'>
+        <TableCell>{row.description}</TableCell>
+        {/* <TableCell>{row.type}</TableCell> */}
+        <TableCell>{`${row.discountRate}%`}</TableCell>
+        <TableCell>{convertDate(row.startDate)}</TableCell>
+        <TableCell>{convertDate(row.endDate)}</TableCell>
+        {/* <TableCell>{row.approveManager}</TableCell> */}
+
+        <TableCell align="right">
           <Button variant="outlined" onClick={handleDialogOpen}>
             More Info
           </Button>
@@ -136,39 +141,33 @@ export default function UserTableRow({
         <DialogContent>
           <Grid container spacing={2}>
             <Grid item xs={12}>
-              <Typography variant="h6">Promotion ID:</Typography>
-              <Typography>{promotionId}</Typography>
+              <Typography variant="h6">Promotion</Typography>
+              <Typography>{row.description}</Typography>
             </Grid>
             <Grid item xs={12}>
               <Typography variant="h6">Type:</Typography>
-              <Typography>{type}</Typography>
+              <Typography>{row.type}</Typography>
             </Grid>
             <Grid item xs={12}>
               <Typography variant="h6">DiscountRate:</Typography>
-              <Typography>{`${discountRate}%`}</Typography>
+              <Typography>{`${row.discountRate}%`}</Typography>
             </Grid>
-            <Grid item xs={12}>
+            {/* <Grid item xs={12}>
               <Typography variant="h6">Approval Manager:</Typography>
-              <Typography>{approveManager}</Typography>
-            </Grid>
+              <Typography>{row.approveManager}</Typography>
+            </Grid> */}
             <Grid item xs={12}>
               <Typography variant="h6">Start Date:</Typography>
-              <Typography>{startDate}</Typography>
+              <Typography>{convertDate(row.startDate)}</Typography>
             </Grid>
             <Grid item xs={12}>
               <Typography variant="h6">End Date:</Typography>
-              <Typography>{endDate}</Typography>
-            </Grid>
-            <Grid item xs={12}>
-              <Typography variant="h6">Description:</Typography>
-              <Typography>{description}</Typography>
+              <Typography>{convertDate(row.endDate)}</Typography>
             </Grid>
           </Grid>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleDialogClose}>
-            Close
-          </Button>
+          <Button onClick={handleDialogClose}>Close</Button>
         </DialogActions>
       </Dialog>
 
@@ -191,13 +190,12 @@ export default function UserTableRow({
           <Iconify icon="eva:trash-2-outline" sx={{ mr: 2 }} />
           Delete
         </MenuItem>
-
       </Popover>
 
       <PromotionEditForm
         open={editOpen}
         onClose={handleEditClose}
-        promotion={{ promotionId, type, discountRate, startDate, endDate, approveManager, description }}
+        promotion={row}
         onSubmit={onSubmit}
       />
 
@@ -205,21 +203,15 @@ export default function UserTableRow({
         open={deleteOpen}
         onClose={handleDeleteClose}
         onDelete={onDelete}
-        promotion={{ promotionId, type, discountRate, startDate, endDate, approveManager, description }}
+        promotion={row}
       />
     </>
   );
 }
 
 UserTableRow.propTypes = {
- 
-  promotionId: PropTypes.any,
-  type: PropTypes.string,
-  approveManager: PropTypes.string,
-  description: PropTypes.string,
-  handleClick: PropTypes.func,
-  discountRate: PropTypes.number,
-  startDate: PropTypes.instanceOf(Date),
-  endDate: PropTypes.instanceOf(Date),
+  row: PropTypes.object,
   selected: PropTypes.any,
+  handleClick: PropTypes.func,
+  getPromotion: PropTypes.func,
 };

@@ -1,6 +1,4 @@
-import axios from 'axios';
 import { useState, useEffect } from 'react';
-import { toast } from 'react-toastify';
 
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
@@ -15,34 +13,26 @@ import TablePagination from '@mui/material/TablePagination';
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 
+import axios from 'axios';
 import TableNoData from '../table-no-data';
-import UserTableRow from '../promo-table-row';
-import UserTableHead from '../promo-table-head';
+import UserTableRow from '../purchase-table-row';
+import UserTableHead from '../purchase-table-head';
 import TableEmptyRows from '../table-empty-rows';
-import PromotionForm from '../create-promo-table';
-import UserTableToolbar from '../promo-table-toolbar';
+import UserTableToolbar from '../purchase-table-toolbar';
 import { emptyRows, applyFilter, getComparator } from '../utils';
+import InvoiceTemplate from '../purchase-form';
 
 // ----------------------------------------------------------------------
 
-export default function PromotionView() {
-    const [promotion, setPromotion] = useState([]);
+export default function PurchaseView() {
     const [page, setPage] = useState(0);
     const [order, setOrder] = useState('asc');
     const [selected, setSelected] = useState([]);
     const [orderBy, setOrderBy] = useState('name');
     const [filterName, setFilterName] = useState('');
     const [rowsPerPage, setRowsPerPage] = useState(5);
-    const [showPromotionForm, setShowPromotionForm] = useState(false);
-
-    useEffect(() => {
-        getPromotion();
-    }, []);
-
-    const getPromotion = async () => {
-        const res = await axios.get('http://localhost:5188/api/Promotion/GetPromotions');
-        setPromotion(res.data);
-    };
+    const [showBillForm, setShowBillForm] = useState(false);
+    const [bills, setBills] = useState([]);
 
     const handleSort = (event, id) => {
         const isAsc = orderBy === id && order === 'asc';
@@ -54,7 +44,7 @@ export default function PromotionView() {
 
     const handleSelectAllClick = (event) => {
         if (event.target.checked) {
-            const newSelecteds = promotion.map((n) => n.name);
+            const newSelecteds = bills.map((n) => n.name);
             setSelected(newSelecteds);
             return;
         }
@@ -93,30 +83,34 @@ export default function PromotionView() {
         setFilterName(event.target.value);
     };
 
+    const fetchBillPurchase = async () => {
+        try {
+            const response = await axios.get('http://localhost:5188/api/Bill/GetBills?type=2');
+            setBills(response.data);
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    useEffect(() => {
+        fetchBillPurchase();
+    }, []);
+
     const dataFiltered = applyFilter({
-        inputData: promotion,
+        inputData: bills,
         comparator: getComparator(order, orderBy),
         filterName,
     });
 
     const notFound = !dataFiltered.length && !!filterName;
 
-    const handleClosePromotionForm = () => {
-        setShowPromotionForm(false);
+    const handleCloseBillForm = () => {
+        setShowBillForm(false);
     };
 
-    const handleNewPromotionClick = async (newPromotionData) => {
-        const res = await axios.post(
-            'http://localhost:5188/api/Promotion/AddNewPromotion',
-            newPromotionData
-        );
-        if (res.data === 1) {
-            toast.success('Create promotion success');
-        } else {
-            toast.error('Create promotion fail');
-        }
-        setShowPromotionForm(false);
-        getPromotion();
+    const handleNewBillClick = (newBillData) => {
+        // addBill(newBillData);
+        setShowBillForm(true);
     };
 
     return (
@@ -128,23 +122,21 @@ export default function PromotionView() {
             }}
         >
             <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
-                <Typography variant="h4">Promotion</Typography>
+                <Typography variant="h4">Purchase</Typography>
 
                 <Button
-                    onClick={() => setShowPromotionForm(true)}
+                    onClick={() => setShowBillForm(true)}
                     variant="contained"
                     color="inherit"
                     startIcon={<Iconify icon="eva:plus-fill" />}
                 >
-                    New Promotion
+                    New Purchase Bill
                 </Button>
-            </Stack>
 
-            <PromotionForm
-                open={showPromotionForm}
-                onClose={handleClosePromotionForm}
-                onSubmit={handleNewPromotionClick}
-            />
+                {showBillForm && (
+                    <InvoiceTemplate open={showBillForm} onClose={handleCloseBillForm} fetchBillPurchase={fetchBillPurchase} />
+                )}
+            </Stack>
 
             <Card>
                 <UserTableToolbar
@@ -159,39 +151,34 @@ export default function PromotionView() {
                             <UserTableHead
                                 order={order}
                                 orderBy={orderBy}
-                                rowCount={promotion.length}
+                                rowCount={bills.length}
                                 numSelected={selected.length}
                                 onRequestSort={handleSort}
                                 onSelectAllClick={handleSelectAllClick}
                                 headLabel={[
-                                    { id: 'description', label: 'Promotion' },
-                                    // { id: 'type', label: 'Type' },
-                                    { id: 'discountRate', label: 'DiscountRate' },
-                                    { id: 'startDate', label: 'StartDate' },
-                                    { id: 'endDate', label: 'EndDate' },
-                                    // { id: 'approveManager', label: 'ApproveManager' },
-                                    { id: '', label: '' },
+                                    { id: 'billId', label: 'Bill Code' },
+                                    { id: 'customerName', label: 'Customer Name' },
+                                    { id: 'staffName', label: 'Staff Name' },
+                                    { id: 'totalAmount', label: 'TotalAmount' },
+                                    { id: 'saleDate', label: 'Purchase Date' },
+                                    { id: '' },
                                 ]}
                             />
                             <TableBody>
                                 {dataFiltered
                                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                                    .map((row, index) => (
+                                    .map((row) => (
                                         <UserTableRow
                                             key={row.id}
                                             row={row}
-                                            selected={selected.indexOf(row.promotionId) !== -1}
-                                            handleClick={(event) =>
-                                                handleClick(event, row.promotionId)
-                                            }
-                                            getPromotion={getPromotion}
-
+                                            selected={selected.indexOf(row.billId) !== -1}
+                                            handleClick={(event) => handleClick(event, row.billId)}
+                                            fetchBillPurchase={fetchBillPurchase} // Truyền hàm fetchBillPurchase
                                         />
                                     ))}
-
                                 <TableEmptyRows
                                     height={77}
-                                    emptyRows={emptyRows(page, rowsPerPage, promotion.length)}
+                                    emptyRows={emptyRows(page, rowsPerPage, bills.length)}
                                 />
 
                                 {notFound && <TableNoData query={filterName} />}
@@ -203,7 +190,7 @@ export default function PromotionView() {
                 <TablePagination
                     page={page}
                     component="div"
-                    count={promotion.length}
+                    count={bills.length}
                     rowsPerPage={rowsPerPage}
                     onPageChange={handleChangePage}
                     rowsPerPageOptions={[5, 10, 25]}

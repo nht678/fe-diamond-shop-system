@@ -8,7 +8,7 @@ export default function UserPage() {
   return (
     <>
       <Helmet>
-        <title> Customer </title>
+        <title> Customer | Minimal UI </title>
       </Helmet>
 
       <CustomerView />

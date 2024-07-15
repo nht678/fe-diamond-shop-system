@@ -18,7 +18,7 @@ export default function TableEmptyRows({ emptyRows, height }) {
         }),
       }}
     >
-      <TableCell colSpan={4} />
+      <TableCell colSpan={9} />
     </TableRow>
   );
 }

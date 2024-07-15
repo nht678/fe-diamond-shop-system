@@ -23,15 +23,28 @@ export default function AppWebsiteVisits({ title, subheader, chart, ...other }) 
     },
     labels,
     xaxis: {
-      type: 'datetime',
+      type: 'category'
     },
+    yaxis: [
+      {
+        title: {
+          text: 'Sales',
+        },
+      },
+      {
+        opposite: true,
+        title: {
+          text: 'Purchases'
+        }
+      }
+    ],
     tooltip: {
       shared: true,
       intersect: false,
       y: {
         formatter: (value) => {
           if (typeof value !== 'undefined') {
-            return `${value.toFixed(0)} visits`;
+            return `${value.toFixed(2)} vnđ`;
           }
           return value;
         },

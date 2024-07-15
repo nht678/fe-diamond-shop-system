@@ -106,6 +106,7 @@ export default function SalePage() {
 
     const handleCloseBillForm = () => {
         setShowBillForm(false);
+        fetchBill();
     };
 
     const handleNewBillClick = (newBillData) => {

@@ -10,6 +10,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import { InputLabel, FormControl, Autocomplete } from '@mui/material';
+import CommonFunction from 'src/utils/commonFunction';
 
 function StaffEditForm({ open, onClose, onSubmit, staff }) {
     const [counters, setCounters] = useState([]);
@@ -50,6 +51,9 @@ function StaffEditForm({ open, onClose, onSubmit, staff }) {
         const res = data.map((item) => ({ label: item.name, value: item.counterId }));
         setCounters(res);
     };
+    const role = localStorage.getItem('ROLE');
+    CommonFunction.getRoleName(formState.roleId);
+
 
     return (
         <Dialog open={open} onClose={onClose} aria-labelledby="form-dialog-title">
@@ -110,33 +114,35 @@ function StaffEditForm({ open, onClose, onSubmit, staff }) {
                     onChange={handleChange}
                     value={formState.email}
                 />
+                {!(role === '2' || role === '1') && CommonFunction.getRoleName(formState.roleId) && (
+                    <FormControl fullWidth margin="dense">
+                        <InputLabel id="role-label">Role</InputLabel>
+                        <Select
+                            labelId="role-label"
+                            name="roleId"
+                            label="Role"
+                            value={formState.roleId}
+                            onChange={handleChange}
+                        >
+                            {/* <MenuItem value="1">Admin</MenuItem>
+                   <MenuItem value="2">Manager</MenuItem> */}
+                            <MenuItem value="3">Staff</MenuItem>
+                        </Select>
+                    </FormControl>
+                )}
+                {CommonFunction.getRoleName(formState.roleId) === "Staff" && (
+                    <Autocomplete
+                        disablePortal
+                        id="counterId"
+                        options={counters}
+                        value={counters.find((option) => option.value === formState.counterId) || null}
+                        onChange={(event, newValue) => {
+                            setFormState({ ...formState, counterId: newValue?.value });
+                        }}
+                        renderInput={(params) => <TextField {...params} label="Counter" />}
+                    />
 
-                <FormControl fullWidth margin="dense">
-                    <InputLabel id="role-label">Role</InputLabel>
-                    <Select
-                        labelId="role-label"
-                        name="roleId"
-                        label="Role"
-                        value={formState.roleId}
-                        onChange={handleChange}
-                    >
-                        <MenuItem value="1">Admin</MenuItem>
-                        <MenuItem value="2">Manager</MenuItem>
-                        <MenuItem value="3">Staff</MenuItem>
-                    </Select>
-                </FormControl>
-
-                <Autocomplete
-                    disablePortal
-                    id="counterId"
-                    options={counters}
-                    value={counters.find((option) => option.value === formState.counterId) || null}
-                    onChange={(event, newValue) => {
-                        setFormState({ ...formState, counterId: newValue?.value });
-                    }}
-                    renderInput={(params) => <TextField {...params} label="Counter" />}
-                />
-
+                )}
                 <FormControl fullWidth margin="dense">
                     <InputLabel id="status-label">Status</InputLabel>
                     <Select
