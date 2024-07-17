@@ -39,11 +39,11 @@ function CrateCounterForm({ open, onClose, onSubmit, counters }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault(); // Ngăn chặn hành động submit mặc định của form
-    if(validate()) {
+    if (validate()) {
       await onSubmit(formState); // Gọi addPromotion
       setFormState(initialFormState); // Clear các trường của form sau khi submit
+      onClose();
     }
-    onClose();
   };
 
   // const fetchAllStaffHasNoCounter = async () => {

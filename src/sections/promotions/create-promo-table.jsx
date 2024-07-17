@@ -95,8 +95,8 @@ function PromotionForm({ open, onClose, onSubmit }) {
     if(validate()) {
       onSubmit(formState); // Gọi addPromotion
       setFormState(initialFormState); // Clear các trường của form sau khi submit
+      onClose();
     }
-    onClose();
   };
   
 
