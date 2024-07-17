@@ -29,7 +29,7 @@ export default function NewModal({ show, handleClose, createJew }) {
             jewelryMaterial: {
                 gemId: '',
                 goldId: '',
-                goldQuantity: 50,
+                goldWeight: 50,
                 gemQuantity: 50,
             },
             barcode: '',
@@ -40,7 +40,7 @@ export default function NewModal({ show, handleClose, createJew }) {
             console.log(values);
             values.previewImage = imageName;
             // Chuyển đổi warrantyTime thành số nguyên nếu có giá trị, hoặc giữ nguyên null
-        values.warrantyTime = values.warrantyTime ? parseInt(values.warrantyTime, 10) : null;
+            values.warrantyTime = values.warrantyTime ? parseInt(values.warrantyTime, 10) : null;
             const res = await createJew(values);
             if (res.status === 200) {
                 toast.success('Jewellery added successfully');
@@ -56,18 +56,30 @@ export default function NewModal({ show, handleClose, createJew }) {
                 'laborCost',
                 'barcode',
                 'jewelryTypeId',
+                'warrantyTime',
             ];
             validateFields.forEach((field) => {
                 if (!values[field]) {
                     errors[field] = 'Required';
                 }
             });
-            // nếu trống gemId hoặc goldId thì báo lỗi
-            if (!values.jewelryMaterial.gemId) {
-                errors['jewelryMaterial.gemId'] = 'Required';
+
+            if (values.laborCost && Number(values.laborCost) < 0) {
+                errors.laborCost = 'Must be greater than or equal to 0';
             }
-            if (!values.jewelryMaterial.goldId) {
-                errors['jewelryMaterial.goldId'] = 'Required';
+            if (values.warrantyTime && Number(values.warrantyTime) < 0) {
+                errors.warrantyTime = 'Must be greater than or equal to 0';
+            }
+            if (!values.jewelryTypeId) {
+                errors.jewelryTypeId = 'Please select a jewelry type';
+            }
+            if (!values.jewelryMaterial || !values.jewelryMaterial.gemId) {
+                errors.jewelryMaterial = errors.jewelryMaterial || {};
+                errors.jewelryMaterial.gemId = 'Please select a gem type';
+            }
+            if (!values.jewelryMaterial || !values.jewelryMaterial.goldId) {
+                errors.jewelryMaterial = errors.jewelryMaterial || {};
+                errors.jewelryMaterial.goldId = 'Please select a gold type';
             }
             return errors;
         },
@@ -215,13 +227,9 @@ export default function NewModal({ show, handleClose, createJew }) {
                                     variant="outlined"
                                     name="code"
                                     value={formik.values.code}
-                                    // onChange={formik.handleChange}
                                     onChange={(e) => {
                                         formik.setFieldValue('code', e.target.value.toUpperCase());
-                                        formik.setFieldValue(
-                                            'barcode',
-                                            e.target.value.toUpperCase()
-                                        );
+                                        formik.setFieldValue('barcode', e.target.value.toUpperCase());
                                     }}
                                     onBlur={formik.handleBlur}
                                     error={formik.touched.code && Boolean(formik.errors.code)}
@@ -258,6 +266,8 @@ export default function NewModal({ show, handleClose, createJew }) {
                                         onChange={formik.handleChange}
                                         onBlur={formik.handleBlur}
                                         type="number"
+                                        error={formik.touched.laborCost && Boolean(formik.errors.laborCost)}
+                                        helperText={formik.touched.laborCost && formik.errors.laborCost}
                                         sx={{ width: 300 }}
                                     />
                                     <TextField
@@ -268,6 +278,8 @@ export default function NewModal({ show, handleClose, createJew }) {
                                         onChange={formik.handleChange}
                                         onBlur={formik.handleBlur}
                                         type="number"
+                                        error={formik.touched.warrantyTime && Boolean(formik.errors.warrantyTime)}
+                                        helperText={formik.touched.warrantyTime && formik.errors.warrantyTime}
                                         sx={{ width: 300 }}
                                     />
                                 </FormControl>
@@ -277,45 +289,48 @@ export default function NewModal({ show, handleClose, createJew }) {
                         <Col md={6}>
                             <InputGroup className="mb-4 mt-3">
                                 <Form.Label>
-                                    Gold Weight: {formik.values.jewelryMaterial.goldQuantity} grams
+                                    Gold Weight: {formik.values.jewelryMaterial.goldWeight} grams
                                 </Form.Label>
                                 <Form.Range
                                     className="custom-range"
-                                    name="jewelryMaterial.goldQuantity"
+                                    name="jewelryMaterial.goldWeight"
                                     min={0}
                                     max={2000}
                                     step={1}
-                                    value={formik.values.jewelryMaterial.goldQuantity}
+                                    value={formik.values.jewelryMaterial.goldWeight}
                                     onChange={formik.handleChange}
                                     onBlur={formik.handleBlur}
                                     style={{ width: '100%' }}
                                 />
                             </InputGroup>
-                            <InputGroup className="mb-4 mt-3">
-                                <Autocomplete
-                                    disablePortal
-                                    id="goldtype-autocomplete"
-                                    options={goldtype}
-                                    onChange={(event, value) =>
-                                        formik.setFieldValue(
-                                            'jewelryMaterial.goldId',
-                                            value ? value.value : ''
-                                        )
-                                    }
-                                    value={
-                                        goldtype.find(
-                                            (option) =>
-                                                option.value ===
-                                                formik.values.jewelryMaterial.goldId
-                                        ) || null
-                                    }
-                                    onBlur={formik.handleBlur}
-                                    sx={{ width: 300 }}
-                                    renderInput={(params) => (
-                                        <TextField {...params} label="Gold Type" />
-                                    )}
-                                />
-                            </InputGroup>
+                            <Autocomplete
+                                disablePortal
+                                id="goldtype-autocomplete"
+                                options={goldtype}
+                                onChange={(event, value) =>
+                                    formik.setFieldValue(
+                                        'jewelryMaterial.goldId',
+                                        value ? value.value : ''
+                                    )
+                                }
+                                value={
+                                    goldtype.find(
+                                        (option) =>
+                                            option.value ===
+                                            formik.values.jewelryMaterial.goldId
+                                    ) || null
+                                }
+                                onBlur={formik.handleBlur}
+                                sx={{ width: 300 }}
+                                renderInput={(params) => (
+                                    <TextField
+                                        {...params}
+                                        label="Gold Type"
+                                        error={formik.touched.jewelryMaterial?.goldId && Boolean(formik.errors.jewelryMaterial?.goldId)}
+                                        helperText={formik.touched.jewelryMaterial?.goldId && formik.errors.jewelryMaterial?.goldId}
+                                    />
+                                )}
+                            />
                         </Col>
                         {/* Gem Material */}
                         <Col md={6}>
@@ -335,30 +350,33 @@ export default function NewModal({ show, handleClose, createJew }) {
                                     style={{ width: '100%' }}
                                 />
                             </InputGroup>
-                            <InputGroup className="mb-4 mt-3">
-                                <Autocomplete
-                                    disablePortal
-                                    id="gemtype-autocomplete"
-                                    options={gemtype}
-                                    onChange={(event, value) =>
-                                        formik.setFieldValue(
-                                            'jewelryMaterial.gemId',
-                                            value ? value.value : ''
-                                        )
-                                    }
-                                    value={
-                                        gemtype.find(
-                                            (option) =>
-                                                option.value === formik.values.jewelryMaterial.gemId
-                                        ) || null
-                                    }
-                                    onBlur={formik.handleBlur}
-                                    sx={{ width: 300 }}
-                                    renderInput={(params) => (
-                                        <TextField {...params} label="Gem Type" />
-                                    )}
-                                />
-                            </InputGroup>
+                            <Autocomplete
+                                disablePortal
+                                id="gemtype-autocomplete"
+                                options={gemtype}
+                                onChange={(event, value) =>
+                                    formik.setFieldValue(
+                                        'jewelryMaterial.gemId',
+                                        value ? value.value : ''
+                                    )
+                                }
+                                value={
+                                    gemtype.find(
+                                        (option) =>
+                                            option.value === formik.values.jewelryMaterial.gemId
+                                    ) || null
+                                }
+                                onBlur={formik.handleBlur}
+                                sx={{ width: 300 }}
+                                renderInput={(params) => (
+                                    <TextField
+                                        {...params}
+                                        label="Gem Type"
+                                        error={formik.touched.jewelryMaterial?.gemId && Boolean(formik.errors.jewelryMaterial?.gemId)}
+                                        helperText={formik.touched.jewelryMaterial?.gemId && formik.errors.jewelryMaterial?.gemId}
+                                    />
+                                )}
+                            />
                         </Col>
                         {/* Jewellery Type */}
                         <Col md={6} className="mb-4 mt-3">
@@ -377,7 +395,12 @@ export default function NewModal({ show, handleClose, createJew }) {
                                 onBlur={formik.handleBlur}
                                 sx={{ width: 300 }}
                                 renderInput={(params) => (
-                                    <TextField {...params} label="Jewellery Type" />
+                                    <TextField
+                                        {...params}
+                                        label="Jewellery Type"
+                                        error={formik.touched.jewelryTypeId && Boolean(formik.errors.jewelryTypeId)}
+                                        helperText={formik.touched.jewelryTypeId && formik.errors.jewelryTypeId}
+                                    />
                                 )}
                             />
                         </Col>

@@ -73,7 +73,10 @@ export default function JewelleryView() {
                 theme: 'colored',
             });
         } catch (error) {
-            console.error('There was an error creating the item:', error);
+            toast.error('Failed to create item. Please try again.', {
+                position: 'bottom-right',
+                theme: 'colored',
+            });
         }
     };
 
@@ -95,13 +98,19 @@ export default function JewelleryView() {
                 `http://localhost:5188/api/Jewelry/UpdateJewelry/${id}`,
                 updatedData
             );
+            if (response.data && response.data.error) {
+                throw new Error(response.data.error);
+            }
             getJew();
             toast.success('Update successful !', {
                 position: 'bottom-right',
                 theme: 'colored',
             });
         } catch (error) {
-            console.error('Error updating jewellery:', error);
+            toast.error('Failed to update item. Please try again.', {
+                position: 'bottom-right',
+                theme: 'colored',
+            });
             throw error;
         }
     };

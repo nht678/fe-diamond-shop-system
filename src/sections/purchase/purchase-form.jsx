@@ -240,6 +240,11 @@ const InvoiceTemplate = ({ open, row, onClose, onSubmit, fetchBillPurchase }) =>
         if (!items.every((item) => item.quantity || item.quantity <= 0)) {
             toast.error('Quantity must be greater than 0');
             return;
+        } 
+
+        if (!items.every((item) => item.quantity > 0)) {
+            toast.error('Quantity must be greater than 0');
+            return;
         }
 
         try {

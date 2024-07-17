@@ -289,6 +289,11 @@ const InvoiceTemplate = ({ open, row, onClose, onSubmit }) => {
             return;
         }
 
+        if (!items.every((item) => item.quantity > 0)) {
+            toast.error('Quantity must be greater than 0');
+            return;
+        }
+
         const response = await axios.post('http://localhost:5188/api/Bill/CreateBill', formState);
         if (response.status === 200) {
             toast.success('Create bill success');
