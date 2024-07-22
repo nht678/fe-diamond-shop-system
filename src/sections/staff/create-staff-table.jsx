@@ -10,6 +10,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import { InputLabel, FormControl, Autocomplete } from '@mui/material';
 import { toast } from 'react-toastify';
+import request from 'src/request';
 
 function StaffForm({ open, onClose, onSubmit, counterIdParam }) {
     const [counters, setCounters] = useState([]);
@@ -31,7 +32,7 @@ function StaffForm({ open, onClose, onSubmit, counterIdParam }) {
     const handleChange = (e) => {
         setFormState({ ...formState, [e.target.name]: e.target.value });
     };
-    
+
     const validate = () => {
         if (!formState.code) {
             toast.error('Code is required');
@@ -58,9 +59,7 @@ function StaffForm({ open, onClose, onSubmit, counterIdParam }) {
             return false;
         }
         return true;
-    }
-
-
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault(); // Ngăn chặn hành động submit mặc định của form
@@ -68,18 +67,16 @@ function StaffForm({ open, onClose, onSubmit, counterIdParam }) {
         formState.counterId = parseInt(formState.counterId, 10);
         formState.status = formState.status === 'true';
         delete formState.userId;
-        if(validate()){
+        if (validate()) {
             await onSubmit(formState, () => {
                 setFormState(initialFormState); // Clear các trường của form sau khi submit
-                
             });
-
         }
     };
 
     const fetchCounters = async () => {
-        const response = await fetch('http://localhost:5188/api/Counter/GetCounters');
-        const data = await response.json();
+        const response = await request.get('Counter/GetCounters');
+        const data = response.data;
         const res = data.map((item) => ({ label: item.name, value: item.counterId }));
         setCounters(res);
     };

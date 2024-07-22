@@ -1,10 +1,6 @@
 import { toast } from 'react-toastify';
-import axios from 'axios';
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { useReactToPrint } from 'react-to-print';
-import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
 import {
     Box,
     Grid,
@@ -26,8 +22,17 @@ import {
 import Iconify from 'src/components/iconify';
 import { Delete as DeleteIcon } from '@mui/icons-material';
 import moment from 'moment';
+import request from 'src/request';
+import { jwtDecode } from 'jwt-decode';
+import CommonFunction from 'src/utils/commonFunction';
+import InvoicePrintTemplate from './invoice-print';
 
-const InvoiceTemplate = ({ open, row, onClose, onSubmit }) => {
+const InvoiceTemplate = ({ open, row, onClose }) => {
+    const token = localStorage.getItem('TOKEN');
+    const decoded = jwtDecode(token);
+    const currentUserId = decoded.Id;
+    const currentCounterId = decoded.jti;
+
     const [currentDate, setCurrentDate] = useState(new Date());
     const [items, setItems] = useState([]);
     const [discountRate, setDiscountRate] = useState(0);
@@ -38,17 +43,27 @@ const InvoiceTemplate = ({ open, row, onClose, onSubmit }) => {
     const [jewelryData, setJewelryData] = useState([]);
     const [counterData, setCounterData] = useState([]);
     const [currrentFormState, setCurrrentFormState] = useState('add');
+    const [openInvoice, setOpenInvoice] = useState(false);
+    const [billDetail, setBillDetail] = useState({});
+
+    const onOpenInvoice = () => {
+        setOpenInvoice(true);
+    };
+
+    const onCloseInvoice = () => {
+        setOpenInvoice(false);
+    };
 
     // Lấy dữ liệu khách hàng
     const getcustomer = async () => {
-        const response = await axios.get('http://localhost:5188/api/Customer');
+        const response = await request.get('Customer');
         setcustomerData(response.data);
     };
 
     // Lấy dữ liệu nhân viên
     const getuser = async () => {
         try {
-            const response = await axios.get('http://localhost:5188/api/User/GetUsers?roleId=3');
+            const response = await request.get('User/GetUsers?roleId=3');
             setstaffData(response.data);
         } catch (error) {
             console.error('Error fetching users:', error);
@@ -56,22 +71,22 @@ const InvoiceTemplate = ({ open, row, onClose, onSubmit }) => {
     };
 
     // Lấy dữ liệu khuyến mãi đang có
-    const getPromotion = async () => {
-        const response = await axios.get(
-            'http://localhost:5188/api/Promotion/GetPromotions?available=true'
+    const getPromotion = async (customerId = '') => {
+        const response = await request.get(
+            `Promotion/GetPromotions?available=true&customerId=${customerId}`
         );
         setpromotionData(response.data);
     };
 
     // Lấy dữ liệu trang sức
     const getjewery = async () => {
-        const response = await axios.get('http://localhost:5188/api/Jewelry/GetJewelries');
+        const response = await request.get('Jewelry/GetJewelries');
         setJewelryData(response.data);
     };
 
     // lấy dữ liệu quầy
     const getCounter = async () => {
-        const response = await axios.get('http://localhost:5188/api/Counter/GetCounters');
+        const response = await request.get('Counter/GetCounters');
         setCounterData(response.data);
     };
 
@@ -91,9 +106,7 @@ const InvoiceTemplate = ({ open, row, onClose, onSubmit }) => {
     const handleBindingDetail = async () => {
         if (!row) return;
         try {
-            const response = await axios.get(
-                `http://localhost:5188/api/Bill/GetBillById/${row.billId}`
-            );
+            const response = await request.get(`Bill/GetBillById/${row.billId}`);
             const {
                 billId,
                 customerId,
@@ -106,6 +119,7 @@ const InvoiceTemplate = ({ open, row, onClose, onSubmit }) => {
                 discountRate: totalDiscountRate,
                 discountDescription,
             } = response.data;
+            setBillDetail(response.data);
             setCurrentDate(new Date(saleDate));
             setFormState({
                 billId,
@@ -137,8 +151,8 @@ const InvoiceTemplate = ({ open, row, onClose, onSubmit }) => {
 
     const [formState, setFormState] = useState({
         customerId: null,
-        userId: null,
-        counterId: null,
+        userId: CommonFunction.IsStaff() ? parseFloat(currentUserId) : null,
+        counterId: CommonFunction.IsStaff() ? parseFloat(currentCounterId) : null,
         jewelries: [],
         promotions: [],
         totalAmount: 0,
@@ -173,12 +187,6 @@ const InvoiceTemplate = ({ open, row, onClose, onSubmit }) => {
     const calculateSubtotal = () => items.reduce((total, item) => total + item.totalAmount || 0, 0);
     const calculateDiscount = () => calculateSubtotal() * ((discountRate || 0) / 100);
     const calculateTotal = () => calculateSubtotal() - calculateDiscount();
-
-    const handleSubmit = (event) => {
-        event.preventDefault();
-        onSubmit(/* form data */);
-        onClose();
-    };
 
     const handleChangeQuantity = (index, newValue) => {
         handleInputChange(index, 'quantity', parseInt(newValue, 10));
@@ -289,12 +297,7 @@ const InvoiceTemplate = ({ open, row, onClose, onSubmit }) => {
             return;
         }
 
-        if (!items.every((item) => item.quantity > 0)) {
-            toast.error('Quantity must be greater than 0');
-            return;
-        }
-
-        const response = await axios.post('http://localhost:5188/api/Bill/CreateBill', formState);
+        const response = await request.post('Bill/CreateBill', formState);
         if (response.status === 200) {
             toast.success('Create bill success');
             setCurrrentFormState('view');
@@ -366,7 +369,9 @@ const InvoiceTemplate = ({ open, row, onClose, onSubmit }) => {
                                             (option) => option.userId === formState.userId
                                         ) || null
                                     }
-                                    getOptionLabel={(option) => `Code: ${option.code} - Name: ${option.fullName}`}
+                                    getOptionLabel={(option) =>
+                                        `Code: ${option.code} - Name: ${option.fullName}`
+                                    }
                                     onChange={(event, newValue) => {
                                         setFormState((prevState) => ({
                                             ...prevState,
@@ -384,7 +389,9 @@ const InvoiceTemplate = ({ open, row, onClose, onSubmit }) => {
                                 <Autocomplete
                                     size="small"
                                     options={customerData}
-                                    getOptionLabel={(option) => `Code: ${option.code} - Name: ${option.fullName}`}
+                                    getOptionLabel={(option) =>
+                                        `Code: ${option.code} - Name: ${option.fullName}`
+                                    }
                                     value={
                                         customerData.find(
                                             (option) => option.customerId === formState.customerId
@@ -395,6 +402,11 @@ const InvoiceTemplate = ({ open, row, onClose, onSubmit }) => {
                                             ...prevState,
                                             customerId: newValue?.customerId,
                                         }));
+                                        getPromotion(newValue?.customerId);
+                                        if (newValue?.customerId) {
+                                            setSelectedPromotion(null);
+                                            setDiscountRate(0);
+                                        }
                                     }}
                                     renderInput={(params) => (
                                         <TextField {...params} label="Customer Name" fullWidth />
@@ -494,7 +506,13 @@ const InvoiceTemplate = ({ open, row, onClose, onSubmit }) => {
 
                                                 <TableCell>{item.totalAmount}</TableCell>
                                                 {currrentFormState === 'view' && (
-                                                    <TableCell>{item.warranty ? moment(item.warranty).format('DD/MM/YYYY') : ''}</TableCell>
+                                                    <TableCell>
+                                                        {item.warranty
+                                                            ? moment(item.warranty).format(
+                                                                  'DD/MM/YYYY'
+                                                              )
+                                                            : ''}
+                                                    </TableCell>
                                                 )}
                                                 {currrentFormState === 'add' && (
                                                     <TableCell>
@@ -576,7 +594,17 @@ const InvoiceTemplate = ({ open, row, onClose, onSubmit }) => {
                         </Button>
                     </Box>
                 )}
+
+                {currrentFormState === 'view' && (
+                    <Box display="flex" justifyContent="flex-end" mt={2}>
+                        <Button onClick={onOpenInvoice} color="primary" style={{ marginRight: 8 }}>
+                            Print Invoice
+                        </Button>
+                    </Box>
+                )}
             </DialogContent>
+
+            <InvoicePrintTemplate row={billDetail} open={openInvoice} onClose={onCloseInvoice} />
         </Dialog>
     );
 };
@@ -585,7 +613,6 @@ InvoiceTemplate.propTypes = {
     open: PropTypes.bool.isRequired,
     row: PropTypes.object,
     onClose: PropTypes.func.isRequired,
-    onSubmit: PropTypes.func.isRequired,
 };
 
 export default InvoiceTemplate;

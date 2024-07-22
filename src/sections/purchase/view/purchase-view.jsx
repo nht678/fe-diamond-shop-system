@@ -14,6 +14,7 @@ import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 
 import axios from 'axios';
+import request from 'src/request';
 import TableNoData from '../table-no-data';
 import UserTableRow from '../purchase-table-row';
 import UserTableHead from '../purchase-table-head';
@@ -85,7 +86,7 @@ export default function PurchaseView() {
 
     const fetchBillPurchase = async () => {
         try {
-            const response = await axios.get('http://localhost:5188/api/Bill/GetBills?type=2');
+            const response = await request.get('Bill/GetBills?type=2');
             setBills(response.data);
         } catch (error) {
             console.error(error);
@@ -97,7 +98,7 @@ export default function PurchaseView() {
     }, []);
 
     const dataFiltered = applyFilter({
-        inputData: bills,
+        inputData: bills ?? [],
         comparator: getComparator(order, orderBy),
         filterName,
     });
@@ -134,7 +135,11 @@ export default function PurchaseView() {
                 </Button>
 
                 {showBillForm && (
-                    <InvoiceTemplate open={showBillForm} onClose={handleCloseBillForm} fetchBillPurchase={fetchBillPurchase} />
+                    <InvoiceTemplate
+                        open={showBillForm}
+                        onClose={handleCloseBillForm}
+                        fetchBillPurchase={fetchBillPurchase}
+                    />
                 )}
             </Stack>
 
@@ -169,7 +174,7 @@ export default function PurchaseView() {
                                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                     .map((row) => (
                                         <UserTableRow
-                                            key={row.id}
+                                            key={row.billId}
                                             row={row}
                                             selected={selected.indexOf(row.billId) !== -1}
                                             handleClick={(event) => handleClick(event, row.billId)}

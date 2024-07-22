@@ -25,6 +25,7 @@ import { useNavigate } from 'react-router-dom';
 
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import request from 'src/request';
 import CounterEditForm from './counter-edit-modal';
 import CounterDeleteForm from './counter-del-modal';
 // ----------------------------------------------------------------------
@@ -54,10 +55,7 @@ export default function CounterTableRow({ selected, handleClick, row, onReload }
 
     const onSubmit = async (updatedData) => {
         try {
-            await axios.put(
-                `http://localhost:5188/api/Counter/UpdateCounter/${row.counterId}`,
-                updatedData
-            );
+            await request.put(`Counter/UpdateCounter/${row.counterId}`, updatedData);
             onReload();
             toast.success('Counter updated successfully');
         } catch (error) {
@@ -78,9 +76,7 @@ export default function CounterTableRow({ selected, handleClick, row, onReload }
 
     const onDelete = async () => {
         try {
-            const response = await axios.delete(
-                `http://localhost:5188/api/Counter/${row.counterId}`
-            );
+            const response = await request.delete(`Counter/${row.counterId}`);
             const { data } = response;
             if (data.success) {
                 toast.success(data.message);

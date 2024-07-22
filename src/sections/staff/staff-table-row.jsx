@@ -15,6 +15,7 @@ import Iconify from 'src/components/iconify';
 
 import { toast } from 'react-toastify';
 import axios from 'axios';
+import request from 'src/request';
 import StaffEditForm from './staff-edit-modal';
 import StaffDeleteForm from './staff-del-modal';
 
@@ -53,10 +54,7 @@ export default function UserTableRow({ selected, row, handleClick, status, onRel
 
     const onSubmit = async (updatedData) => {
         try {
-            const response = await axios.put(
-                `http://localhost:5188/api/User/UpdateUser/${row.userId}`,
-                updatedData
-            );
+            const response = await request.put(`User/UpdateUser/${row.userId}`, updatedData);
             if (response.status === 200) {
                 toast.success('Staff updated successfully');
                 handleEditClose();
@@ -77,19 +75,17 @@ export default function UserTableRow({ selected, row, handleClick, status, onRel
         handleCloseMenu();
     };
 
-    const onDelete = async() => {
-            try {
-                const response = await axios.delete(
-                    `http://localhost:5188/api/User/DeleteUser/${row.userId}`
-                );
-                if (response.status === 200) {
-                    toast.success('Staff deleted successfully');
-                    handleDeleteClose();
-                    onReload();
-                }
-            } catch (error) {
-                toast.error(error.message);
+    const onDelete = async () => {
+        try {
+            const response = await request.delete(`User/DeleteUser/${row.userId}`);
+            if (response.status === 200) {
+                toast.success('Staff deleted successfully');
+                handleDeleteClose();
+                onReload();
             }
+        } catch (error) {
+            toast.error(error.message);
+        }
         handleDeleteClose();
     };
 

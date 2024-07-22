@@ -10,7 +10,6 @@ import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import { useNavigate } from 'react-router-dom'; // Đổi từ navigate sang useNavigate
 
-import { account } from 'src/_mock/account';
 
 // ----------------------------------------------------------------------
 

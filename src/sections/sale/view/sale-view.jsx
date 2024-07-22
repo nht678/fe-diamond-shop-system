@@ -14,6 +14,7 @@ import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 
 import axios from 'axios';
+import request from 'src/request';
 import TableNoData from '../table-no-data';
 import UserTableRow from '../sale-table-row';
 import UserTableHead from '../sale-table-head';
@@ -85,7 +86,7 @@ export default function SalePage() {
 
     const fetchBill = async () => {
         try {
-            const response = await axios.get('http://localhost:5188/api/Bill/GetBills?type=1');
+            const response = await request.get('Bill/GetBills?type=1');
             setBills(response.data);
         } catch (error) {
             console.error(error);
@@ -97,7 +98,7 @@ export default function SalePage() {
     }, []);
 
     const dataFiltered = applyFilter({
-        inputData: bills,
+        inputData: bills ?? [],
         comparator: getComparator(order, orderBy),
         filterName,
     });
@@ -110,7 +111,6 @@ export default function SalePage() {
     };
 
     const handleNewBillClick = (newBillData) => {
-        // addBill(newBillData);
         setShowBillForm(true);
     };
 
@@ -172,7 +172,7 @@ export default function SalePage() {
                                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                     .map((row) => (
                                         <UserTableRow
-                                            key={row.id}
+                                            key={row.billId}
                                             row={row}
                                             selected={selected.indexOf(row.billId) !== -1}
                                             handleClick={(event) => handleClick(event, row.billId)}

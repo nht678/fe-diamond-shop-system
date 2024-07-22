@@ -1,143 +1,142 @@
-import { faker } from '@faker-js/faker';
-
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
 
-import Iconify from 'src/components/iconify';
-
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 
-import AppTasks from '../app-tasks';
-import AppNewsUpdate from '../app-news-update';
-import AppOrderTimeline from '../app-order-timeline';
+import request from 'src/request';
 import AppCurrentVisits from '../app-current-visits';
 import AppWebsiteVisits from '../app-website-visits';
 import AppWidgetSummary from '../app-widget-summary';
-import AppTrafficBySite from '../app-traffic-by-site';
-import AppCurrentSubject from '../app-current-subject';
-import AppConversionRates from '../app-conversion-rates';
 
 // ----------------------------------------------------------------------
 
 export default function AppView() {
-  const [summary, setSummary] = useState(null);
-  const [salesData, setSalesData] = useState([]);
-  const [purchasesData, setPurchasesData] = useState([]);
-  const [saleOfCounterInYear, setSaleOfCounterInYear] = useState([]);
+    const [summary, setSummary] = useState(null);
+    const [salesData, setSalesData] = useState([]);
+    const [purchasesData, setPurchasesData] = useState([]);
+    const [saleOfCounterInYear, setSaleOfCounterInYear] = useState([]);
 
-  const fetchSummary = async () => {
-    const response = await axios.get('http://localhost:5188/api/Dashboard/GetDashboard');
-    setSummary(response.data);
-    setSalesData(response.data.completeSaleInYear.map(item => item.total));
-    setPurchasesData(response.data.completePurchaseInYear.map(item => item.total));
-    setSaleOfCounterInYear(response.data.completeSalesByCounterInYear);
-  }
+    const fetchSummary = async () => {
+        const response = await request.get('Dashboard/GetDashboard');
+        setSummary(response.data);
+        setSalesData(response.data.completeSaleInYear.map((item) => item.total));
+        setPurchasesData(response.data.completePurchaseInYear.map((item) => item.total));
+        setSaleOfCounterInYear(response.data.completeSalesByCounterInYear);
+    };
 
-  useEffect(() => {
-    fetchSummary();
-  }, []);
+    useEffect(() => {
+        fetchSummary();
+    }, []);
 
-  return (
-    <Container maxWidth="xl">
-      <Typography variant="h4" sx={{ mb: 5 }}>
-        Hi, Welcome back 👋
-      </Typography>
+    return (
+        <Container maxWidth="xl">
+            <Typography variant="h4" sx={{ mb: 5 }}>
+                Hi, Welcome back 👋
+            </Typography>
 
-      <Grid container spacing={3}>
-        <Grid xs={12} sm={6} md={3}>
-          <AppWidgetSummary
-            title="Month Sales"
-            total={summary?.saleCountInMonth}
-            color="success"
-            icon={<img alt="icon" src="/assets/icons/glass/ic_glass_bag.png" />}
-          />
-        </Grid>
+            <Grid container spacing={3}>
+                <Grid xs={12} sm={6} md={3}>
+                    <AppWidgetSummary
+                        title="Month Sales"
+                        total={summary?.saleCountInMonth}
+                        color="success"
+                        icon={<img alt="icon" src="/assets/icons/glass/ic_glass_bag.png" />}
+                    />
+                </Grid>
 
-        <Grid xs={12} sm={6} md={3}>
-          <AppWidgetSummary
-            title="Total Sales"
-            total={summary?.totalSaleInMonth}
-            color="warning"
-            icon={<img alt="icon" src="/assets/icons/glass/ic_glass_buy.png" />}
-          />
-        </Grid>
+                <Grid xs={12} sm={6} md={3}>
+                    <AppWidgetSummary
+                        title="Total Sales"
+                        total={summary?.totalSaleInMonth}
+                        color="warning"
+                        icon={<img alt="icon" src="/assets/icons/glass/ic_glass_buy.png" />}
+                    />
+                </Grid>
 
+                <Grid xs={12} sm={6} md={3}>
+                    <AppWidgetSummary
+                        title="Month Purchase"
+                        total={summary?.purchaseCountInMonth}
+                        color="success"
+                        icon={<img alt="icon" src="/assets/icons/glass/ic_glass_bag.png" />}
+                    />
+                </Grid>
 
-        <Grid xs={12} sm={6} md={3}>
-          <AppWidgetSummary
-            title="Month Purchase"
-            total={summary?.purchaseCountInMonth}
-            color="success"
-            icon={<img alt="icon" src="/assets/icons/glass/ic_glass_bag.png" />}
-          />
-        </Grid>
+                <Grid xs={12} sm={6} md={3}>
+                    <AppWidgetSummary
+                        title="Total Purchase"
+                        total={summary?.totalPurchaseInMonth}
+                        color="warning"
+                        icon={<img alt="icon" src="/assets/icons/glass/ic_glass_buy.png" />}
+                    />
+                </Grid>
 
-        <Grid xs={12} sm={6} md={3}>
-          <AppWidgetSummary
-            title="Total Purchase"
-            total={summary?.totalPurchaseInMonth}
-            color="warning"
-            icon={<img alt="icon" src="/assets/icons/glass/ic_glass_buy.png" />}
-          />
-        </Grid>
+                <Grid xs={12} sm={6} md={3}>
+                    <AppWidgetSummary
+                        title="Customers"
+                        total={summary?.customerCount}
+                        color="info"
+                        icon={<img alt="icon" src="/assets/icons/glass/ic_glass_users.png" />}
+                    />
+                </Grid>
 
+                <Grid xs={12} md={12} lg={12}>
+                    <AppWebsiteVisits
+                        title="Revenue"
+                        chart={{
+                            labels: [
+                                'January',
+                                'February',
+                                'March',
+                                'April',
+                                'May',
+                                'June',
+                                'July',
+                                'August',
+                                'September',
+                                'October',
+                                'November',
+                                'December',
+                            ],
+                            series: [
+                                {
+                                    name: 'Sales',
+                                    type: 'column',
+                                    fill: 'solid',
+                                    data: salesData,
+                                },
+                                {
+                                    name: 'Purchases',
+                                    type: 'area',
+                                    fill: 'gradient',
+                                    data: purchasesData,
+                                },
+                            ],
+                        }}
+                    />
+                </Grid>
 
-        <Grid xs={12} sm={6} md={3}>
-          <AppWidgetSummary
-            title="Customers"
-            total={summary?.customerCount}
-            color="info"
-            icon={<img alt="icon" src="/assets/icons/glass/ic_glass_users.png" />}
-          />
-        </Grid>
+                <Grid xs={12} md={12} lg={12}>
+                    <AppCurrentVisits
+                        title="Sales by Counter in Year"
+                        chart={{
+                            labels: saleOfCounterInYear.map((item) => item.counterName),
+                            colors: ['#FFC260', '#536DE6'],
+                            series: [
+                                {
+                                    name: 'Sales',
+                                    type: 'column',
+                                    fill: 'solid',
+                                    data: saleOfCounterInYear.map((item) => item.total),
+                                },
+                            ],
+                        }}
+                    />
+                </Grid>
 
-        <Grid xs={12} md={12} lg={12}>
-          <AppWebsiteVisits
-            title="Revenue"
-            chart={{
-              labels: [
-                'January', 'February', 'March', 'April', 'May', 'June',
-                'July', 'August', 'September', 'October', 'November', 'December'
-              ],
-              series: [
-                {
-                  name: 'Sales',
-                  type: 'column',
-                  fill: 'solid',
-                  data: salesData,
-                },
-                {
-                  name: 'Purchases',
-                  type: 'area',
-                  fill: 'gradient',
-                  data: purchasesData,
-                },
-              ],
-            }}
-          />
-        </Grid>
-
-        <Grid xs={12} md={12} lg={12}>
-          <AppCurrentVisits
-            title="Sales by Counter in Year"
-            chart={{
-              labels: saleOfCounterInYear.map(item => item.counterName),
-              colors: ['#FFC260', '#536DE6'],
-              series: [
-                {
-                  name: 'Sales',
-                  type: 'column',
-                  fill: 'solid',
-                  data: saleOfCounterInYear.map(item => item.total),
-                },
-              ],
-            }}
-          />
-        </Grid>
-
-        {/* <Grid xs={12} md={6} lg={8}>
+                {/* <Grid xs={12} md={6} lg={8}>
           <AppConversionRates
             title="Conversion Rates"
             subheader="(+43%) than last year"
@@ -158,7 +157,7 @@ export default function AppView() {
           />
         </Grid> */}
 
-        {/* <Grid xs={12} md={6} lg={4}>
+                {/* <Grid xs={12} md={6} lg={4}>
           <AppCurrentSubject
             title="Current Subject"
             chart={{
@@ -172,7 +171,7 @@ export default function AppView() {
           />
         </Grid> */}
 
-        {/* <Grid xs={12} md={6} lg={8}>
+                {/* <Grid xs={12} md={6} lg={8}>
           <AppNewsUpdate
             title="News Update"
             list={[...Array(5)].map((_, index) => ({
@@ -243,7 +242,7 @@ export default function AppView() {
             ]}
           />
         </Grid> */}
-      </Grid>
-    </Container>
-  );
+            </Grid>
+        </Container>
+    );
 }

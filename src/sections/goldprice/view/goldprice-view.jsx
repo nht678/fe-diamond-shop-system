@@ -10,10 +10,9 @@ import Typography from '@mui/material/Typography';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
 
-// import { goldprice } from 'src/_mock/goldprice';
-
 import Scrollbar from 'src/components/scrollbar';
 
+import request from 'src/request';
 import GoldpriceTableNoData from '../goldprice-no-data';
 import GoldpriceTableHead from '../goldprice-table-head';
 import GoldpriceTableEmptyRows from '../goldprice-empty-rows';
@@ -41,7 +40,7 @@ export default function GoldPriceView() {
         getGoldprice();
     }, []);
     const getGoldprice = async () => {
-        const res = await axios.get('http://localhost:5188/api/Price/GetGoldPrices');
+        const res = await request.get('/Price/GetGoldPrices');
         setGoldprice(res.data);
     };
 
@@ -95,17 +94,12 @@ export default function GoldPriceView() {
     };
 
     const dataFiltered = applyFilter({
-        inputData: goldprice,
+        inputData: goldprice ?? [],
         comparator: getComparator(order, orderBy),
         filterName,
     });
 
     const notFound = !dataFiltered.length && !!filterName;
-
-    // const handleNewStaffClick = (newStaffData) => {
-    //   addStaff(newStaffData);
-    //   setShowStaffForm(false);
-    // };
 
     return (
         <Container
@@ -149,7 +143,7 @@ export default function GoldPriceView() {
                                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                     .map((row) => (
                                         <GoldpriceTableRow
-                                            key={row.id}
+                                            key={row.goldId}
                                             city={row.city}
                                             buyPrice={row.buyPrice}
                                             sellPrice={row.sellPrice}

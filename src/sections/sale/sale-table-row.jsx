@@ -12,6 +12,7 @@ import IconButton from '@mui/material/IconButton';
 import moment from 'moment';
 
 import Iconify from 'src/components/iconify';
+import request from 'src/request';
 import InvoiceTemplate from './sale-form';
 
 // ----------------------------------------------------------------------
@@ -42,7 +43,7 @@ export default function UserTableRow({ selected, row, handleClick }) {
 
 
     const payNow = async () => {
-        const response = await axios.get(`http://localhost:5188/api/Bill/PayNow/${row.billId}`);
+        const response = await request.get(`Bill/PayNow/${row.billId}`);
         const { data, success, message } = response.data;
         if (success) {
             window.open(data, '_blank');

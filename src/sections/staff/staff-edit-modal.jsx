@@ -11,6 +11,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import { InputLabel, FormControl, Autocomplete } from '@mui/material';
 import CommonFunction from 'src/utils/commonFunction';
+import request from 'src/request';
 
 function StaffEditForm({ open, onClose, onSubmit, staff }) {
     const [counters, setCounters] = useState([]);
@@ -46,14 +47,13 @@ function StaffEditForm({ open, onClose, onSubmit, staff }) {
     };
 
     const fetchCounters = async () => {
-        const response = await fetch('http://localhost:5188/api/Counter/GetCounters');
-        const data = await response.json();
+        const response = await request.get('Counter/GetCounters');
+        const data = response.data;
         const res = data.map((item) => ({ label: item.name, value: item.counterId }));
         setCounters(res);
     };
     const role = localStorage.getItem('ROLE');
     CommonFunction.getRoleName(formState.roleId);
-
 
     return (
         <Dialog open={open} onClose={onClose} aria-labelledby="form-dialog-title">
@@ -114,34 +114,36 @@ function StaffEditForm({ open, onClose, onSubmit, staff }) {
                     onChange={handleChange}
                     value={formState.email}
                 />
-                {!(role === '2' || role === '1') && CommonFunction.getRoleName(formState.roleId) && (
-                    <FormControl fullWidth margin="dense">
-                        <InputLabel id="role-label">Role</InputLabel>
-                        <Select
-                            labelId="role-label"
-                            name="roleId"
-                            label="Role"
-                            value={formState.roleId}
-                            onChange={handleChange}
-                        >
-                            {/* <MenuItem value="1">Admin</MenuItem>
+                {!(role === '2' || role === '1') &&
+                    CommonFunction.getRoleName(formState.roleId) && (
+                        <FormControl fullWidth margin="dense">
+                            <InputLabel id="role-label">Role</InputLabel>
+                            <Select
+                                labelId="role-label"
+                                name="roleId"
+                                label="Role"
+                                value={formState.roleId}
+                                onChange={handleChange}
+                            >
+                                {/* <MenuItem value="1">Admin</MenuItem>
                    <MenuItem value="2">Manager</MenuItem> */}
-                            <MenuItem value="3">Staff</MenuItem>
-                        </Select>
-                    </FormControl>
-                )}
-                {CommonFunction.getRoleName(formState.roleId) === "Staff" && (
+                                <MenuItem value="3">Staff</MenuItem>
+                            </Select>
+                        </FormControl>
+                    )}
+                {CommonFunction.getRoleName(formState.roleId) === 'Staff' && (
                     <Autocomplete
                         disablePortal
                         id="counterId"
                         options={counters}
-                        value={counters.find((option) => option.value === formState.counterId) || null}
+                        value={
+                            counters.find((option) => option.value === formState.counterId) || null
+                        }
                         onChange={(event, newValue) => {
                             setFormState({ ...formState, counterId: newValue?.value });
                         }}
                         renderInput={(params) => <TextField {...params} label="Counter" />}
                     />
-
                 )}
                 <FormControl fullWidth margin="dense">
                     <InputLabel id="status-label">Status</InputLabel>

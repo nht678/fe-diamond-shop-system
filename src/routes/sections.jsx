@@ -1,10 +1,11 @@
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, useEffect } from 'react';
 import { Outlet, Navigate, useRoutes } from 'react-router-dom';
+import request from 'src/request';
 
 import DashboardLayout from 'src/layouts/dashboard';
 
 export const Dashboard = lazy(() => import('src/pages/app'));
-const IndexPage = lazy(() => import('src/pages/customer'))
+const IndexPage = lazy(() => import('src/pages/customer'));
 export const LoginPage = lazy(() => import('src/pages/login'));
 export const Promotion = lazy(() => import('src/pages/promotion'));
 export const Customer = lazy(() => import('src/pages/customer'));
@@ -18,9 +19,26 @@ export const Exchange = lazy(() => import('src/pages/exchange'));
 // ----------------------------------------------------------------------
 export default function Router() {
     const role = localStorage.getItem('ROLE');
+
+    // Fetch gold price every hour
+    const getGoldprice = async () => {
+        try {
+            const lastFetch = localStorage.getItem('lastFetchGoldPrice');
+            if (lastFetch && new Date().getTime() - lastFetch < 3600000) return;
+            await request.get('/Price/GetGoldPrices');
+            localStorage.setItem('lastFetchGoldPrice', new Date().getTime());
+        } catch (error) {
+            console.error('Error fetching gold price:', error);
+        }
+    };
+
+    useEffect(() => {
+        getGoldprice();
+    }, []);
+
     let childrenRoutes = [];
 
-    switch(role) {
+    switch (role) {
         case '1':
             childrenRoutes = [
                 { element: <IndexPage /> },
@@ -38,12 +56,13 @@ export default function Router() {
                 { path: 'goldprice', element: <GoldPrice /> },
                 { path: 'counter', element: <Counter /> },
                 { path: 'staff/counter/:counterId', element: <Staff /> },
-                {path: 'promotion', element: <Promotion />}
+                { path: 'promotion', element: <Promotion /> },
             ];
             break;
         case '3':
             childrenRoutes = [
                 { element: <IndexPage /> },
+                { path: 'customer', element: <Customer /> },
                 { path: 'sale', element: <Sale /> },
                 { path: 'purchase', element: <Purchase /> },
                 { path: 'goldprice', element: <GoldPrice /> },
@@ -52,9 +71,7 @@ export default function Router() {
             ];
             break;
         default:
-            childrenRoutes = [
-                { element: <IndexPage /> },
-            ];
+            childrenRoutes = [{ element: <IndexPage /> }];
             break;
     }
 
@@ -83,9 +100,20 @@ export default function Router() {
         },
     ]);
 
+    const token = localStorage.getItem('TOKEN');
+
+    // if (token && token !== 'undefined') {
+    //     const decoded = jwtDecode(token);
+    //     if (decoded.exp * 1000 < Date.now()) {
+    //         localStorage.removeItem('TOKEN');
+    //         return <Navigate to="/login" replace />;
+    //     }
+    // } else {
+    //     return <Navigate to="/login" replace />;
+    // }
+
     return routes;
 }
-
 
 // export default function Router() {
 //     const role = localStorage.getItem('ROLE');

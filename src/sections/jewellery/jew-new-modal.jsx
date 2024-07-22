@@ -13,6 +13,7 @@ import FormControl from '@mui/material/FormControl';
 import Barcode from 'react-barcode';
 import './jew-modal.css';
 import { toast } from 'react-toastify';
+import request from 'src/request';
 
 export default function NewModal({ show, handleClose, createJew }) {
     const [goldtype, setGoldtype] = useState([]);
@@ -20,6 +21,7 @@ export default function NewModal({ show, handleClose, createJew }) {
     const [jewelleryType, setJewelleryType] = useState([]);
     const [imageName, setImageName] = useState('');
     const [imagePreviewUrl, setImagePreviewUrl] = useState('');
+    const [counters, setCounters] = useState([]);
 
     const formik = useFormik({
         initialValues: {
@@ -35,6 +37,7 @@ export default function NewModal({ show, handleClose, createJew }) {
             barcode: '',
             laborCost: '',
             warrantyTime: '',
+            jewelryCounters: [],
         },
         onSubmit: async (values) => {
             console.log(values);
@@ -88,7 +91,12 @@ export default function NewModal({ show, handleClose, createJew }) {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                await Promise.all([getGemPrices(), getGoldPrices(), getJewelleryTypes()]);
+                await Promise.all([
+                    getGemPrices(),
+                    getGoldPrices(),
+                    getJewelleryTypes(),
+                    fetchCounters(),
+                ]);
             } catch (error) {
                 console.error('Error fetching data:', error);
             }
@@ -98,7 +106,7 @@ export default function NewModal({ show, handleClose, createJew }) {
 
     const getGoldPrices = async () => {
         try {
-            const response = await axios.get('http://localhost:5188/api/Price/GetGoldPrices');
+            const response = await request.get('Price/GetGoldPrices');
             const goldOptions = response.data.map((item) => ({
                 label: item.type,
                 value: item.goldId,
@@ -111,7 +119,7 @@ export default function NewModal({ show, handleClose, createJew }) {
 
     const getGemPrices = async () => {
         try {
-            const response = await axios.get('http://localhost:5188/api/Price/GetGemPrices');
+            const response = await request.get('Price/GetGemPrices');
             const gemOptions = response.data.map((item) => ({
                 label: item.type,
                 value: item.gemId,
@@ -124,9 +132,7 @@ export default function NewModal({ show, handleClose, createJew }) {
 
     const getJewelleryTypes = async () => {
         try {
-            const response = await axios.get(
-                'http://localhost:5188/api/JewelryType/GetJewelryTypes'
-            );
+            const response = await request.get('JewelryType/GetJewelryTypes');
             const jewelryOptions = response.data.map((item) => ({
                 label: item.name,
                 value: item.jewelryTypeId,
@@ -137,6 +143,13 @@ export default function NewModal({ show, handleClose, createJew }) {
         }
     };
 
+    const fetchCounters = async () => {
+        const response = await request.get('Counter/GetCounters');
+        const data = response.data;
+        const res = data.map((item) => ({ label: item.name, value: item.counterId }));
+        setCounters(res);
+    };
+
     const handleImageUpload = async (event) => {
         const file = event.target.files[0];
         if (file) {
@@ -144,11 +157,12 @@ export default function NewModal({ show, handleClose, createJew }) {
             formData.append('files', file);
             formData.append('type', 0);
             try {
-                const response = await axios.post('http://localhost:5188/api/File', formData, {
+                const response = await request.post('File', formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data',
                     },
                 });
+
                 if (response.data.data && response.data.data.length > 0) {
                     const fileName = response.data.data[0];
                     setImageName(fileName);
@@ -402,6 +416,28 @@ export default function NewModal({ show, handleClose, createJew }) {
                                         helperText={formik.touched.jewelryTypeId && formik.errors.jewelryTypeId}
                                     />
                                 )}
+                            />
+                        </Col>
+
+                        {/* Counters */}
+                        <Col md={6} className="mb-4 mt-3">
+                            <Autocomplete
+                                disablePortal
+                                id="counter-autocomplete"
+                                options={counters}
+                                multiple
+                                onChange={(event, value) =>
+                                    formik.setFieldValue(
+                                        'jewelryCounters',
+                                        value.map((item) => item.value)
+                                    )
+                                }
+                                value={counters.filter((option) =>
+                                    formik.values.jewelryCounters.includes(option.value)
+                                )}
+                                onBlur={formik.handleBlur}
+                                sx={{ width: 300 }}
+                                renderInput={(params) => <TextField {...params} label="Counters" />}
                             />
                         </Col>
                     </Row>

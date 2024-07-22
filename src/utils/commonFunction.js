@@ -3,14 +3,29 @@ class CommonFunction {
     static getRoleName = (id) => {
         switch (id) {
             case 1:
-                return "Admin";
+                return 'Admin';
             case 2:
-                return "Manager";
+                return 'Manager';
             case 3:
-                return "Staff";
+                return 'Staff';
             default:
-                return "Unknown";
+                return 'Unknown';
         }
+    };
+
+    static IsAdmin() {
+        const role = localStorage.getItem('ROLE');
+        return role === '1';
+    }
+
+    static IsManager() {
+        const role = localStorage.getItem('ROLE');
+        return role === '2';
+    }
+
+    static IsStaff() {
+        const role = localStorage.getItem('ROLE');
+        return role === '3';
     }
 }
 

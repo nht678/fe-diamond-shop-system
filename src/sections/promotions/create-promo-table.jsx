@@ -1,7 +1,5 @@
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
-import axios from 'axios';
-import { toast } from 'react-toastify';
 
 import Dialog from '@mui/material/Dialog';
 import Button from '@mui/material/Button';
@@ -9,163 +7,179 @@ import TextField from '@mui/material/TextField';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
+import { toast } from 'react-toastify';
+import { Autocomplete } from '@mui/material';
+import request from 'src/request';
+import moment from 'moment';
 
 function PromotionForm({ open, onClose, onSubmit }) {
-  const initialFormState = {
-    discountRate: '',
-    startDate: '',
-    endDate: '',
-    approveManager: '',
-    description: '',
-  };
-
-  const [formState, setFormState] = React.useState(initialFormState);
-  const [promotions, setPromotions] = React.useState([]);
-  const [errors, setErrors] = React.useState({});
-
-  useEffect(() => {
-    const fetchPromotions = async () => {
-      try {
-        const response = await axios.get('http://localhost:5188/api/Promotion/GetPromotions');
-        setPromotions(response.data);
-      } catch (error) {
-        toast.error('Failed to fetch promotions');
-      }
+    const [customers, setCustomer] = React.useState([]);
+    const initialFormState = {
+        discountRate: '',
+        startDate: '',
+        endDate: '',
+        approveManager: '',
+        description: '',
+        customerPromotions: [],
     };
 
-    fetchPromotions();
-  }, []);
+    const [formState, setFormState] = React.useState(initialFormState);
+    // const [promotions, setPromotions] = React.useState([]);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormState({ ...formState, [name]: value });
-    if (errors[name]) {
-      setErrors({ ...errors, [name]: '' });
-    }
-  };
+    useEffect(() => {
+        // const fetchPromotions = async () => {
+        //     const response = await request.get('Promotion/GetPromotions');
+        //     setPromotions(response.data);
+        // };
 
-  const validateForm = () => {
-    const tempErrors = {};
-    tempErrors.description = formState.description ? "" : "Description is required";
-    tempErrors.startDate = formState.startDate ? "" : "Start date is required";
-    tempErrors.endDate = formState.endDate ? "" : "End date is required";
-    tempErrors.discountRate = formState.discountRate ? "" : "Discount rate is required";
+        // fetchPromotions();
+        fetchCustomer();
+    }, []);
 
-    setErrors(tempErrors);
-    return Object.values(tempErrors).every(x => x === "");
-  }
+    const fetchCustomer = async () => {
+        const response = await request.get('Customer');
+        const data = response.data.map((item) => ({
+            label: item.fullName,
+            value: item.customerId,
+        }));
+        setCustomer(data);
+    };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+    const handleChange = (e) => {
+        setFormState({ ...formState, [e.target.name]: e.target.value });
+    };
+    const validate = () => {
+        if (!formState.description) {
+            toast.error('Description is required');
+            return false;
+        }
+        if (!formState.startDate) {
+            toast.error('Start Date is required');
+            return false;
+        }
+        if (!formState.endDate) {
+            toast.error('End Date is required');
+            return false;
+        }
+        if (!formState.discountRate) {
+            toast.error('Discount Rate is required');
+            return false;
+        }
+        if (formState.discountRate < 0 || formState.discountRate > 100) {
+            toast.error('Discount Rate must be between 0 and 100');
+            return false;
+        }
+        return true;
+    };
 
-    if (!validateForm()) {
-      toast.error("Please fill all required fields");
-      return;
-    }
+    const handleSubmit = (e) => {
+        e.preventDefault(); // Ngăn chặn hành động submit mặc định của form
 
-    const startDateObj = new Date(formState.startDate);
-    const endDateObj = new Date(formState.endDate);
-    const currentDate = new Date();
+        // Chuyển startDate và endDate sang đối tượng Date
+        const startDateObj = new Date(formState.startDate);
+        const endDateObj = new Date(formState.endDate);
+        const currentDate = new Date();
 
-    currentDate.setHours(0, 0, 0, 0);
+        // Đặt giờ, phút, giây, và mili giây về 0 để chỉ so sánh ngày
+        currentDate.setHours(0, 0, 0, 0);
 
-    if (startDateObj < currentDate || endDateObj < currentDate) {
-      toast.error("Start date and end date cannot be in the past.");
-      return;
-    }
+        // Kiểm tra điều kiện
+        if (startDateObj < currentDate || endDateObj < currentDate) {
+            toast.error('Start date and end date cannot be in the past.');
+            return; // Dừng hàm nếu điều kiện không được thoả mãn
+        }
 
-    const formDiscountRate = parseFloat(formState.discountRate);
+        // // Kiểm tra xem startDate và endDate của mã giảm giá mới có trùng với mã giảm giá nào hiện có không
+        // const isOverlapping = promotions.some((promo) => {
+        //     const existingStartDate = new Date(promo.startDate);
+        //     const existingEndDate = new Date(promo.endDate);
 
-    const isOverlapping = promotions.some((promo) => {
-      const promoDiscountRate = parseFloat(promo.discountRate);
-      if (promoDiscountRate !== formDiscountRate) {
-        return false; // Không kiểm tra trùng lặp nếu discountRate khác nhau
-      }
+        //     return (
+        //         (startDateObj >= existingStartDate && startDateObj <= existingEndDate) ||
+        //         (endDateObj >= existingStartDate && endDateObj <= existingEndDate) ||
+        //         (startDateObj <= existingStartDate && endDateObj >= existingEndDate)
+        //     );
+        // });
 
-      const existingStartDate = new Date(promo.startDate);
-      const existingEndDate = new Date(promo.endDate);
+        // if (isOverlapping) {
+        //     toast.error('The new promotion dates overlap with an existing promotion.');
+        //     return; // Dừng hàm nếu điều kiện không được thoả mãn
+        // }
 
-      return (
-        (startDateObj >= existingStartDate && startDateObj <= existingEndDate) ||
-        (endDateObj >= existingStartDate && endDateObj <= existingEndDate) ||
-        (startDateObj <= existingStartDate && endDateObj >= existingEndDate)
-      );
-    });
+        if (validate()) {
+            onSubmit(formState); // Gọi addPromotion
+            setFormState(initialFormState); // Clear các trường của form sau khi submit
+            onClose();
+        }
+    };
 
-    if (isOverlapping) {
-      toast.error("A promotion with the same discount rate already exists for this period.");
-      return;
-    }
-
-    onSubmit(formState);
-    setFormState(initialFormState);
-    onClose();
-    toast.success("Promotion added successfully!");
-  };
-
-  return (
-    <Dialog open={open} onClose={onClose} aria-labelledby="form-dialog-title">
-      <DialogTitle id="form-dialog-title">New Promotion</DialogTitle>
-      <DialogContent>
-        <TextField
-          margin="dense"
-          name="description"
-          label="Promotion"
-          type="text"
-          fullWidth
-          onChange={handleChange}
-          error={!!errors.description}
-          helperText={errors.description}
-          InputProps={{ style: { marginBottom: 10 } }}
-        />
-        <TextField
-          margin="dense"
-          name="startDate"
-          label="Start Date"
-          type="date"
-          fullWidth
-          onChange={handleChange}
-          error={!!errors.startDate}
-          helperText={errors.startDate}
-          InputProps={{ style: { marginBottom: 10 } }}
-          InputLabelProps={{ shrink: true }}
-        />
-        <TextField
-          margin="dense"
-          name="endDate"
-          label="End Date"
-          type="date"
-          fullWidth
-          onChange={handleChange}
-          error={!!errors.endDate}
-          helperText={errors.endDate}
-          InputProps={{ style: { marginBottom: 10 } }}
-          InputLabelProps={{ shrink: true }}
-        />
-        <TextField
-          margin="dense"
-          name="discountRate"
-          label="Discount Rate"
-          type="number"
-          fullWidth
-          onChange={handleChange}
-          error={!!errors.discountRate}
-          helperText={errors.discountRate}
-          InputProps={{ style: { marginBottom: 10 } }}
-        />
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose}>Cancel</Button>
-        <Button onClick={handleSubmit}>Submit</Button>
-      </DialogActions>
-    </Dialog>
-  );
+    return (
+        <Dialog open={open} onClose={onClose} aria-labelledby="form-dialog-title">
+            <DialogTitle id="form-dialog-title">New Promotion</DialogTitle>
+            <DialogContent>
+                <TextField
+                    margin="dense"
+                    name="description"
+                    label="Promotion"
+                    type="text"
+                    fullWidth
+                    onChange={handleChange}
+                    InputProps={{ style: { marginBottom: 10 } }}
+                />
+                <TextField
+                    margin="dense"
+                    name="startDate"
+                    label=""
+                    type="date"
+                    fullWidth
+                    onChange={handleChange}
+                    InputProps={{ style: { marginBottom: 10 } }}
+                />
+                <TextField
+                    margin="dense"
+                    name="endDate"
+                    label=""
+                    type="date"
+                    fullWidth
+                    onChange={handleChange}
+                    InputProps={{ style: { marginBottom: 10 } }}
+                />
+                <TextField
+                    margin="dense"
+                    name="discountRate"
+                    label="Discount Rate"
+                    type="text"
+                    fullWidth
+                    onChange={handleChange}
+                    InputProps={{ style: { marginBottom: 10 } }}
+                />
+                <Autocomplete
+                    multiple
+                    id="customerPromotions"
+                    options={customers}
+                    onChange={(event, value) =>
+                        setFormState({
+                            ...formState,
+                            customerPromotions: value.map((item) => ({
+                                customerId: item.value,
+                            })),
+                        })
+                    }
+                    renderInput={(params) => <TextField {...params} label="Customers" />}
+                />
+            </DialogContent>
+            <DialogActions>
+                <Button onClick={onClose}>Cancel</Button>
+                <Button onClick={handleSubmit}>Submit</Button>
+            </DialogActions>
+        </Dialog>
+    );
 }
 
 PromotionForm.propTypes = {
-  open: PropTypes.bool.isRequired,
-  onClose: PropTypes.func.isRequired,
-  onSubmit: PropTypes.func.isRequired,
+    open: PropTypes.bool.isRequired,
+    onClose: PropTypes.func.isRequired,
+    onSubmit: PropTypes.func.isRequired,
 };
 
 export default PromotionForm;

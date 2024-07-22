@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import React, { useEffect, useState, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { useFormik } from 'formik';
 import Form from 'react-bootstrap/Form';
@@ -10,17 +9,25 @@ import TextField from '@mui/material/TextField';
 import FormControl from '@mui/material/FormControl';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import Barcode from 'react-barcode';
+import request from 'src/request';
+import { toast } from 'react-toastify';
 
 export default function EditModal({ show, handleClose, onUpdate, row }) {
     const [goldtype, setGoldtype] = useState([]);
     const [gemtype, setGemtype] = useState([]);
     const [jewelryTypes, setJewelryTypes] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [counters, setCounters] = useState([]);
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                await Promise.all([getGemPrices(), getGoldPrices(), getJewelleryTypes()]);
+                await Promise.all([
+                    getGemPrices(),
+                    getGoldPrices(),
+                    getJewelleryTypes(),
+                    fetchCounters(),
+                ]);
             } catch (error) {
                 console.error('Error fetching data:', error);
             } finally {
@@ -33,7 +40,7 @@ export default function EditModal({ show, handleClose, onUpdate, row }) {
 
     const getGoldPrices = async () => {
         try {
-            const response = await axios.get('http://localhost:5188/api/Price/GetGoldPrices');
+            const response = await request.get('Price/GetGoldPrices');
             const types = response.data.map((item) => ({ label: item.type, value: item.goldId }));
             setGoldtype(types);
         } catch (error) {
@@ -43,7 +50,7 @@ export default function EditModal({ show, handleClose, onUpdate, row }) {
 
     const getGemPrices = async () => {
         try {
-            const response = await axios.get('http://localhost:5188/api/Price/GetGemPrices');
+            const response = await request.get('Price/GetGemPrices');
             const types = response.data.map((item) => ({ label: item.type, value: item.gemId }));
             setGemtype(types);
         } catch (error) {
@@ -53,9 +60,7 @@ export default function EditModal({ show, handleClose, onUpdate, row }) {
 
     const getJewelleryTypes = async () => {
         try {
-            const response = await axios.get(
-                'http://localhost:5188/api/JewelryType/GetJewelryTypes'
-            );
+            const response = await request.get('JewelryType/GetJewelryTypes');
             const jewelryOptions = response.data.map((item) => ({
                 label: item.name,
                 value: item.jewelryTypeId,
@@ -64,6 +69,13 @@ export default function EditModal({ show, handleClose, onUpdate, row }) {
         } catch (error) {
             console.error('Error fetching jewellery types:', error);
         }
+    };
+
+    const fetchCounters = async () => {
+        const response = await request.get('Counter/GetCounters');
+        const data = response.data;
+        const res = data.map((item) => ({ label: item.name, value: item.counterId }));
+        setCounters(res);
     };
 
     const formik = useFormik({
@@ -82,6 +94,7 @@ export default function EditModal({ show, handleClose, onUpdate, row }) {
             barcode: row.barcode,
             laborCost: row.laborCost,
             previewImage: row.previewImage,
+            jewelryCounters: row.jewelryCounters || [],
         },
         onSubmit: async (values) => {
             // Chuyển đổi warrantyTime thành số nguyên hoặc null
@@ -89,9 +102,29 @@ export default function EditModal({ show, handleClose, onUpdate, row }) {
                 ...values,
                 warrantyTime: values.warrantyTime ? parseInt(values.warrantyTime, 10) : null,
             };
-    
-            console.log(payload); // Log payload để kiểm tra
-    
+
+            // validate thông tin cần thiết như gemId, goldId, ...
+            if (!payload.jewelryMaterial.gemId || !payload.jewelryMaterial.goldId) {
+                toast.error('Gem and Gold are required');
+                return;
+            }
+
+            // barcode
+            if (!payload.barcode) {
+                toast.error('Barcode is required');
+                return;
+            }
+
+            if (!payload.name) {
+                toast.error('Name is required');
+                return;
+            }
+
+            if (!payload.code) {
+                toast.error('Code is required');
+                return;
+            }
+
             await onUpdate(row.jewelryId, payload);
             handleClose();
         },
@@ -103,6 +136,7 @@ export default function EditModal({ show, handleClose, onUpdate, row }) {
                 'laborCost',
                 'barcode',
                 'jewelryTypeId',
+                'warrantyTime',
             ];
             validateFields.forEach((field) => {
                 if (!values[field]) {
@@ -119,7 +153,15 @@ export default function EditModal({ show, handleClose, onUpdate, row }) {
             return errors;
         },
     });
-    
+
+    const previewImg = useMemo(
+        () =>
+            `http://localhost:5188/api/File/image/${formik.values.previewImage}?type=${
+                formik.values.previewImage !== row.previewImage ? 0 : 1
+            }`,
+        [formik.values.previewImage, row.previewImage]
+    );
+
     const handleImageUpload = async (event) => {
         const file = event.target.files[0];
         if (file) {
@@ -127,7 +169,7 @@ export default function EditModal({ show, handleClose, onUpdate, row }) {
             formData.append('files', file);
             formData.append('type', 0);
             try {
-                const response = await axios.post('http://localhost:5188/api/File', formData, {
+                const response = await request.post('File', formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data',
                     },
@@ -177,11 +219,7 @@ export default function EditModal({ show, handleClose, onUpdate, row }) {
                                     <Form.Control type="file" onChange={handleImageUpload} />
                                     {formik.values.previewImage && (
                                         <img
-                                            src={`http://localhost:5188/api/File/image/${formik.values.previewImage
-                                                }?type=${formik.values.previewImage !== row.previewImage
-                                                    ? 0
-                                                    : 1
-                                                }`}
+                                            src={previewImg}
                                             alt="Preview"
                                             style={{ marginTop: '10px', maxWidth: '300px' }}
                                         />
@@ -375,7 +413,7 @@ export default function EditModal({ show, handleClose, onUpdate, row }) {
                                 />
                             </InputGroup>
                         </Col>
-                        <Col md={{ span: 6, offset: 6 }}>
+                        <Col>
                             <InputGroup className="mb-4 mt-3">
                                 <Autocomplete
                                     disablePortal
@@ -396,6 +434,31 @@ export default function EditModal({ show, handleClose, onUpdate, row }) {
                                     sx={{ width: 300 }}
                                     renderInput={(params) => (
                                         <TextField {...params} label="Jewellery Type" />
+                                    )}
+                                />
+                            </InputGroup>
+                        </Col>
+
+                        {/* Counters */}
+                        <Col md={6}>
+                            <InputGroup className="mb-4 mt-3">
+                                <Autocomplete
+                                    multiple
+                                    id="counter-autocomplete"
+                                    options={counters}
+                                    value={formik.values.jewelryCounters.map((counter) =>
+                                        counters.find((item) => item.value === counter.counterId)
+                                    )}
+                                    onChange={(event, value) =>
+                                        formik.setFieldValue(
+                                            'jewelryCounters',
+                                            value.map((item) => ({ counterId: item.value }))
+                                        )
+                                    }
+                                    onBlur={formik.handleBlur}
+                                    sx={{ width: 600 }}
+                                    renderInput={(params) => (
+                                        <TextField {...params} label="Counters" />
                                     )}
                                 />
                             </InputGroup>

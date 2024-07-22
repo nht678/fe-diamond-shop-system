@@ -15,6 +15,7 @@ import TablePagination from '@mui/material/TablePagination';
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 
+import request from 'src/request';
 import TableNoData from '../table-no-data';
 import UserTableRow from '../promo-table-row';
 import UserTableHead from '../promo-table-head';
@@ -40,7 +41,7 @@ export default function PromotionView() {
     }, []);
 
     const getPromotion = async () => {
-        const res = await axios.get('http://localhost:5188/api/Promotion/GetPromotions');
+        const res = await request.get('Promotion/GetPromotions');
         setPromotion(res.data);
     };
 
@@ -94,7 +95,7 @@ export default function PromotionView() {
     };
 
     const dataFiltered = applyFilter({
-        inputData: promotion,
+        inputData: promotion ?? [],
         comparator: getComparator(order, orderBy),
         filterName,
     });
@@ -106,15 +107,8 @@ export default function PromotionView() {
     };
 
     const handleNewPromotionClick = async (newPromotionData) => {
-        const res = await axios.post(
-            'http://localhost:5188/api/Promotion/AddNewPromotion',
-            newPromotionData
-        );
-        if (res.data === 1) {
-            toast.success('Create promotion success');
-        } else {
-            toast.error('Create promotion fail');
-        }
+        await request.post('Promotion/AddNewPromotion', newPromotionData);
+        toast.success('Create promotion success');
         setShowPromotionForm(false);
         getPromotion();
     };
@@ -129,7 +123,6 @@ export default function PromotionView() {
         >
             <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
                 <Typography variant="h4">Promotion</Typography>
-
                 <Button
                     onClick={() => setShowPromotionForm(true)}
                     variant="contained"
@@ -140,11 +133,13 @@ export default function PromotionView() {
                 </Button>
             </Stack>
 
-            <PromotionForm
-                open={showPromotionForm}
-                onClose={handleClosePromotionForm}
-                onSubmit={handleNewPromotionClick}
-            />
+            {showPromotionForm && (
+                <PromotionForm
+                    open={showPromotionForm}
+                    onClose={handleClosePromotionForm}
+                    onSubmit={handleNewPromotionClick}
+                />
+            )}
 
             <Card>
                 <UserTableToolbar
@@ -170,6 +165,7 @@ export default function PromotionView() {
                                     { id: 'startDate', label: 'StartDate' },
                                     { id: 'endDate', label: 'EndDate' },
                                     // { id: 'approveManager', label: 'ApproveManager' },
+                                    { id: 'customerPromotions', label: 'Customers' },
                                     { id: '', label: '' },
                                 ]}
                             />
@@ -178,14 +174,13 @@ export default function PromotionView() {
                                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                     .map((row, index) => (
                                         <UserTableRow
-                                            key={row.id}
+                                            key={row.promotionId}
                                             row={row}
                                             selected={selected.indexOf(row.promotionId) !== -1}
                                             handleClick={(event) =>
                                                 handleClick(event, row.promotionId)
                                             }
                                             getPromotion={getPromotion}
-
                                         />
                                     ))}
 

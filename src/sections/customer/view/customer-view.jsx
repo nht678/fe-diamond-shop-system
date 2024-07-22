@@ -12,11 +12,10 @@ import Typography from '@mui/material/Typography';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
 
-// import { customer, addCustomer } from 'src/_mock/customer';
-
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 
+import request from 'src/request';
 import TableNoData from '../table-no-data';
 import UserTableRow from '../customer-table-row';
 import TableEmptyRows from '../table-empty-rows';
@@ -28,227 +27,195 @@ import { emptyRows, applyFilter, getComparator } from '../utils';
 // ----------------------------------------------------------------------
 
 export default function CustomerPage() {
-  // // Khởi tạo state cho danh sách khách hàng
-  // const [customer, setCustomer] = useState([]);
+    const [customer, setCustomer] = useState([]);
 
-  // // Sử dụng useEffect để gọi API khi component được mount
-  // useEffect(() => {
-  //   const fetchCustomers = async () => {
-  //     try {
-  //       const response = await fetch('https://65dc58f6e7edadead7ebb035.mockapi.io/authentication/test'); // Thay thế bằng URL của API thực tế
-  //       const data = await response.json();
+    const [page, setPage] = useState(0);
 
-  //       // Giả sử data là một mảng các đối tượng khách hàng
-  //       const formattedData = data.map((customers, index) => ({
-  //         id: customers.id,
-  //         avatarUrl: customers.avatarUrl || `/assets/images/avatars/avatar_${index + 1}.jpg`,
-  //         name: customers.name,
-  //         address: customers.address,
-  //         point: customers.point || Math.floor(Math.random() * 100) + 1,
-  //         status: customers.status || sample(['active', 'banned']),
-  //         phoneNumber: customers.phoneNumber,
-  //       }));
-  //       console.log("Customer")
+    const [order, setOrder] = useState('asc');
 
-  //       setCustomer(formattedData);
-  //     } catch (error) {
-  //       console.error('Error fetching customers:', error);
-  //     }
-  //   };
+    const [selected, setSelected] = useState([]);
 
-  //   fetchCustomers();
-  // }, []);
+    const [orderBy, setOrderBy] = useState('name');
 
-  const [customer, setCustomer] = useState([]);
+    const [filterName, setFilterName] = useState('');
 
-  const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(5);
 
-  const [order, setOrder] = useState('asc');
+    const [showCustomerForm, setShowCustomerForm] = useState(false);
 
-  const [selected, setSelected] = useState([]);
+    useEffect(() => {
+        getCustomer();
+    }, []);
+    const getCustomer = async () => {
+        const res = await request.get('Customer');
+        setCustomer(res.data);
+    };
 
-  const [orderBy, setOrderBy] = useState('name');
+    const handleSort = (event, id) => {
+        const isAsc = orderBy === id && order === 'asc';
+        if (id !== '') {
+            setOrder(isAsc ? 'desc' : 'asc');
+            setOrderBy(id);
+        }
+    };
 
-  const [filterName, setFilterName] = useState('');
+    const handleSelectAllClick = (event) => {
+        if (event.target.checked) {
+            const newSelecteds = customer.map((n) => n.name);
+            setSelected(newSelecteds);
+            return;
+        }
+        setSelected([]);
+    };
 
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+    const handleClick = (event, name) => {
+        const selectedIndex = selected.indexOf(name);
+        let newSelected = [];
+        if (selectedIndex === -1) {
+            newSelected = newSelected.concat(selected, name);
+        } else if (selectedIndex === 0) {
+            newSelected = newSelected.concat(selected.slice(1));
+        } else if (selectedIndex === selected.length - 1) {
+            newSelected = newSelected.concat(selected.slice(0, -1));
+        } else if (selectedIndex > 0) {
+            newSelected = newSelected.concat(
+                selected.slice(0, selectedIndex),
+                selected.slice(selectedIndex + 1)
+            );
+        }
+        setSelected(newSelected);
+    };
 
-  const [showCustomerForm, setShowCustomerForm] = useState(false);
+    const handleChangePage = (event, newPage) => {
+        setPage(newPage);
+    };
 
-  useEffect(() => {
-    getCustomer();
-  }, []);
-  const getCustomer = async () => {
-    const res = await axios.get('http://localhost:5188/api/Customer');
-    setCustomer(res.data);
-  };
+    const handleChangeRowsPerPage = (event) => {
+        setPage(0);
+        setRowsPerPage(parseInt(event.target.value, 10));
+    };
 
-  const handleSort = (event, id) => {
-    const isAsc = orderBy === id && order === 'asc';
-    if (id !== '') {
-      setOrder(isAsc ? 'desc' : 'asc');
-      setOrderBy(id);
-    }
-  };
+    const handleFilterByName = (event) => {
+        setPage(0);
+        setFilterName(event.target.value);
+    };
 
-  const handleSelectAllClick = (event) => {
-    if (event.target.checked) {
-      const newSelecteds = customer.map((n) => n.name);
-      setSelected(newSelecteds);
-      return;
-    }
-    setSelected([]);
-  };
+    const dataFiltered = applyFilter({
+        inputData: customer ?? [],
+        comparator: getComparator(order, orderBy),
+        filterName,
+    });
 
-  const handleClick = (event, name) => {
-    const selectedIndex = selected.indexOf(name);
-    let newSelected = [];
-    if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selected, name);
-    } else if (selectedIndex === 0) {
-      newSelected = newSelected.concat(selected.slice(1));
-    } else if (selectedIndex === selected.length - 1) {
-      newSelected = newSelected.concat(selected.slice(0, -1));
-    } else if (selectedIndex > 0) {
-      newSelected = newSelected.concat(
-        selected.slice(0, selectedIndex),
-        selected.slice(selectedIndex + 1)
-      );
-    }
-    setSelected(newSelected);
-  };
+    const notFound = !dataFiltered.length && !!filterName;
 
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
+    const handleCloseCustomerForm = () => {
+        setShowCustomerForm(false);
+    };
 
-  const handleChangeRowsPerPage = (event) => {
-    setPage(0);
-    setRowsPerPage(parseInt(event.target.value, 10));
-  };
+    const handleNewCustomerClick = async (newCustomerData) => {
+        const res = await request.post('Customer/CreateCustomer', newCustomerData);
+        if (res.status === 200) {
+            toast.success('Create customer successfully');
+        } else {
+            toast.error('Create customer failed');
+        }
+        getCustomer();
 
-  const handleFilterByName = (event) => {
-    setPage(0);
-    setFilterName(event.target.value);
-  };
+        setShowCustomerForm(false);
+    };
 
-  const dataFiltered = applyFilter({
-    inputData: customer,
-    comparator: getComparator(order, orderBy),
-    filterName,
-  });
-
-  const notFound = !dataFiltered.length && !!filterName;
-
-  const handleCloseCustomerForm = () => {
-    setShowCustomerForm(false);
-  };
-
-  const handleNewCustomerClick = async (newCustomerData) => {
-    const res = await axios.post(
-      'http://localhost:5188/api/Customer/CreateCustomer',
-      newCustomerData
-    );
-    if (res.status === 200) {
-      toast.success('Create customer successfully');
-    } else {
-      toast.error('Create customer failed');
-    }
-    getCustomer();
-
-    setShowCustomerForm(false);
-  };
-
-  return (
-    <Container
-      style={{
-        marginLeft: 0,
-        marginRight: 0,
-        maxWidth: '100%',
-      }}
-    >
-      <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
-        <Typography variant="h4">Customer</Typography>
-
-        <Button
-          onClick={() => setShowCustomerForm(true)}
-          variant="contained"
-          color="inherit"
-          startIcon={<Iconify icon="eva:plus-fill" />}
+    return (
+        <Container
+            style={{
+                marginLeft: 0,
+                marginRight: 0,
+                maxWidth: '100%',
+            }}
         >
-          New Customer
-        </Button>
-      </Stack>
+            <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
+                <Typography variant="h4">Customer</Typography>
 
-      <CustomerForm
-        open={showCustomerForm}
-        onClose={handleCloseCustomerForm}
-        onSubmit={handleNewCustomerClick}
-        customers={customer}
-      />
+                <Button
+                    onClick={() => setShowCustomerForm(true)}
+                    variant="contained"
+                    color="inherit"
+                    startIcon={<Iconify icon="eva:plus-fill" />}
+                >
+                    New Customer
+                </Button>
+            </Stack>
 
-      <Card>
-        <UserTableToolbar
-          numSelected={selected.length}
-          filterName={filterName}
-          onFilterName={handleFilterByName}
-        />
+            <CustomerForm
+                open={showCustomerForm}
+                onClose={handleCloseCustomerForm}
+                onSubmit={handleNewCustomerClick}
+                customers={customer}
+            />
 
-        <Scrollbar>
-          <TableContainer sx={{ overflow: 'unset' }}>
-            <Table sx={{ minWidth: 800 }}>
-              <UserTableHead
-                order={order}
-                orderBy={orderBy}
-                rowCount={customer.length}
-                numSelected={selected.length}
-                onRequestSort={handleSort}
-                onSelectAllClick={handleSelectAllClick}
-                headLabel={[
-                  { id: 'code', label: 'Code' },
-                  { id: 'fullName', label: 'Full Name' },
-                  { id: 'gender', label: 'Gender' },
-                  { id: 'address', label: 'Address' },
-                  { id: 'phone', label: 'Phone Number' },
-                  { id: 'point', label: 'Point' },
-                  { id: ' ', label: ' ' },
-                ]}
-              />
-              <TableBody>
-                {dataFiltered
-                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map((row) => (
-                    <UserTableRow
-                      key={row.customerId}
-                      row={row}
-                      selected={selected.indexOf(row.customerId) !== -1}
-                      handleClick={(event) => handleClick(event, row.customerId)}
-                      getCustomer={getCustomer}
-                      customers={customer}
-                    />
-                  ))}
-
-                <TableEmptyRows
-                  height={77}
-                  emptyRows={emptyRows(page, rowsPerPage, customer.length)}
+            <Card>
+                <UserTableToolbar
+                    numSelected={selected.length}
+                    filterName={filterName}
+                    onFilterName={handleFilterByName}
                 />
 
-                {notFound && <TableNoData query={filterName} />}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </Scrollbar>
+                <Scrollbar>
+                    <TableContainer sx={{ overflow: 'unset' }}>
+                        <Table sx={{ minWidth: 800 }}>
+                            <UserTableHead
+                                order={order}
+                                orderBy={orderBy}
+                                rowCount={customer.length}
+                                numSelected={selected.length}
+                                onRequestSort={handleSort}
+                                onSelectAllClick={handleSelectAllClick}
+                                headLabel={[
+                                    { id: 'code', label: 'Code' },
+                                    { id: 'fullName', label: 'Full Name' },
+                                    { id: 'gender', label: 'Gender' },
+                                    { id: 'address', label: 'Address' },
+                                    { id: 'phone', label: 'Phone Number' },
+                                    { id: 'point', label: 'Point' },
+                                    { id: ' ', label: ' ' },
+                                ]}
+                            />
+                            <TableBody>
+                                {dataFiltered
+                                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                                    .map((row) => (
+                                        <UserTableRow
+                                            key={row.customerId}
+                                            row={row}
+                                            selected={selected.indexOf(row.customerId) !== -1}
+                                            handleClick={(event) =>
+                                                handleClick(event, row.customerId)
+                                            }
+                                            getCustomer={getCustomer}
+                                            customers={customer}
+                                        />
+                                    ))}
 
-        <TablePagination
-          page={page}
-          component="div"
-          count={customer.length}
-          rowsPerPage={rowsPerPage}
-          onPageChange={handleChangePage}
-          rowsPerPageOptions={[5, 10, 25]}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-        />
-      </Card>
-    </Container>
-  );
+                                <TableEmptyRows
+                                    height={77}
+                                    emptyRows={emptyRows(page, rowsPerPage, customer.length)}
+                                />
+
+                                {notFound && <TableNoData query={filterName} />}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
+                </Scrollbar>
+
+                <TablePagination
+                    page={page}
+                    component="div"
+                    count={customer.length}
+                    rowsPerPage={rowsPerPage}
+                    onPageChange={handleChangePage}
+                    rowsPerPageOptions={[5, 10, 25]}
+                    onRowsPerPageChange={handleChangeRowsPerPage}
+                />
+            </Card>
+        </Container>
+    );
 }

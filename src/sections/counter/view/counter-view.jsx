@@ -14,6 +14,7 @@ import TablePagination from '@mui/material/TablePagination';
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 import { toast } from 'react-toastify';
+import request from 'src/request';
 import TableNoData from '../table-no-data';
 import CounterTableRow from '../counter-table-row';
 import CrateCounterForm from '../create-counter-table';
@@ -21,7 +22,6 @@ import CounterTableHead from '../counter-table-head';
 import TableEmptyRows from '../table-empty-rows';
 import CounterTableToolbar from '../counter-table-toolbar';
 import { emptyRows, applyFilter, getComparator } from '../utils';
-
 
 // ----------------------------------------------------------------------
 
@@ -86,7 +86,7 @@ export default function CounterView() {
     };
 
     const dataFiltered = applyFilter({
-        inputData: counters,
+        inputData: counters ?? [],
         comparator: getComparator(order, orderBy),
         filterName,
     });
@@ -98,7 +98,7 @@ export default function CounterView() {
     };
 
     const handleNewCounterClick = async (newCounterData) => {
-        const response = await axios.post('http://localhost:5188/api/Counter/CreateCounter', newCounterData);
+        const response = await request.post('Counter/CreateCounter', newCounterData);
         try {
             if (response.status === 200) {
                 toast.success('Counter created successfully');
@@ -110,10 +110,9 @@ export default function CounterView() {
     };
 
     const fetchAllCounters = async () => {
-        const response = await fetch('http://localhost:5188/api/Counter/GetCounters');
-        const data = await response.json();
-        addCounter(data);
-        setCounter(data);
+        const response = await request.get('Counter/GetCounters');
+        addCounter(response.data);
+        setCounter(response.data);
     };
 
     useEffect(() => {

@@ -23,8 +23,16 @@ import {
 } from '@mui/material';
 import Iconify from 'src/components/iconify';
 import { Delete as DeleteIcon } from '@mui/icons-material';
+import request from 'src/request';
+import { jwtDecode } from 'jwt-decode';
+import CommonFunction from 'src/utils/commonFunction';
 
 const InvoiceTemplate = ({ open, row, onClose, onSubmit, fetchBillPurchase }) => {
+    const token = localStorage.getItem('TOKEN');
+    const decoded = jwtDecode(token);
+    const currentUserId = decoded.Id;
+    const currentCounterId = decoded.jti;
+
     const [currentDate, setCurrentDate] = useState(new Date());
     const [items, setItems] = useState([]);
     const [discountRate, setDiscountRate] = useState(0);
@@ -38,14 +46,14 @@ const InvoiceTemplate = ({ open, row, onClose, onSubmit, fetchBillPurchase }) =>
 
     // Lấy dữ liệu khách hàng
     const getcustomer = async () => {
-        const response = await axios.get('http://localhost:5188/api/Customer');
+        const response = await request.get('Customer');
         setcustomerData(response.data);
     };
 
     // Lấy dữ liệu nhân viên
     const getuser = async () => {
         try {
-            const response = await axios.get('http://localhost:5188/api/User/GetUsers?roleId=3');
+            const response = await request.get('User/GetUsers?roleId=3');
             setstaffData(response.data);
         } catch (error) {
             console.error('Error fetching users:', error);
@@ -54,13 +62,13 @@ const InvoiceTemplate = ({ open, row, onClose, onSubmit, fetchBillPurchase }) =>
 
     // Lấy dữ liệu trang sức
     const getjewery = async () => {
-        const response = await axios.get('http://localhost:5188/api/Jewelry/GetJewelries');
+        const response = await request.get('Jewelry/GetJewelries');
         setJewelryData(response.data);
     };
 
     // lấy dữ liệu quầy
     const getCounter = async () => {
-        const response = await axios.get('http://localhost:5188/api/Counter/GetCounters');
+        const response = await request.get('Counter/GetCounters');
         setCounterData(response.data);
     };
 
@@ -78,9 +86,7 @@ const InvoiceTemplate = ({ open, row, onClose, onSubmit, fetchBillPurchase }) =>
     const handleBindingDetail = async () => {
         if (!row) return;
         try {
-            const response = await axios.get(
-                `http://localhost:5188/api/Bill/GetBillById/${row.billId}`
-            );
+            const response = await request.get(`Bill/GetBillById/${row.billId}`);
 
             const {
                 billId,
@@ -124,8 +130,8 @@ const InvoiceTemplate = ({ open, row, onClose, onSubmit, fetchBillPurchase }) =>
 
     const [formState, setFormState] = useState({
         customerId: null,
-        userId: null,
-        counterId: null,
+        userId: CommonFunction.IsStaff() ? parseFloat(currentUserId) : null,
+        counterId: CommonFunction.IsStaff() ? parseFloat(currentCounterId) : null,
         jewelries: [],
         promotions: [],
         totalAmount: 0,
@@ -248,11 +254,11 @@ const InvoiceTemplate = ({ open, row, onClose, onSubmit, fetchBillPurchase }) =>
         }
 
         try {
-            const response = await axios.post('http://localhost:5188/api/Bill/CreateBill', formState);
+            const response = await request.post('Bill/CreateBill', formState);
             if (response.status === 200) {
                 toast.success('Create purchase bill successfully');
                 setCurrrentFormState('view');
-                fetchBillPurchase(); 
+                fetchBillPurchase();
             } else {
                 toast.error('Create purchase bill failed');
             }
@@ -261,8 +267,6 @@ const InvoiceTemplate = ({ open, row, onClose, onSubmit, fetchBillPurchase }) =>
             toast.error('Error creating purchase bill');
         }
     };
-
-
 
     return (
         <Dialog open={open} onClose={onClose} fullScreen>

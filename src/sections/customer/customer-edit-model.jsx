@@ -39,10 +39,7 @@ function CustomerEditForm({ open, onClose, onSubmit, customer }) {
     //   toast.error('Code is not valid');
     //   return false;
     // }
-    if (customer.some(cust => cust.code === formState.code && cust.id !== formState.id)) {
-      toast.error('Code already exists');
-      return false;
-    }
+    //  
     if (!formState.fullName) {
       toast.error('Full Name is required');
       return false;

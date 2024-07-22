@@ -12,11 +12,11 @@ import Typography from '@mui/material/Typography';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
 
-// import { fetchAllJew} from 'src/_mock/jewellery';
-
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 
+import request from 'src/request';
+import CommonFunction from 'src/utils/commonFunction';
 import NewModal from '../jew-new-modal';
 import TableNoData from '../table-no-data';
 import UserTableRow from '../jew-table-row';
@@ -53,8 +53,8 @@ export default function JewelleryView() {
 
     const getJew = async () => {
         try {
-            const response = await axios.get('http://localhost:5188/api/Jewelry/GetJewelries');
-            setJewList(response.data); // Cập nhật state với dữ liệu từ server
+            const response = await request.get('Jewelry/GetJewelries');
+            setJewList(response.data ?? []); // Cập nhật state với dữ liệu từ server
         } catch (error) {
             console.error('Error fetching jewellery:', error);
         }
@@ -62,10 +62,7 @@ export default function JewelleryView() {
 
     const createJew = async (newItem) => {
         try {
-            const response = await axios.post(
-                'http://localhost:5188/api/Jewelry/CreateJewelry',
-                newItem
-            );
+            const response = await request.post('Jewelry/CreateJewelry', newItem);
             getJew();
             handleClose();
             toast.success('Create successful !', {
@@ -82,7 +79,7 @@ export default function JewelleryView() {
 
     const deleteJewellery = async (id) => {
         try {
-            await axios.delete(`http://localhost:5188/api/Jewelry/DeleteJewelry/${id}`);
+            await request.delete(`Jewelry/DeleteJewelry/${id}`);
             getJew();
             toast.success('Delete successful !', {
                 position: 'bottom-right',
@@ -94,13 +91,7 @@ export default function JewelleryView() {
     };
     const updateJew = async (id, updatedData) => {
         try {
-            const response = await axios.put(
-                `http://localhost:5188/api/Jewelry/UpdateJewelry/${id}`,
-                updatedData
-            );
-            if (response.data && response.data.error) {
-                throw new Error(response.data.error);
-            }
+            const response = await request.put(`Jewelry/UpdateJewelry/${id}`, updatedData);
             getJew();
             toast.success('Update successful !', {
                 position: 'bottom-right',
@@ -165,7 +156,7 @@ export default function JewelleryView() {
     };
 
     const dataFiltered = applyFilter({
-        inputData: jewList,
+        inputData: jewList ?? [],
         comparator: getComparator(order, orderBy),
         filterName,
     });
@@ -180,18 +171,22 @@ export default function JewelleryView() {
                 maxWidth: '100%',
             }}
         >
-            <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
-                <Typography variant="h4">Jewellery</Typography>
-                <Button
-                    variant="contained"
-                    color="inherit"
-                    startIcon={<Iconify icon="eva:plus-fill" />}
-                    onClick={handleShow}
-                >
-                    New Jewellery
-                </Button>
-                {show && <NewModal show={show} handleClose={handleClose} createJew={createJew} />}
-            </Stack>
+            {!CommonFunction.IsStaff() && (
+                <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
+                    <Typography variant="h4">Jewellery</Typography>
+                    <Button
+                        variant="contained"
+                        color="inherit"
+                        startIcon={<Iconify icon="eva:plus-fill" />}
+                        onClick={handleShow}
+                    >
+                        New Jewellery
+                    </Button>
+                    {show && (
+                        <NewModal show={show} handleClose={handleClose} createJew={createJew} />
+                    )}
+                </Stack>
+            )}
 
             <Card>
                 <UserTableToolbar
@@ -219,6 +214,7 @@ export default function JewelleryView() {
                                     { id: 'jewelryPrice', label: 'JewelryPrice' },
                                     { id: 'laborCost', label: 'Labor Cost' },
                                     { id: 'barcode', label: 'Barcode' },
+                                    { id: 'counters', label: 'Counters' },
                                     { id: '' },
                                 ]}
                             />

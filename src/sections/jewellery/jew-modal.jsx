@@ -4,8 +4,10 @@ import { Row, Col, Modal, Button, ListGroup } from 'react-bootstrap';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import Barcode from 'react-barcode';
 import './view-jew-modal.css';
+import request from 'src/request';
 
 export default function InfoModal({ show, handleClose, row }) {
+    const previewImg = `http://localhost:5188/api/File/image/${row.previewImage}?type=1`;
     return (
         <Modal
             size="lg"
@@ -20,11 +22,7 @@ export default function InfoModal({ show, handleClose, row }) {
             <Modal.Body>
                 <Row>
                     <Col md={6} className="d-flex align-items-center justify-content-center">
-                        <img
-                            src={`http://localhost:5188/api/File/image/${row.previewImage}?type=1`}
-                            alt={row.name}
-                            className="info-modal-image"
-                        />
+                        <img src={previewImg} alt={row.name} className="info-modal-image" />
                     </Col>
                     <Col md={6}>
                         <ListGroup>
@@ -63,6 +61,12 @@ export default function InfoModal({ show, handleClose, row }) {
                             </ListGroup.Item>
                             <ListGroup.Item>
                                 <strong>Total Price:</strong> {row.totalPrice}
+                            </ListGroup.Item>
+                            <ListGroup.Item>
+                                <strong>Counters:</strong>{' '}
+                                {row.jewelryCounters
+                                    ?.map((counter) => counter.counterName)
+                                    .join(', ') ?? ''}
                             </ListGroup.Item>
                         </ListGroup>
                     </Col>

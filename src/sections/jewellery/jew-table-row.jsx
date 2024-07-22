@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import Button from 'react-bootstrap/Button';
 
@@ -16,6 +16,8 @@ import Iconify from 'src/components/iconify';
 
 // eslint-disable-next-line import/no-extraneous-dependencies
 import Barcode from 'react-barcode';
+import request from 'src/request';
+import CommonFunction from 'src/utils/commonFunction';
 import InfoModal from './jew-modal';
 import DelModal from './jew-del-modal';
 import EditModal from './jew-edit-modal';
@@ -47,6 +49,11 @@ export default function UserTableRow({ selected, onDelete, onUpdate, handleClick
         setOpen(null);
     };
 
+    const previewImg = useMemo(
+        () => `http://localhost:5188/api/File/image/${row.previewImage}?type=1&width=50&height=50`,
+        [row.previewImage]
+    );
+
     return (
         <>
             <TableRow hover tabIndex={-1} role="checkbox" selected={selected}>
@@ -55,7 +62,7 @@ export default function UserTableRow({ selected, onDelete, onUpdate, handleClick
                 </TableCell>
                 <TableCell>
                     <img
-                        src={`http://localhost:5188/api/File/image/${row.previewImage}?type=1&width=50&height=50`}
+                        src={previewImg}
                         alt={row.name}
                         style={{ width: 50, height: 50, borderRadius: 8 }}
                     />
@@ -67,7 +74,10 @@ export default function UserTableRow({ selected, onDelete, onUpdate, handleClick
                 <TableCell>{row.jewelryPrice}</TableCell>
                 <TableCell>{row.laborCost}</TableCell>
                 <TableCell>
-                    <Barcode value={row.barcode} height={30} />
+                    <Barcode value={row.barcode} height={20} />
+                </TableCell>
+                <TableCell>
+                    {row.jewelryCounters?.map((counter) => counter.counterName).join(', ') ?? ''}
                 </TableCell>
 
                 <TableCell align="right">
@@ -80,37 +90,43 @@ export default function UserTableRow({ selected, onDelete, onUpdate, handleClick
                 </TableCell>
             </TableRow>
 
-            <Popover
-                open={!!open}
-                anchorEl={open}
-                onClose={handleCloseMenu}
-                anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
-                transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-                PaperProps={{
-                    sx: { width: 140 },
-                }}
-            >
-                <MenuItem
-                    onClick={() => {
-                        handleCloseMenu();
-                        handleShowEd();
+            {!CommonFunction.IsStaff() && (
+                <Popover
+                    open={!!open}
+                    anchorEl={open}
+                    onClose={handleCloseMenu}
+                    anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
+                    transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+                    PaperProps={{
+                        sx: { width: 140 },
                     }}
                 >
-                    <Iconify icon="eva:edit-fill" sx={{ mr: 2 }} onClick={handleShowEd} />
-                    Edit
-                </MenuItem>
+                    <MenuItem
+                        onClick={() => {
+                            handleCloseMenu();
+                            handleShowEd();
+                        }}
+                    >
+                        <Iconify icon="eva:edit-fill" sx={{ mr: 2 }} onClick={handleShowEd} />
+                        Edit
+                    </MenuItem>
 
-                <MenuItem
-                    onClick={() => {
-                        handleCloseMenu();
-                        handleShowDel();
-                    }}
-                    sx={{ color: 'error.main' }}
-                >
-                    <Iconify icon="eva:trash-2-outline" sx={{ mr: 2 }} onClick={handleShowDel} />
-                    Delete
-                </MenuItem>
-            </Popover>
+                    <MenuItem
+                        onClick={() => {
+                            handleCloseMenu();
+                            handleShowDel();
+                        }}
+                        sx={{ color: 'error.main' }}
+                    >
+                        <Iconify
+                            icon="eva:trash-2-outline"
+                            sx={{ mr: 2 }}
+                            onClick={handleShowDel}
+                        />
+                        Delete
+                    </MenuItem>
+                </Popover>
+            )}
 
             {show && <InfoModal show={show} handleClose={handleClose} row={row} />}
 

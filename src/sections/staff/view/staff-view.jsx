@@ -16,6 +16,7 @@ import Scrollbar from 'src/components/scrollbar';
 
 import { useParams, useNavigate } from 'react-router-dom';
 import { Backdrop, CircularProgress, IconButton } from '@mui/material';
+import request from 'src/request';
 import TableNoData from '../table-no-data';
 import UserTableRow from '../staff-table-row';
 import StaffForm from '../create-staff-table';
@@ -23,7 +24,6 @@ import UserTableHead from '../staff-table-head';
 import TableEmptyRows from '../table-empty-rows';
 import UserTableToolbar from '../staff-table-toolbar';
 import { emptyRows, applyFilter, getComparator } from '../utils';
-
 // ----------------------------------------------------------------------
 
 export default function StaffView() {
@@ -43,7 +43,7 @@ export default function StaffView() {
 
     const handleBeforeRouteChange = async () => {
         if (counterId) {
-            const response = await fetch(`http://localhost:5188/api/Counter/GetById/${counterId}`);
+            const response = await request.get(`Counter/GetById/${counterId}`);
             const data = await response.json();
             setCounter(data);
         }
@@ -113,7 +113,7 @@ export default function StaffView() {
     };
 
     const dataFiltered = applyFilter({
-        inputData: staffs,
+        inputData: staffs ?? [],
         comparator: getComparator(order, orderBy),
         filterName,
     });
@@ -126,14 +126,8 @@ export default function StaffView() {
 
     const handleNewStaffClick = async (newStaffData, resetFormData) => {
         setIsLoading(true);
-        const response = await fetch('http://localhost:5188/api/User/AddUser', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(newStaffData),
-        });
-        const data = await response.json();
+        const response = await request.post('User/AddUser', newStaffData);
+        const data = response.data;
         setIsLoading(false);
         if (data.success) {
             fetchAllStaff();
@@ -148,13 +142,12 @@ export default function StaffView() {
     };
 
     const fetchAllStaff = async () => {
-        let fetchLink = 'http://localhost:5188/api/User/GetUsers';
+        let fetchLink = 'User/GetUsers';
         if (counterId) {
-            fetchLink = `http://localhost:5188/api/User/GetUsers?counterId=${counterId}`;
+            fetchLink = `User/GetUsers?counterId=${counterId}`;
         }
-        const response = await fetch(fetchLink);
-        const data = await response.json();
-        setStaff(data);
+        const response = await request.get(fetchLink);
+        setStaff(response.data);
     };
 
     useEffect(() => {
@@ -235,7 +228,7 @@ export default function StaffView() {
                                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                     .map((row) => (
                                         <UserTableRow
-                                            key={row.id}
+                                            key={row.userId}
                                             row={row}
                                             selected={selected.indexOf(row.code) !== -1}
                                             handleClick={(event) => handleClick(event, row.code)}
