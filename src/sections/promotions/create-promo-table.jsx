@@ -38,10 +38,13 @@ function PromotionForm({ open, onClose, onSubmit }) {
 
     const fetchCustomer = async () => {
         const response = await request.get('Customer');
-        const data = response.data.map((item) => ({
-            label: item.fullName,
-            value: item.customerId,
-        }));
+        const data = response.data
+            .filter((item) => item.point > 500) // Filter customers with more than 500 points
+            .map((item) => ({
+                label: item.fullName,
+                value: item.customerId,
+                point: item.point,
+            }));
         setCustomer(data);
     };
 
@@ -165,6 +168,11 @@ function PromotionForm({ open, onClose, onSubmit }) {
                             })),
                         })
                     }
+                    renderOption={(props, option) => (
+                        <li {...props} key={option.value}>
+                            {`${option.label} - ${option.point} point`}
+                        </li>
+                    )}
                     renderInput={(params) => <TextField {...params} label="Customers" />}
                 />
             </DialogContent>
