@@ -188,6 +188,24 @@ export default function JewelleryView() {
                 </Stack>
             )}
 
+            {CommonFunction.IsStaff() && (
+                <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
+                    <Typography variant="h4">Jewellery</Typography>
+                    <Button
+                        variant="contained"
+                        color="inherit"
+                        startIcon={<Iconify icon="eva:plus-fill" />}
+                        onClick={handleShow}
+                    >
+                        Expertise Jewellery
+                    </Button>
+                    {show && (
+                        <NewModal show={show} handleClose={handleClose} createJew={createJew} />
+                    )}
+                </Stack>
+            )}
+
+
             <Card>
                 <UserTableToolbar
                     numSelected={selected.length}
