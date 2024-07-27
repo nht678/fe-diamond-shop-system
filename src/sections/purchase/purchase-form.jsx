@@ -26,8 +26,9 @@ import { Delete as DeleteIcon } from '@mui/icons-material';
 import request from 'src/request';
 import { jwtDecode } from 'jwt-decode';
 import CommonFunction from 'src/utils/commonFunction';
+import InvoicePrintTemplate from './invoice-print';
 
-const InvoiceTemplate = ({ open, row, onClose, onSubmit, fetchBillPurchase }) => {
+const InvoiceTemplate = ({ open, row, onClose}) => {
     const token = localStorage.getItem('TOKEN');
     const decoded = jwtDecode(token);
     const currentUserId = decoded.Id;
@@ -43,6 +44,16 @@ const InvoiceTemplate = ({ open, row, onClose, onSubmit, fetchBillPurchase }) =>
     const [jewelryData, setJewelryData] = useState([]);
     const [counterData, setCounterData] = useState([]);
     const [currrentFormState, setCurrrentFormState] = useState('add');
+    const [openInvoice, setOpenInvoice] = useState(false);
+    const [billDetail, setBillDetail] = useState({});
+
+    const onOpenInvoice = () => {
+        setOpenInvoice(true);
+    };
+
+    const onCloseInvoice = () => {
+        setOpenInvoice(false);
+    };
 
     // Lấy dữ liệu khách hàng
     const getcustomer = async () => {
@@ -97,6 +108,7 @@ const InvoiceTemplate = ({ open, row, onClose, onSubmit, fetchBillPurchase }) =>
                 discountRate: totalDiscountRate,
                 discountDescription,
             } = response.data;
+            setBillDetail(response.data);
 
             setCurrentDate(new Date(saleDate));
 
@@ -172,11 +184,6 @@ const InvoiceTemplate = ({ open, row, onClose, onSubmit, fetchBillPurchase }) =>
 
     const calculateTotal = () => items.reduce((total, item) => total + item.totalAmount, 0);
 
-    const handleSubmit = (event) => {
-        event.preventDefault();
-        onSubmit(/* form data */);
-        onClose();
-    };
 
     const isNaN = (value) => (Number.isNaN(value) ? 0 : value);
 
@@ -258,7 +265,7 @@ const InvoiceTemplate = ({ open, row, onClose, onSubmit, fetchBillPurchase }) =>
             if (response.status === 200) {
                 toast.success('Create purchase bill successfully');
                 setCurrrentFormState('view');
-                fetchBillPurchase();
+                
             } else {
                 toast.error('Create purchase bill failed');
             }
@@ -537,6 +544,14 @@ const InvoiceTemplate = ({ open, row, onClose, onSubmit, fetchBillPurchase }) =>
                         </Button>
                     </Box>
                 )}
+                                {currrentFormState === 'view' && (
+                    <Box display="flex" justifyContent="flex-end" mt={2}>
+                        <Button onClick={onOpenInvoice} color="primary" style={{ marginRight: 8 }}>
+                            Print Invoice
+                        </Button>
+                    </Box>
+                )}
+                <InvoicePrintTemplate row={billDetail} open={openInvoice} onClose={onCloseInvoice} />
             </DialogContent>
         </Dialog>
     );
@@ -546,8 +561,6 @@ InvoiceTemplate.propTypes = {
     open: PropTypes.bool.isRequired,
     row: PropTypes.object,
     onClose: PropTypes.func.isRequired,
-    onSubmit: PropTypes.func.isRequired,
-    fetchBillPurchase: PropTypes.func.isRequired,
 };
 
 export default InvoiceTemplate;

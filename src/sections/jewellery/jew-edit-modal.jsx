@@ -185,11 +185,7 @@ export default function EditModal({ show, handleClose, onUpdate, row }) {
     };
 
     // Replace non-ASCII characters from the barcode
-    const handleBarcodeChange = (event) => {
-        // eslint-disable-next-line no-control-regex
-        const value = event.target.value.replace(/[^\x00-\x7F]/g, '');
-        formik.setFieldValue('barcode', value);
-    };
+
 
     if (isLoading) {
         return (
@@ -234,11 +230,11 @@ export default function EditModal({ show, handleClose, onUpdate, row }) {
                                 </div>
                                 <div>
                                     <TextField
+                                    disabled
                                         className="mt-4"
                                         label="Barcode"
                                         name="barcode"
                                         value={formik.values.barcode}
-                                        onChange={handleBarcodeChange}
                                         onBlur={formik.handleBlur}
                                         sx={{
                                             maxWidth: 300,
@@ -253,18 +249,13 @@ export default function EditModal({ show, handleClose, onUpdate, row }) {
                             </Col>
                             <Col md={12}>
                                 <TextField
+                                disabled
                                     className="mt-4"
                                     label="Jewellery Code"
                                     variant="outlined"
                                     name="code"
                                     value={formik.values.code}
-                                    onChange={(e) => {
-                                        formik.setFieldValue('code', e.target.value.toUpperCase());
-                                        formik.setFieldValue(
-                                            'barcode',
-                                            e.target.value.toUpperCase()
-                                        );
-                                    }}
+
                                     onBlur={formik.handleBlur}
                                     sx={{
                                         width: 300,

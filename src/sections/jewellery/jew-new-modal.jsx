@@ -23,18 +23,28 @@ export default function NewModal({ show, handleClose, createJew }) {
     const [imagePreviewUrl, setImagePreviewUrl] = useState('');
     const [counters, setCounters] = useState([]);
 
+    const generateRandomString = (length) => {
+        const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        let result = '';
+        for (let i = 0; i < length; i += 1) {
+            result += characters.charAt(Math.floor(Math.random() * characters.length));
+        }
+        return result;
+    };
+    
+
     const formik = useFormik({
         initialValues: {
             jewelryTypeId: '',
             name: '',
-            code: '',
+            code: generateRandomString(4),
             jewelryMaterial: {
                 gemId: '',
                 goldId: '',
                 goldWeight: 50,
                 gemQuantity: 50,
             },
-            barcode: '',
+            barcode: generateRandomString(7),
             laborCost: '',
             warrantyTime: '',
             jewelryCounters: [],
@@ -44,6 +54,7 @@ export default function NewModal({ show, handleClose, createJew }) {
             values.previewImage = imageName;
             // Chuyển đổi warrantyTime thành số nguyên nếu có giá trị, hoặc giữ nguyên null
             values.warrantyTime = values.warrantyTime ? parseInt(values.warrantyTime, 10) : null;
+
             const res = await createJew(values);
             if (res.status === 200) {
                 toast.success('Jewellery added successfully');
@@ -224,6 +235,7 @@ export default function NewModal({ show, handleClose, createJew }) {
                                 <InputGroup className="mb-4 mt-3">
                                     <FormControl fullWidth>
                                         <TextField
+                                        disabled
                                             label="Barcode"
                                             name="barcode"
                                             value={formik.values.barcode}
@@ -237,17 +249,12 @@ export default function NewModal({ show, handleClose, createJew }) {
                             {/* Jewellery Code */}
                             <InputGroup className="mb-4 mt-3">
                                 <TextField
+                                disabled
                                     label="Jewellery Code"
                                     variant="outlined"
                                     name="code"
                                     value={formik.values.code}
-                                    onChange={(e) => {
-                                        formik.setFieldValue('code', e.target.value.toUpperCase());
-                                        formik.setFieldValue('barcode', e.target.value.toUpperCase());
-                                    }}
                                     onBlur={formik.handleBlur}
-                                    error={formik.touched.code && Boolean(formik.errors.code)}
-                                    helperText={formik.touched.code && formik.errors.code}
                                     sx={{ width: 300 }}
                                 />
                             </InputGroup>
@@ -420,26 +427,7 @@ export default function NewModal({ show, handleClose, createJew }) {
                         </Col>
 
                         {/* Counters */}
-                        <Col md={6} className="mb-4 mt-3">
-                            <Autocomplete
-                                disablePortal
-                                id="counter-autocomplete"
-                                options={counters}
-                                multiple
-                                onChange={(event, value) =>
-                                    formik.setFieldValue(
-                                        'jewelryCounters',
-                                        value.map((item) => item.value)
-                                    )
-                                }
-                                value={counters.filter((option) =>
-                                    formik.values.jewelryCounters.includes(option.value)
-                                )}
-                                onBlur={formik.handleBlur}
-                                sx={{ width: 300 }}
-                                renderInput={(params) => <TextField {...params} label="Counters" />}
-                            />
-                        </Col>
+
                     </Row>
                     <Modal.Footer>
                         <Button variant="secondary" onClick={handleClose}>
