@@ -4,10 +4,9 @@ import { useFormik } from 'formik';
 import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
 import { Row, Col, Modal, Button, Spinner } from 'react-bootstrap';
-import { Autocomplete } from '@mui/material';
-import TextField from '@mui/material/TextField';
+import { Autocomplete, Switch, FormControlLabel } from '@mui/material';
 import FormControl from '@mui/material/FormControl';
-// eslint-disable-next-line import/no-extraneous-dependencies
+import TextField from '@mui/material/TextField';
 import Barcode from 'react-barcode';
 import request from 'src/request';
 import { toast } from 'react-toastify';
@@ -91,7 +90,7 @@ export default function EditModal({ show, handleClose, onUpdate, row }) {
                 gemQuantity: row.materials[0]?.gem.gemQuantity,
                 jewelryMaterialId: row.materials[0]?.jewelryMaterialId,
             },
-            warrantyTime: row.warrantyTime || '', // Đảm bảo khởi tạo với giá trị chuỗi trống nếu không có giá trị
+            warrantyTime: row.warrantyTime || '',
             barcode: row.barcode,
             laborCost: row.laborCost,
             previewImage: row.previewImage,
@@ -124,29 +123,14 @@ export default function EditModal({ show, handleClose, onUpdate, row }) {
                 errors.jewelryTypeId = 'Please select a jewelry type';
             }
 
-            // nếu trống gemId hoặc goldId thì báo lỗi
-            // if (!values.jewelryMaterial.gemId) {
-            //     errors['jewelryMaterial.gemId'] = 'Required';
-            // }
-            // if (!values.jewelryMaterial.goldId) {
-            //     errors['jewelryMaterial.goldId'] = 'Required';
-            // }
             return errors;
         },
         onSubmit: async (values) => {
-            // Chuyển đổi warrantyTime thành số nguyên hoặc null
             const payload = {
                 ...values,
                 warrantyTime: values.warrantyTime ? parseInt(values.warrantyTime, 10) : null,
             };
 
-            // validate thông tin cần thiết như gemId, goldId, ...
-            // if (!payload.jewelryMaterial.gemId || !payload.jewelryMaterial.goldId) {
-            //     toast.error('Gem and Gold are required');
-            //     return;
-            // }
-
-            // barcode
             if (!payload.barcode) {
                 toast.error('Barcode is required');
                 return;
@@ -197,7 +181,9 @@ export default function EditModal({ show, handleClose, onUpdate, row }) {
         }
     };
 
-    // Replace non-ASCII characters from the barcode
+    const handleTypeChange = () => {
+        formik.setFieldValue('type', formik.values.type === 1 ? 2 : 1);
+    };
 
     if (isLoading) {
         return (
@@ -223,7 +209,7 @@ export default function EditModal({ show, handleClose, onUpdate, row }) {
                         <Col md={6}>
                             <InputGroup className="mb-4 mt-3">
                                 <FormControl fullWidth>
-                                    <Form.Label>Upload Image</Form.Label>
+                                    <Form.Label>Upload Image : </Form.Label>
                                     <Form.Control type="file" onChange={handleImageUpload} />
                                     {formik.values.previewImage && (
                                         <img
@@ -234,11 +220,25 @@ export default function EditModal({ show, handleClose, onUpdate, row }) {
                                     )}
                                 </FormControl>
                             </InputGroup>
+                            <Col md={12} className="mt-4">
+                                <FormControlLabel
+                                label="For Sale"
+                                labelPlacement="start"
+                                    control={
+                                        <Switch
+                                            checked={formik.values.type === 1}
+                                            onChange={handleTypeChange}
+                                        />
+                                    }
+                                    
+                                />
+                            </Col>
                         </Col>
+                        
                         <Col md={6}>
                             <Col md={12}>
                                 <div>
-                                    <Barcode value={formik.values.barcode} height={30} />
+                                    <Barcode className="mt-3" value={formik.values.barcode} height={30} />
                                 </div>
                                 <div>
                                     <TextField
@@ -323,7 +323,7 @@ export default function EditModal({ show, handleClose, onUpdate, row }) {
                                     onChange={formik.handleChange}
                                     onBlur={formik.handleBlur}
                                     type="number"
-                                    InputProps={{ inputProps: { min: 0 } }} // Đảm bảo giá trị là số nguyên dương
+                                    InputProps={{ inputProps: { min: 0 } }}
                                     sx={{
                                         maxWidth: 300,
                                         '& .MuiOutlinedInput-root': {
@@ -334,6 +334,7 @@ export default function EditModal({ show, handleClose, onUpdate, row }) {
                                     }}
                                 />
                             </Col>
+
                         </Col>
                         <Col md={6}>
                             <InputGroup className="mb-4 mt-3">
@@ -349,7 +350,7 @@ export default function EditModal({ show, handleClose, onUpdate, row }) {
                                     value={formik.values.jewelryMaterial.goldWeight}
                                     onChange={formik.handleChange}
                                     onBlur={formik.handleBlur}
-                                    style={{ width: '100%' }}
+                                    style={{ width: '90%' }}
                                 />
                             </InputGroup>
                             <InputGroup className="mb-4 mt-3">
@@ -389,7 +390,7 @@ export default function EditModal({ show, handleClose, onUpdate, row }) {
                                     value={formik.values.jewelryMaterial.gemQuantity}
                                     onChange={formik.handleChange}
                                     onBlur={formik.handleBlur}
-                                    style={{ width: '100%' }}
+                                    style={{ width: '90%' }}
                                 />
                             </InputGroup>
                             <InputGroup className="mb-4 mt-3">
@@ -441,7 +442,6 @@ export default function EditModal({ show, handleClose, onUpdate, row }) {
                             </InputGroup>
                         </Col>
 
-                        {/* Counters */}
                         {!CommonFunction.IsStaff() && (
                             <Col md={6}>
                                 <InputGroup className="mb-4 mt-3">

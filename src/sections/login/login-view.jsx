@@ -1,194 +1,153 @@
 import { useState } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import { jwtDecode } from 'jwt-decode';
-
+import {jwtDecode} from 'jwt-decode';
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
-import Card from '@mui/material/Card';
+import Grid from '@mui/material/Grid';
+import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
-import Divider from '@mui/material/Divider';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import LoadingButton from '@mui/lab/LoadingButton';
-import { alpha, useTheme } from '@mui/material/styles';
+import { useTheme, createTheme, ThemeProvider } from '@mui/material/styles';
 import InputAdornment from '@mui/material/InputAdornment';
-
 import { useRouter } from 'src/routes/hooks';
-
-import { bgGradient } from 'src/theme/css';
-
-import Logo from 'src/components/logo';
 import Iconify from 'src/components/iconify';
 import request from 'src/request';
 
-// ----------------------------------------------------------------------
+const defaultTheme = createTheme();
 
 export default function LoginView() {
-    const theme = useTheme();
+  const theme = useTheme();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const router = useRouter();
 
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+  const handleClick = async () => {
+    try {
+      const response = await request.post('User/Login', { email, password });
+      const { message, success, data } = response.data;
+      if (!success) {
+        toast.error(message);
+        return;
+      }
+      localStorage.setItem('TOKEN', data.token);
+      const token = jwtDecode(data.token);
+      const role = token.role; // Extract role from token
+      localStorage.setItem('ROLE', role);
+      if (role === '1') {
+        router.push('/dashboard');
+        window.location.reload();
+      } else if (role === '2') {
+        router.push('/dashboard');
+        window.location.reload();
+      } else if (role === '3') {
+        router.push('/sale');
+        window.location.reload();
+      }
+    } catch (e) {
+      toast.error('Error information login response');
+    }
+  };
 
-    const router = useRouter();
+  return (
+    <ThemeProvider theme={defaultTheme}>
+      <Grid container component="main" sx={{ height: '100vh' }}>
+        <Grid
+          item
+          xs={false}
+          sm={4}
+          md={7}
+          sx={{
+            backgroundImage: 'url(/assets/background/jewbackground.jpg)',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+          }}
+        />
+        <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
+          <Box
+            sx={{
+              my: 12,
+              mx: 8,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+            }}
+          >
+            <img
+              src="/assets/logo.svg"
+              width="80"
+              height="80"
+              alt="logo"
+            />
+            <Typography component="h1" variant="h5" sx={{
+              fontFamily: "'Henny Penny', -apple-system, Roboto, Helvetica, sans-serif",
+              fontWeight: 400,
+              fontSize: '28px',
+              lineHeight: '150%',
+              mt: 1
+            }}>
+              Login
+            </Typography>
+            <Box component="form" noValidate sx={{ mt: 4 }}>
+              <TextField
+              sx={{ mb: 1 }}
+                color="primary"
+                margin="normal"
+                required
+                fullWidth
+                id="email"
+                label="Email Address"
+                name="email"
+                autoComplete="email"
+                autoFocus
+                onChange={(e) => setEmail(e.target.value)}
+              />
+              <TextField
+                color="primary"
+                margin="normal"
+                required
+                fullWidth
+                name="password"
+                label="Password"
+                type={showPassword ? 'text' : 'password'}
+                id="password"
+                autoComplete="current-password"
+                onChange={(e) => setPassword(e.target.value)}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        onClick={() => setShowPassword(!showPassword)}
+                        edge="end"
+                      >
+                        <Iconify
+                          icon={showPassword ? 'eva:eye-fill' : 'eva:eye-off-fill'}
+                        />
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
+              />
 
-    const [showPassword, setShowPassword] = useState(false);
-
-    // comment cho de dang nhap
-    const handleClick = async () => {
-        try {
-            const response = await request.post('User/Login', { email, password });
-            const { message, success, data } = response.data;
-            if (!success) {
-                toast.error(message);
-                return;
-            }
-            localStorage.setItem('TOKEN', data.token);
-            const token = jwtDecode(data.token);
-            // Assuming role is derived from the decoded token, this line was missing its definition
-            const role = token.role; // Extract role from token
-            console.log(role);
-            localStorage.setItem('ROLE', role);
-            if (role === '1') {
-                router.push('/dashboard');
-                window.location.reload();
-            } else if (role === '2') {
-                router.push('/dashboard');
-                window.location.reload();
-            } else if (role === '3') {
-                router.push('/sale');
-                window.location.reload();
-            }
-        } catch (e) {
-            toast.error('Error information login response');
-        }
-    };
-
-    // const handleClick = () => {
-    //   router.push('/dashboard');
-    // };
-
-    const renderForm = (
-        <>
-            <Stack spacing={3}>
-                <TextField onChange={(e) => setEmail(e.target.value)} name="email" label="Email" />
-
-                <TextField
-                    name="password"
-                    label="Password"
-                    onChange={(e) => setPassword(e.target.value)}
-                    type={showPassword ? 'text' : 'password'}
-                    InputProps={{
-                        endAdornment: (
-                            <InputAdornment position="end">
-                                <IconButton
-                                    onClick={() => setShowPassword(!showPassword)}
-                                    edge="end"
-                                >
-                                    <Iconify
-                                        icon={showPassword ? 'eva:eye-fill' : 'eva:eye-off-fill'}
-                                    />
-                                </IconButton>
-                            </InputAdornment>
-                        ),
-                    }}
-                />
-            </Stack>
-
-            <Stack direction="row" alignItems="center" justifyContent="flex-end" sx={{ my: 3 }}>
-                <Link variant="subtitle2" underline="hover">
-                    Forgot password?
-                </Link>
-            </Stack>
-
-            <LoadingButton
+              <LoadingButton
                 fullWidth
                 size="large"
                 onClick={handleClick}
                 variant="contained"
-                color="inherit"
-            >
+                color="primary"
+                sx={{ mt: 6, mb: 2 }}
+              >
                 Login
-            </LoadingButton>
-        </>
-    );
-
-    return (
-        <Box
-            sx={{
-                ...bgGradient({
-                    color: alpha(theme.palette.background.default, 0.9),
-                    imgUrl: '/assets/background/overlay_4.jpg',
-                }),
-                height: 1,
-            }}
-        >
-            <Logo
-                sx={{
-                    position: 'fixed',
-                    top: { xs: 16, md: 24 },
-                    left: { xs: 16, md: 24 },
-                }}
-            />
-
-            <Stack alignItems="center" justifyContent="center" sx={{ height: 1 }}>
-                <Card
-                    sx={{
-                        p: 5,
-                        width: 1,
-                        maxWidth: 420,
-                    }}
-                >
-                    <Typography variant="body2" sx={{ mt: 2, mb: 5 }}>
-                        Don’t have an account?
-                        <Link variant="subtitle2" sx={{ ml: 0.5 }}>
-                            Get started
-                        </Link>
-                    </Typography>
-
-                    <Stack direction="row" spacing={2}>
-                        <Button
-                            fullWidth
-                            size="large"
-                            color="inherit"
-                            variant="outlined"
-                            sx={{ borderColor: alpha(theme.palette.grey[500], 0.16) }}
-                        >
-                            <Iconify icon="eva:google-fill" color="#DF3E30" />
-                        </Button>
-
-                        <Button
-                            fullWidth
-                            size="large"
-                            color="inherit"
-                            variant="outlined"
-                            sx={{ borderColor: alpha(theme.palette.grey[500], 0.16) }}
-                        >
-                            <Iconify icon="eva:facebook-fill" color="#1877F2" />
-                        </Button>
-
-                        <Button
-                            fullWidth
-                            size="large"
-                            color="inherit"
-                            variant="outlined"
-                            sx={{ borderColor: alpha(theme.palette.grey[500], 0.16) }}
-                        >
-                            <Iconify icon="eva:twitter-fill" color="#1C9CEA" />
-                        </Button>
-                    </Stack>
-
-                    <Divider sx={{ my: 3 }}>
-                        <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                            OR
-                        </Typography>
-                    </Divider>
-
-                    {renderForm}
-                </Card>
-            </Stack>
-        </Box>
-    );
+              </LoadingButton>
+            </Box>
+          </Box>
+        </Grid>
+      </Grid>
+    </ThemeProvider>
+  );
 }

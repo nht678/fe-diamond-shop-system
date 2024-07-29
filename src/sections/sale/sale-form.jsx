@@ -80,9 +80,15 @@ const InvoiceTemplate = ({ open, row, onClose }) => {
 
     // Lấy dữ liệu trang sức
     const getjewery = async () => {
-        const response = await request.get('Jewelry/GetJewelries');
-        setJewelryData(response.data);
+        try {
+            const response = await request.get('Jewelry/GetJewelries');
+            const filteredData = response.data.filter(jewelry => jewelry.type === 1);
+            setJewelryData(filteredData);
+        } catch (error) {
+            console.error("Error fetching jewelry data:", error);
+        }
     };
+    
 
     // lấy dữ liệu quầy
     const getCounter = async () => {
@@ -601,6 +607,7 @@ const InvoiceTemplate = ({ open, row, onClose }) => {
                             Print Invoice
                         </Button>
                     </Box>
+                    
                 )}
             </DialogContent>
 
