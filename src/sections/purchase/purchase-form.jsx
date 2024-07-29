@@ -28,7 +28,7 @@ import { jwtDecode } from 'jwt-decode';
 import CommonFunction from 'src/utils/commonFunction';
 import InvoicePrintTemplate from './invoice-print';
 
-const InvoiceTemplate = ({ open, row, onClose}) => {
+const InvoiceTemplate = ({ open, row, onClose }) => {
     const token = localStorage.getItem('TOKEN');
     const decoded = jwtDecode(token);
     const currentUserId = decoded.Id;
@@ -36,11 +36,8 @@ const InvoiceTemplate = ({ open, row, onClose}) => {
 
     const [currentDate, setCurrentDate] = useState(new Date());
     const [items, setItems] = useState([]);
-    const [discountRate, setDiscountRate] = useState(0);
-    const [selectedPromotion, setSelectedPromotion] = useState(null);
     const [customerData, setcustomerData] = useState([]);
     const [staffData, setstaffData] = useState([]);
-    const [promotionData, setpromotionData] = useState([]);
     const [jewelryData, setJewelryData] = useState([]);
     const [counterData, setCounterData] = useState([]);
     const [currrentFormState, setCurrrentFormState] = useState('add');
@@ -58,14 +55,14 @@ const InvoiceTemplate = ({ open, row, onClose}) => {
     // Lấy dữ liệu khách hàng
     const getcustomer = async () => {
         const response = await request.get('Customer');
-        setcustomerData(response.data);
+        setcustomerData(response.data || []);
     };
 
     // Lấy dữ liệu nhân viên
     const getuser = async () => {
         try {
             const response = await request.get('User/GetUsers?roleId=3');
-            setstaffData(response.data);
+            setstaffData(response.data || []);
         } catch (error) {
             console.error('Error fetching users:', error);
         }
@@ -74,13 +71,13 @@ const InvoiceTemplate = ({ open, row, onClose}) => {
     // Lấy dữ liệu trang sức
     const getjewery = async () => {
         const response = await request.get('Jewelry/GetJewelries');
-        setJewelryData(response.data);
+        setJewelryData(response.data || []);
     };
 
     // lấy dữ liệu quầy
     const getCounter = async () => {
         const response = await request.get('Counter/GetCounters');
-        setCounterData(response.data);
+        setCounterData(response.data || []);
     };
 
     useEffect(() => {
@@ -99,19 +96,9 @@ const InvoiceTemplate = ({ open, row, onClose}) => {
         try {
             const response = await request.get(`Bill/GetBillById/${row.billId}`);
 
-            const {
-                billId,
-                customerId,
-                userId,
-                counterId,
-                saleDate,
-                discountRate: totalDiscountRate,
-                discountDescription,
-            } = response.data;
+            const { billId, customerId, userId, counterId, saleDate } = response.data;
             setBillDetail(response.data);
-
             setCurrentDate(new Date(saleDate));
-
             setFormState({
                 billId,
                 customerId,
@@ -126,15 +113,6 @@ const InvoiceTemplate = ({ open, row, onClose}) => {
                     gemQuantity: item.stoneQuantity,
                 }))
             );
-
-            // nếu tồn tại khuyến mãi thì set lại giá trị cho selectedPromotion
-            if (discountDescription) {
-                setSelectedPromotion({
-                    description: discountDescription,
-                    discountRate: totalDiscountRate,
-                });
-                setDiscountRate(totalDiscountRate);
-            }
         } catch (error) {
             console.error('Error fetching bill:', error);
         }
@@ -158,7 +136,11 @@ const InvoiceTemplate = ({ open, row, onClose}) => {
         const updatedItems = [...items];
         updatedItems[index][field] = value;
         // nếu field là những trường cần tính toán thì cập nhật lại giá trị totalAmount
-        if (['quantity', 'goldWeight', 'gemQuantity'].includes(field)) {
+        if (
+            ['quantity', 'goldWeight', 'gemQuantity', 'gemSellPrice', 'goldSellPrice'].includes(
+                field
+            )
+        ) {
             updatedItems[index][field] = parseFloat(value, 10);
             updatedItems[index].totalAmount = caculatetotalAmount(updatedItems[index]);
         }
@@ -171,6 +153,8 @@ const InvoiceTemplate = ({ open, row, onClose}) => {
                 quantity: item.quantity,
                 gemQuantity: item.gemQuantity,
                 goldWeight: item.goldWeight,
+                gemSellPrice: item.gemSellPrice,
+                goldSellPrice: item.goldSellPrice,
             })),
             totalAmount: calculateTotal(),
         }));
@@ -183,7 +167,6 @@ const InvoiceTemplate = ({ open, row, onClose}) => {
     };
 
     const calculateTotal = () => items.reduce((total, item) => total + item.totalAmount, 0);
-
 
     const isNaN = (value) => (Number.isNaN(value) ? 0 : value);
 
@@ -253,7 +236,7 @@ const InvoiceTemplate = ({ open, row, onClose}) => {
         if (!items.every((item) => item.quantity || item.quantity <= 0)) {
             toast.error('Quantity must be greater than 0');
             return;
-        } 
+        }
 
         if (!items.every((item) => item.quantity > 0)) {
             toast.error('Quantity must be greater than 0');
@@ -265,7 +248,6 @@ const InvoiceTemplate = ({ open, row, onClose}) => {
             if (response.status === 200) {
                 toast.success('Create purchase bill successfully');
                 setCurrrentFormState('view');
-                
             } else {
                 toast.error('Create purchase bill failed');
             }
@@ -473,7 +455,23 @@ const InvoiceTemplate = ({ open, row, onClose}) => {
                                                         disabled={currrentFormState === 'view'}
                                                     />
                                                 </TableCell>
-                                                <TableCell>{item.gemSellPrice}</TableCell>
+                                                {/* <TableCell>{item.gemSellPrice}</TableCell> */}
+                                                <TableCell>
+                                                    <TextField
+                                                        size="small"
+                                                        type="number"
+                                                        value={item.gemSellPrice}
+                                                        onChange={(e) =>
+                                                            handleInputChange(
+                                                                index,
+                                                                'gemSellPrice',
+                                                                e.target.value
+                                                            )
+                                                        }
+                                                        fullWidth
+                                                        disabled={currrentFormState === 'view'}
+                                                    />
+                                                </TableCell>
 
                                                 <TableCell>{item.goldType}</TableCell>
                                                 <TableCell>
@@ -492,7 +490,23 @@ const InvoiceTemplate = ({ open, row, onClose}) => {
                                                         disabled={currrentFormState === 'view'}
                                                     />
                                                 </TableCell>
-                                                <TableCell>{item.goldSellPrice}</TableCell>
+                                                {/* <TableCell>{item.goldSellPrice}</TableCell> */}
+                                                <TableCell>
+                                                    <TextField
+                                                        size="small"
+                                                        type="number"
+                                                        value={item.goldSellPrice}
+                                                        onChange={(e) =>
+                                                            handleInputChange(
+                                                                index,
+                                                                'goldSellPrice',
+                                                                e.target.value
+                                                            )
+                                                        }
+                                                        fullWidth
+                                                        disabled={currrentFormState === 'view'}
+                                                    />
+                                                </TableCell>
 
                                                 <TableCell>{item.totalAmount}</TableCell>
                                                 {currrentFormState === 'add' && (
@@ -544,14 +558,18 @@ const InvoiceTemplate = ({ open, row, onClose}) => {
                         </Button>
                     </Box>
                 )}
-                                {currrentFormState === 'view' && (
+                {currrentFormState === 'view' && (
                     <Box display="flex" justifyContent="flex-end" mt={2}>
                         <Button onClick={onOpenInvoice} color="primary" style={{ marginRight: 8 }}>
                             Print Invoice
                         </Button>
                     </Box>
                 )}
-                <InvoicePrintTemplate row={billDetail} open={openInvoice} onClose={onCloseInvoice} />
+                <InvoicePrintTemplate
+                    row={billDetail}
+                    open={openInvoice}
+                    onClose={onCloseInvoice}
+                />
             </DialogContent>
         </Dialog>
     );
