@@ -69,13 +69,18 @@ export default function UserTableRow({ selected, onDelete, onUpdate, handleClick
                 </TableCell>
                 <TableCell sx={{ textAlign: 'center' }}>{row.code}</TableCell>
                 <TableCell sx={{ textAlign: 'center' }}>{row.name}</TableCell>
-                <TableCell sx={{ textAlign: 'center' }}>{row.type}</TableCell>
-  
-                <TableCell sx={{ textAlign: 'center' }} >{row.jewelryPrice}</TableCell>
+                <TableCell sx={{ textAlign: 'center' }}>{row.jewelryType}</TableCell>
 
-                <TableCell >
+                <TableCell sx={{ textAlign: 'center' }}>{row.jewelryPrice}</TableCell>
+
+                <TableCell>
                     <Barcode value={row.barcode} height={20} />
                 </TableCell>
+
+                <TableCell sx={{ textAlign: 'center' }}>
+                    {row.type === 1 ? 'Sell' : 'Re-Purchase'}
+                </TableCell>
+
                 <TableCell sx={{ textAlign: 'center' }}>
                     {row.jewelryCounters?.map((counter) => counter.counterName).join(', ') ?? ''}
                 </TableCell>

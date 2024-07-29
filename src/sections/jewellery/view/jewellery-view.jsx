@@ -32,7 +32,6 @@ export default function JewelleryView() {
 
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
-
     const [jewList, setJewList] = useState([]);
 
     const [page, setPage] = useState(0);
@@ -64,17 +63,14 @@ export default function JewelleryView() {
         try {
             const response = await request.post('Jewelry/CreateJewelry', newItem);
             getJew();
-            handleClose();
-            toast.success('Create successful !', {
-                position: 'bottom-right',
-                theme: 'colored',
-            });
+            return response;
         } catch (error) {
             toast.error('Failed to create item. Please try again.', {
                 position: 'bottom-right',
                 theme: 'colored',
             });
         }
+        return null;
     };
 
     const deleteJewellery = async (id) => {
@@ -205,7 +201,6 @@ export default function JewelleryView() {
                 </Stack>
             )}
 
-
             <Card>
                 <UserTableToolbar
                     numSelected={selected.length}
@@ -227,9 +222,10 @@ export default function JewelleryView() {
                                     { id: 'previewImage', label: 'Preview Image' },
                                     { id: 'code', label: 'Code' },
                                     { id: 'name', label: 'Name' },
-                                    { id: 'type', label: 'Type' },
+                                    { id: 'jewelryType', label: 'JewelryType' },
                                     { id: 'jewelryPrice', label: 'JewelryPrice' },
                                     { id: 'barcode', label: 'Barcode' },
+                                    { id: 'type', label: 'Type' },
                                     { id: 'counters', label: 'Counters' },
                                     { id: '' },
                                 ]}

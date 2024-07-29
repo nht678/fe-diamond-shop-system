@@ -138,7 +138,7 @@ export default function PurchaseView() {
                     <InvoiceTemplate
                         open={showBillForm}
                         onClose={handleCloseBillForm}
-                        
+                        fetchBillPurchase={fetchBillPurchase}
                     />
                 )}
             </Stack>
