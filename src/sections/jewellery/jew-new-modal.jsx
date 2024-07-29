@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
 import PropTypes from 'prop-types';
 import { useFormik } from 'formik';
 import Form from 'react-bootstrap/Form';
@@ -14,6 +13,7 @@ import Barcode from 'react-barcode';
 import './jew-modal.css';
 import { toast } from 'react-toastify';
 import request from 'src/request';
+import CommonFunction from 'src/utils/commonFunction';
 
 export default function NewModal({ show, handleClose, createJew }) {
     const [goldtype, setGoldtype] = useState([]);
@@ -31,32 +31,30 @@ export default function NewModal({ show, handleClose, createJew }) {
         }
         return result;
     };
-    
 
     const formik = useFormik({
         initialValues: {
-            jewelryTypeId: '',
+            jewelryTypeId: null,
             name: '',
             code: generateRandomString(4),
             jewelryMaterial: {
-                gemId: '',
-                goldId: '',
-                goldWeight: 50,
-                gemQuantity: 50,
+                gemId: null,
+                goldId: null,
+                goldWeight: 0,
+                gemQuantity: 0,
             },
             barcode: generateRandomString(7),
-            laborCost: '',
-            warrantyTime: '',
+            laborCost: null,
+            warrantyTime: null,
             jewelryCounters: [],
+            type: 1,
         },
         onSubmit: async (values) => {
-            console.log(values);
             values.previewImage = imageName;
             // Chuyển đổi warrantyTime thành số nguyên nếu có giá trị, hoặc giữ nguyên null
             values.warrantyTime = values.warrantyTime ? parseInt(values.warrantyTime, 10) : null;
-
             const res = await createJew(values);
-            if (res.status === 200) {
+            if (res && res.status === 200) {
                 toast.success('Jewellery added successfully');
                 formik.resetForm();
                 handleClose();
@@ -87,14 +85,15 @@ export default function NewModal({ show, handleClose, createJew }) {
             if (!values.jewelryTypeId) {
                 errors.jewelryTypeId = 'Please select a jewelry type';
             }
-            if (!values.jewelryMaterial || !values.jewelryMaterial.gemId) {
-                errors.jewelryMaterial = errors.jewelryMaterial || {};
-                errors.jewelryMaterial.gemId = 'Please select a gem type';
-            }
-            if (!values.jewelryMaterial || !values.jewelryMaterial.goldId) {
-                errors.jewelryMaterial = errors.jewelryMaterial || {};
-                errors.jewelryMaterial.goldId = 'Please select a gold type';
-            }
+
+            // if (!values.jewelryMaterial || !values.jewelryMaterial.gemId) {
+            //     errors.jewelryMaterial = errors.jewelryMaterial || {};
+            //     errors.jewelryMaterial.gemId = 'Please select a gem type';
+            // }
+            // if (!values.jewelryMaterial || !values.jewelryMaterial.goldId) {
+            //     errors.jewelryMaterial = errors.jewelryMaterial || {};
+            //     errors.jewelryMaterial.goldId = 'Please select a gold type';
+            // }
             return errors;
         },
     });
@@ -235,7 +234,7 @@ export default function NewModal({ show, handleClose, createJew }) {
                                 <InputGroup className="mb-4 mt-3">
                                     <FormControl fullWidth>
                                         <TextField
-                                        disabled
+                                            disabled
                                             label="Barcode"
                                             name="barcode"
                                             value={formik.values.barcode}
@@ -249,7 +248,7 @@ export default function NewModal({ show, handleClose, createJew }) {
                             {/* Jewellery Code */}
                             <InputGroup className="mb-4 mt-3">
                                 <TextField
-                                disabled
+                                    disabled
                                     label="Jewellery Code"
                                     variant="outlined"
                                     name="code"
@@ -287,8 +286,13 @@ export default function NewModal({ show, handleClose, createJew }) {
                                         onChange={formik.handleChange}
                                         onBlur={formik.handleBlur}
                                         type="number"
-                                        error={formik.touched.laborCost && Boolean(formik.errors.laborCost)}
-                                        helperText={formik.touched.laborCost && formik.errors.laborCost}
+                                        error={
+                                            formik.touched.laborCost &&
+                                            Boolean(formik.errors.laborCost)
+                                        }
+                                        helperText={
+                                            formik.touched.laborCost && formik.errors.laborCost
+                                        }
                                         sx={{ width: 300 }}
                                     />
                                     <TextField
@@ -299,8 +303,14 @@ export default function NewModal({ show, handleClose, createJew }) {
                                         onChange={formik.handleChange}
                                         onBlur={formik.handleBlur}
                                         type="number"
-                                        error={formik.touched.warrantyTime && Boolean(formik.errors.warrantyTime)}
-                                        helperText={formik.touched.warrantyTime && formik.errors.warrantyTime}
+                                        error={
+                                            formik.touched.warrantyTime &&
+                                            Boolean(formik.errors.warrantyTime)
+                                        }
+                                        helperText={
+                                            formik.touched.warrantyTime &&
+                                            formik.errors.warrantyTime
+                                        }
                                         sx={{ width: 300 }}
                                     />
                                 </FormControl>
@@ -337,8 +347,7 @@ export default function NewModal({ show, handleClose, createJew }) {
                                 value={
                                     goldtype.find(
                                         (option) =>
-                                            option.value ===
-                                            formik.values.jewelryMaterial.goldId
+                                            option.value === formik.values.jewelryMaterial.goldId
                                     ) || null
                                 }
                                 onBlur={formik.handleBlur}
@@ -347,8 +356,14 @@ export default function NewModal({ show, handleClose, createJew }) {
                                     <TextField
                                         {...params}
                                         label="Gold Type"
-                                        error={formik.touched.jewelryMaterial?.goldId && Boolean(formik.errors.jewelryMaterial?.goldId)}
-                                        helperText={formik.touched.jewelryMaterial?.goldId && formik.errors.jewelryMaterial?.goldId}
+                                        error={
+                                            formik.touched.jewelryMaterial?.goldId &&
+                                            Boolean(formik.errors.jewelryMaterial?.goldId)
+                                        }
+                                        helperText={
+                                            formik.touched.jewelryMaterial?.goldId &&
+                                            formik.errors.jewelryMaterial?.goldId
+                                        }
                                     />
                                 )}
                             />
@@ -393,8 +408,14 @@ export default function NewModal({ show, handleClose, createJew }) {
                                     <TextField
                                         {...params}
                                         label="Gem Type"
-                                        error={formik.touched.jewelryMaterial?.gemId && Boolean(formik.errors.jewelryMaterial?.gemId)}
-                                        helperText={formik.touched.jewelryMaterial?.gemId && formik.errors.jewelryMaterial?.gemId}
+                                        error={
+                                            formik.touched.jewelryMaterial?.gemId &&
+                                            Boolean(formik.errors.jewelryMaterial?.gemId)
+                                        }
+                                        helperText={
+                                            formik.touched.jewelryMaterial?.gemId &&
+                                            formik.errors.jewelryMaterial?.gemId
+                                        }
                                     />
                                 )}
                             />
@@ -419,15 +440,47 @@ export default function NewModal({ show, handleClose, createJew }) {
                                     <TextField
                                         {...params}
                                         label="Jewellery Type"
-                                        error={formik.touched.jewelryTypeId && Boolean(formik.errors.jewelryTypeId)}
-                                        helperText={formik.touched.jewelryTypeId && formik.errors.jewelryTypeId}
+                                        error={
+                                            formik.touched.jewelryTypeId &&
+                                            Boolean(formik.errors.jewelryTypeId)
+                                        }
+                                        helperText={
+                                            formik.touched.jewelryTypeId &&
+                                            formik.errors.jewelryTypeId
+                                        }
                                     />
                                 )}
                             />
                         </Col>
 
                         {/* Counters */}
-
+                        {!CommonFunction.IsStaff() && (
+                            <Col md={6} className="mb-4 mt-3">
+                                <Autocomplete
+                                    disablePortal
+                                    id="counter-autocomplete"
+                                    options={counters}
+                                    multiple
+                                    onChange={(event, value) =>
+                                        formik.setFieldValue(
+                                            'jewelryCounters',
+                                            value.map((item) => ({ counterId: item.value }))
+                                        )
+                                    }
+                                    // value={counters.filter((option) =>
+                                    //     formik.values.jewelryCounters.includes(option.value)
+                                    // )}
+                                    value={formik.values.jewelryCounters.map((counter) =>
+                                        counters.find((item) => item.value === counter.counterId)
+                                    )}
+                                    onBlur={formik.handleBlur}
+                                    sx={{ width: 300 }}
+                                    renderInput={(params) => (
+                                        <TextField {...params} label="Counters" />
+                                    )}
+                                />
+                            </Col>
+                        )}
                     </Row>
                     <Modal.Footer>
                         <Button variant="secondary" onClick={handleClose}>

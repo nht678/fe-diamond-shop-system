@@ -11,6 +11,7 @@ import FormControl from '@mui/material/FormControl';
 import Barcode from 'react-barcode';
 import request from 'src/request';
 import { toast } from 'react-toastify';
+import CommonFunction from 'src/utils/commonFunction';
 
 export default function EditModal({ show, handleClose, onUpdate, row }) {
     const [goldtype, setGoldtype] = useState([]);
@@ -95,6 +96,42 @@ export default function EditModal({ show, handleClose, onUpdate, row }) {
             laborCost: row.laborCost,
             previewImage: row.previewImage,
             jewelryCounters: row.jewelryCounters || [],
+            type: row.type,
+        },
+        validate: (values) => {
+            const errors = {};
+            const validateFields = [
+                'name',
+                'code',
+                'laborCost',
+                'barcode',
+                'jewelryTypeId',
+                'warrantyTime',
+            ];
+            validateFields.forEach((field) => {
+                if (!values[field]) {
+                    errors[field] = 'Required';
+                }
+            });
+
+            if (values.laborCost && Number(values.laborCost) < 0) {
+                errors.laborCost = 'Must be greater than or equal to 0';
+            }
+            if (values.warrantyTime && Number(values.warrantyTime) < 0) {
+                errors.warrantyTime = 'Must be greater than or equal to 0';
+            }
+            if (!values.jewelryTypeId) {
+                errors.jewelryTypeId = 'Please select a jewelry type';
+            }
+
+            // nếu trống gemId hoặc goldId thì báo lỗi
+            // if (!values.jewelryMaterial.gemId) {
+            //     errors['jewelryMaterial.gemId'] = 'Required';
+            // }
+            // if (!values.jewelryMaterial.goldId) {
+            //     errors['jewelryMaterial.goldId'] = 'Required';
+            // }
+            return errors;
         },
         onSubmit: async (values) => {
             // Chuyển đổi warrantyTime thành số nguyên hoặc null
@@ -104,10 +141,10 @@ export default function EditModal({ show, handleClose, onUpdate, row }) {
             };
 
             // validate thông tin cần thiết như gemId, goldId, ...
-            if (!payload.jewelryMaterial.gemId || !payload.jewelryMaterial.goldId) {
-                toast.error('Gem and Gold are required');
-                return;
-            }
+            // if (!payload.jewelryMaterial.gemId || !payload.jewelryMaterial.goldId) {
+            //     toast.error('Gem and Gold are required');
+            //     return;
+            // }
 
             // barcode
             if (!payload.barcode) {
@@ -127,30 +164,6 @@ export default function EditModal({ show, handleClose, onUpdate, row }) {
 
             await onUpdate(row.jewelryId, payload);
             handleClose();
-        },
-        validate: (values) => {
-            const errors = {};
-            const validateFields = [
-                'name',
-                'code',
-                'laborCost',
-                'barcode',
-                'jewelryTypeId',
-                'warrantyTime',
-            ];
-            validateFields.forEach((field) => {
-                if (!values[field]) {
-                    errors[field] = 'Required';
-                }
-            });
-            // nếu trống gemId hoặc goldId thì báo lỗi
-            if (!values.jewelryMaterial.gemId) {
-                errors['jewelryMaterial.gemId'] = 'Required';
-            }
-            if (!values.jewelryMaterial.goldId) {
-                errors['jewelryMaterial.goldId'] = 'Required';
-            }
-            return errors;
         },
     });
 
@@ -185,7 +198,6 @@ export default function EditModal({ show, handleClose, onUpdate, row }) {
     };
 
     // Replace non-ASCII characters from the barcode
-
 
     if (isLoading) {
         return (
@@ -230,7 +242,7 @@ export default function EditModal({ show, handleClose, onUpdate, row }) {
                                 </div>
                                 <div>
                                     <TextField
-                                    disabled
+                                        disabled
                                         className="mt-4"
                                         label="Barcode"
                                         name="barcode"
@@ -249,13 +261,12 @@ export default function EditModal({ show, handleClose, onUpdate, row }) {
                             </Col>
                             <Col md={12}>
                                 <TextField
-                                disabled
+                                    disabled
                                     className="mt-4"
                                     label="Jewellery Code"
                                     variant="outlined"
                                     name="code"
                                     value={formik.values.code}
-
                                     onBlur={formik.handleBlur}
                                     sx={{
                                         width: 300,
@@ -431,29 +442,33 @@ export default function EditModal({ show, handleClose, onUpdate, row }) {
                         </Col>
 
                         {/* Counters */}
-                        <Col md={6}>
-                            <InputGroup className="mb-4 mt-3">
-                                <Autocomplete
-                                    multiple
-                                    id="counter-autocomplete"
-                                    options={counters}
-                                    value={formik.values.jewelryCounters.map((counter) =>
-                                        counters.find((item) => item.value === counter.counterId)
-                                    )}
-                                    onChange={(event, value) =>
-                                        formik.setFieldValue(
-                                            'jewelryCounters',
-                                            value.map((item) => ({ counterId: item.value }))
-                                        )
-                                    }
-                                    onBlur={formik.handleBlur}
-                                    sx={{ width: 600 }}
-                                    renderInput={(params) => (
-                                        <TextField {...params} label="Counters" />
-                                    )}
-                                />
-                            </InputGroup>
-                        </Col>
+                        {!CommonFunction.IsStaff() && (
+                            <Col md={6}>
+                                <InputGroup className="mb-4 mt-3">
+                                    <Autocomplete
+                                        multiple
+                                        id="counter-autocomplete"
+                                        options={counters}
+                                        value={formik.values.jewelryCounters.map((counter) =>
+                                            counters.find(
+                                                (item) => item.value === counter.counterId
+                                            )
+                                        )}
+                                        onChange={(event, value) =>
+                                            formik.setFieldValue(
+                                                'jewelryCounters',
+                                                value.map((item) => ({ counterId: item.value }))
+                                            )
+                                        }
+                                        onBlur={formik.handleBlur}
+                                        sx={{ width: 600 }}
+                                        renderInput={(params) => (
+                                            <TextField {...params} label="Counters" />
+                                        )}
+                                    />
+                                </InputGroup>
+                            </Col>
+                        )}
                     </Row>
 
                     <Modal.Footer>
