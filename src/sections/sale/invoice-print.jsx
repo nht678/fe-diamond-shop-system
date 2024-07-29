@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
+    Card,
     Box,
     Grid,
     Typography,
@@ -37,7 +38,7 @@ const InvoicePrintTemplate = ({ row, open, onClose }) => {
             <DialogContent>
                 <Box p={4}>
                     <Grid container spacing={2}>
-                        <Grid item xs={12}>
+                        <Grid item xs={6}>
                             <Typography variant="h4" gutterBottom>
                                 Invoice Number: {row.billId}
                             </Typography>
@@ -45,9 +46,14 @@ const InvoicePrintTemplate = ({ row, open, onClose }) => {
                             <Typography variant="body1">
                                 {moment(row.saleDate).format('DD-MM-YYYY')}
                             </Typography>
-                            <Divider />
+                            <Divider sx={{ marginY: 2, mt: 1 }} />
                         </Grid>
-                        <Grid item xs={12}>
+                        <Grid item xs={6}>
+                            <Box textAlign="right">
+                                <img src="/assets/logo.svg" alt="" style={{ width: 90 }} />
+                            </Box>
+                        </Grid>
+                        <Grid item xs={6}>
                             <Typography variant="h5">Customer:</Typography>
                             <Typography variant="body1">Code: {row.customerCode}</Typography>
                             <Typography variant="body1">Name: {row.customerName}</Typography>
@@ -55,13 +61,13 @@ const InvoicePrintTemplate = ({ row, open, onClose }) => {
                             <Typography variant="body1">Phone: {row.customerPhone}</Typography>
                         </Grid>
 
-                        <Grid item xs={12}>
+                        <Grid item xs={6}>
                             <Typography variant="h5">Sales Person:</Typography>
                             <Typography variant="body1">Code: {row.staffCode}</Typography>
                             <Typography variant="body1">Name: {row.staffName}</Typography>
                         </Grid>
                     </Grid>
-                    <Divider />
+                    <Divider sx={{ marginY: 2, mt: 1 }} />
                     <Grid container spacing={2} mt={2}>
                         <Grid item xs={12}>
                             <Table>
@@ -108,8 +114,9 @@ const InvoicePrintTemplate = ({ row, open, onClose }) => {
                     </Grid>
                     <Divider />
                     <Grid container spacing={2} mt={2}>
-                        <Grid item xs={8} />
-                        <Grid item xs={4}>
+                        <Grid item xs={7} />
+                        <Grid item xs={5}>
+                            
                             <Box display="flex" justifyContent="space-between" mb={1}>
                                 <Typography variant="subtitle1">Subtotal:</Typography>
                                 <Typography variant="subtitle1">
@@ -128,6 +135,7 @@ const InvoicePrintTemplate = ({ row, open, onClose }) => {
                                     {calculateTotal()?.toFixed(2)} VNĐ
                                 </Typography>
                             </Box>
+                            
 
                             <Box mt={4} className="noPrint">
                                 <Button
@@ -140,9 +148,33 @@ const InvoicePrintTemplate = ({ row, open, onClose }) => {
                                 >
                                     Print
                                 </Button>
+                                
                             </Box>
+                            
                         </Grid>
                     </Grid>
+                    <Divider sx={{ marginY: 2, mt: 1 }} />
+                    <Box mt={3} >
+                        <Typography variant="h6">Policy:</Typography>
+                        <Typography variant="body2">
+                            - Goods once sold are not eligible for exchange or return..
+                        </Typography>
+                        <Typography variant="body2">
+                            - Please keep the invoice for any future reference.
+                        </Typography>
+                        <Typography variant="body2">
+                            - For any inquiries, contact our customer service at (123) 456-7890.
+                        </Typography>
+                    </Box>
+                    <Box mt={6}>
+                        <Typography variant="h6">Authorized Signature: _____________</Typography>
+                        <Box mt={2} width="50%">
+                            <Divider />
+                        </Box>
+                        <Box textAlign="center" sx={{ marginTop: 3 }}>
+                            <Typography variant="h4">THANK YOU!</Typography>
+                        </Box>
+                    </Box>
                 </Box>
             </DialogContent>
         </Dialog>
