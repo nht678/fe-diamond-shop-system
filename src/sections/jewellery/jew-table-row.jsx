@@ -10,6 +10,7 @@ import MenuItem from '@mui/material/MenuItem';
 import TableCell from '@mui/material/TableCell';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
+import Label from 'src/components/label';
 
 // import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
@@ -70,28 +71,29 @@ export default function UserTableRow({ selected, onDelete, onUpdate, handleClick
                 <TableCell sx={{ textAlign: 'center' }}>{row.code}</TableCell>
                 <TableCell sx={{ textAlign: 'center' }}>{row.name}</TableCell>
                 <TableCell sx={{ textAlign: 'center' }}>{row.jewelryType}</TableCell>
-
-                <TableCell sx={{ textAlign: 'center' }}>{row.jewelryPrice}</TableCell>
+                <TableCell sx={{ textAlign: 'center' }}>{row.totalPrice}</TableCell>
 
                 <TableCell>
                     <Barcode value={row.barcode} height={20} />
                 </TableCell>
 
                 <TableCell sx={{ textAlign: 'center' }}>
-                    {row.type === 1 ? 'Sell' : 'Re-Purchase'}
+                    <Label color={(row.type=== 1 && 'success') || 'warning'}>{row.type === 1 ? 'For Sale' : 'Re-Purchase'}</Label>
                 </TableCell>
 
                 <TableCell sx={{ textAlign: 'center' }}>
                     {row.jewelryCounters?.map((counter) => counter.counterName).join(', ') ?? ''}
                 </TableCell>
 
-                <TableCell align="right">
-                    <Button variant="outline-primary" onClick={handleShow}>
+                <TableCell align="right" style={{ whiteSpace: 'nowrap' }}>
+                    <Button variant="outline-primary" onClick={handleShow} >
                         More Info
                     </Button>
-                    <IconButton onClick={handleOpenMenu}>
+                    {!CommonFunction.IsStaff() && (
+                    <IconButton onClick={handleOpenMenu} >
                         <Iconify icon="eva:more-vertical-fill" />
                     </IconButton>
+                    )}
                 </TableCell>
             </TableRow>
 

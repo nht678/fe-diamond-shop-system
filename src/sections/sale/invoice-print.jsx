@@ -153,7 +153,7 @@ const InvoicePrintTemplate = ({ row, open, onClose }) => {
                             
                         </Grid>
                     </Grid>
-                    <Divider sx={{ marginY: 2, mt: 1 }} />
+                    <Divider sx={{ marginY: 2, mt: 5 }} />
                     <Box mt={3} >
                         <Typography variant="h6">Policy:</Typography>
                         <Typography variant="body2">
@@ -168,10 +168,10 @@ const InvoicePrintTemplate = ({ row, open, onClose }) => {
                     </Box>
                     <Box mt={6}>
                         <Typography variant="h6">Authorized Signature: _____________</Typography>
-                        <Box mt={2} width="50%">
+                        <Box mt={5} width="50%">
                             <Divider />
                         </Box>
-                        <Box textAlign="center" sx={{ marginTop: 3 }}>
+                        <Box textAlign="center" sx={{ marginTop: 5 }}>
                             <Typography variant="h4">THANK YOU!</Typography>
                         </Box>
                     </Box>

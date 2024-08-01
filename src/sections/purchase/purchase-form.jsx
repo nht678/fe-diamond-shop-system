@@ -98,6 +98,7 @@ const InvoiceTemplate = ({ open, row, onClose }) => {
 
             const { billId, customerId, userId, counterId, saleDate } = response.data;
             setBillDetail(response.data);
+            console.log(response.data)
             setCurrentDate(new Date(saleDate));
             setFormState({
                 billId,
@@ -248,6 +249,13 @@ const InvoiceTemplate = ({ open, row, onClose }) => {
             if (response.status === 200) {
                 toast.success('Create purchase bill successfully');
                 setCurrrentFormState('view');
+                setBillDetail({
+                    ...formState,
+                    items,
+                    
+                });
+                console.log(formState);
+                
             } else {
                 toast.error('Create purchase bill failed');
             }
@@ -558,7 +566,7 @@ const InvoiceTemplate = ({ open, row, onClose }) => {
                         </Button>
                     </Box>
                 )}
-                {currrentFormState === 'view' && (
+                {row && (
                     <Box display="flex" justifyContent="flex-end" mt={2}>
                         <Button onClick={onOpenInvoice} color="primary" style={{ marginRight: 8 }}>
                             Print Invoice
