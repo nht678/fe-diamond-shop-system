@@ -223,7 +223,7 @@ export default function JewelleryView() {
                                     { id: 'code', label: 'Code' },
                                     { id: 'name', label: 'Name' },
                                     { id: 'jewelryType', label: 'JewelryType' },
-                                    { id: 'jewelryPrice', label: 'JewelryPrice' },
+                                    { id: 'totalPrice', label: 'TotalPrice' },
                                     { id: 'barcode', label: 'Barcode' },
                                     { id: 'type', label: 'Type' },
                                     { id: 'counters', label: 'Counters' },

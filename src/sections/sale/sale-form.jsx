@@ -458,6 +458,11 @@ const InvoiceTemplate = ({ open, row, onClose }) => {
                                         {items.map((item, index) => (
                                             <TableRow key={index}>
                                                 <TableCell>
+                                                {currrentFormState === 'view' ? (
+                <Typography>
+                    {item ? `${item.code} - ${item.name}` : 'No item selected'}
+                </Typography>
+            ) : (
                                                     <Autocomplete
                                                         size="small"
                                                         options={jewelryDataFilter}
@@ -482,8 +487,10 @@ const InvoiceTemplate = ({ open, row, onClose }) => {
                                                                 fullWidth
                                                             />
                                                         )}
-                                                        readOnly={currrentFormState === 'view'}
+                                                        
+                                                        
                                                     />
+            )}
                                                 </TableCell>
                                                 <TableCell>
                                                     <TextField
@@ -601,7 +608,7 @@ const InvoiceTemplate = ({ open, row, onClose }) => {
                     </Box>
                 )}
 
-                {currrentFormState === 'view' && (
+                {row && (
                     <Box display="flex" justifyContent="flex-end" mt={2}>
                         <Button onClick={onOpenInvoice} color="primary" style={{ marginRight: 8 }}>
                             Print Invoice
